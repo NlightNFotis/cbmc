@@ -25,6 +25,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <goto-programs/remove_vector.h>
 #include <goto-programs/remove_complex.h>
 #include <goto-programs/remove_asm.h>
+#include <goto-programs/remove_skip.h>
 #include <goto-programs/goto_convert_functions.h>
 #include <goto-programs/show_properties.h>
 #include <goto-programs/show_symbol_table.h>
@@ -304,8 +305,8 @@ int goto_analyzer_parse_optionst::doit()
   {
     if(cmdline.isset("version"))
     {
-	std::cout << CBMC_VERSION << std::endl;
-	return 0;
+      std::cout << CBMC_VERSION << std::endl;
+      return 0;
     }
 
     //
@@ -331,8 +332,18 @@ int goto_analyzer_parse_optionst::doit()
     if(goto_model(cmdline.args))
       return 6;
 
-    if(process_goto_program(options))
+    goto_functionst::function_mapt::const_iterator f_it
+      =goto_model.goto_functions.function_map.find(
+        goto_functionst::entry_point());
+
+    if(f_it==goto_model.goto_functions.function_map.end())
+    {
+      error() << "Entry point not found" << eom;
       return 6;
+    }
+
+    if(process_goto_program(options))
+    return 6;
 
     if(cmdline.isset("taint"))
     {
@@ -340,18 +351,18 @@ int goto_analyzer_parse_optionst::doit()
 
       if(cmdline.isset("show-taint"))
       {
-	taint_analysis(goto_model, taint_file, get_message_handler(), true, "");
-	return 0;
+        taint_analysis(goto_model, taint_file, get_message_handler(), true, "");
+        return 0;
       }
       else
       {
-	std::string json_file=cmdline.get_value("json");
-	bool result=taint_analysis(
-	  goto_model,
-          taint_file,
-          get_message_handler(),
-          false,
-          json_file);
+        std::string json_file=cmdline.get_value("json");
+        bool result=taint_analysis(
+            goto_model,
+            taint_file,
+            get_message_handler(),
+            false,
+            json_file);
         return result?10:0;
       }
     }
@@ -361,20 +372,20 @@ int goto_analyzer_parse_optionst::doit()
       const std::string json_file=cmdline.get_value("json");
 
       if(json_file.empty())
-	unreachable_instructions(goto_model, false, std::cout);
+      unreachable_instructions(goto_model, false, std::cout);
       else if(json_file=="-")
-	unreachable_instructions(goto_model, true, std::cout);
+      unreachable_instructions(goto_model, true, std::cout);
       else
       {
-	std::ofstream ofs(json_file);
-	if(!ofs)
-	{
-	  error() << "Failed to open json output `"
-		  << json_file << "'" << eom;
-	  return 6;
-	}
+        std::ofstream ofs(json_file);
+        if(!ofs)
+        {
+          error() << "Failed to open json output `"
+          << json_file << "'" << eom;
+          return 6;
+        }
 
-	unreachable_instructions(goto_model, true, ofs);
+        unreachable_instructions(goto_model, true, ofs);
       }
 
       return 0;
@@ -386,12 +397,12 @@ int goto_analyzer_parse_optionst::doit()
 
       forall_goto_functions(it, goto_model.goto_functions)
       {
-	std::cout << ">>>>\n";
-	std::cout << ">>>> " << it->first << '\n';
-	std::cout << ">>>>\n";
-	local_may_aliast local_may_alias(it->second);
-	local_may_alias.output(std::cout, it->second, ns);
-	std::cout << '\n';
+        std::cout << ">>>>\n";
+        std::cout << ">>>> " << it->first << '\n';
+        std::cout << ">>>>\n";
+        local_may_aliast local_may_alias(it->second);
+        local_may_alias.output(std::cout, it->second, ns);
+        std::cout << '\n';
       }
 
       return 0;
@@ -399,45 +410,14 @@ int goto_analyzer_parse_optionst::doit()
 
     label_properties(goto_model);
 
-    if(cmdline.isset("show-properties"))
+    if (cmdline.isset("show-properties"))
     {
       show_properties(goto_model, get_ui());
       return 0;
     }
 
-<<<<<<< HEAD
-    return 0;
-  }
-
-  label_properties(goto_model);
-
-  if(cmdline.isset("show-properties"))
-  {
-    show_properties(goto_model, get_ui());
-    return 0;
-  }
-
-  if(set_properties())
-    return 7;
-
-
-  // Output file factory
-  std::ostream *out;
-  const std::string outfile=options.get_option("outfile");
-  if(outfile=="-")
-    out=&std::cout;
-  else
-  {
-    out=new std::ofstream(outfile);
-    if(!*out)
-    {
-      error() << "Failed to open output file `"
-              << outfile << "'" << eom;
-      return 6;
-=======
-    if(set_properties())
+    if (set_properties())
       return 7;
-  
 
     // Output file factory
     std::ostream *out;
@@ -446,91 +426,66 @@ int goto_analyzer_parse_optionst::doit()
       out = &std::cout;
     else
     {
-      out = new std::ofstream(outfile);
-      if(!*out)
+      if(options.get_bool_option("simplify"))
+        out=new std::ofstream(outfile, std::ios::binary);
+      else
+        out=new std::ofstream(outfile);
+
+      if (!*out)
       {
-	error() << "Failed to open output file `"
-		<< outfile << "'" << eom;
-	return 6;
+        error() << "Failed to open output file `" << outfile << "'" << eom;
+        return 6;
       }
->>>>>>> 1f65b1a... Catch exceptions thrown in doit().
     }
 
-
-<<<<<<< HEAD
-  // Run the analysis
-  bool result=true;
-  if(options.get_bool_option("show"))
-    result=static_show_domain(goto_model, options, get_message_handler(), *out);
-
-  else if(options.get_bool_option("verify"))
-    result=   static_analyzer(goto_model, options, get_message_handler(), *out);
-
-  else if(options.get_bool_option("simplify"))
-    result= static_simplifier(goto_model, options, get_message_handler(), *out);
-  else
-  {
-    error() << "No task given" << eom;
-    return 6;
-  }
-
-  if(out!=&std::cout)
-    delete out;
-
-  return result?10:0;
-
-
-=======
     // Run the analysis
     bool result = true;
     if (options.get_bool_option("show"))
-      result = static_show_domain(goto_model, options, get_message_handler(), *out);
-
+      result = static_show_domain(goto_model, options, get_message_handler(),
+          *out);
     else if (options.get_bool_option("verify"))
-      result =    static_analyzer(goto_model, options, get_message_handler(), *out);
-
+      result = static_analyzer(goto_model, options, get_message_handler(),
+          *out);
     else if (options.get_bool_option("simplify"))
-      result =  static_simplifier(goto_model, options, get_message_handler(), *out);
+      result = static_simplifier(goto_model, options, get_message_handler(),
+          *out);
     else
     {
       error() << "No task given" << eom;
       return 6;
     }
-  
+
     if (out != &std::cout)
       delete out;
+
+    return result ? 10 : 0;
   
-  return result?10:0;
-  
->>>>>>> 1f65b1a... Catch exceptions thrown in doit().
-  // Final defensive error case
-  error() << "no analysis option given -- consider reading --help"
-          << eom;
-  return 6;
+#if 0
+    // Final defensive error case
+    error() << "no analysis option given -- consider reading --help" << eom;
+    return 6;
+#endif
+
   }
-  catch(const char *e)
+  catch (const char *e)
   {
     error() << e << eom;
     return 6;
   }
-
-  catch(const std::string e)
+  catch (const std::string e)
   {
     error() << e << eom;
     return 6;
   }
-
-  catch(int x)
+  catch (int x)
   {
     return x;
   }
-
-  catch(std::bad_alloc)
+  catch (std::bad_alloc)
   {
     error() << "Out of memory" << eom;
     return 6;
   }
-
 }
 
 /*******************************************************************\
