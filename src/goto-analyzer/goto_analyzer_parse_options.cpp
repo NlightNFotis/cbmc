@@ -202,7 +202,7 @@ void goto_analyzer_parse_optionst::get_command_line_options(optionst &options)
     options.set_option("xml", true);
     options.set_option("outfile", cmdline.get_value("xml"));
   }
-  else if (cmdline.isset("dot"))
+  else if(cmdline.isset("dot"))
   {
     options.set_option("dot", true);
     options.set_option("outfile", cmdline.get_value("dot"));
@@ -267,10 +267,10 @@ void goto_analyzer_parse_optionst::get_command_line_options(optionst &options)
     options.set_option("non-null", true);
   else if(cmdline.isset("constants"))
     options.set_option("constants", true);
-  else if (cmdline.isset("dependence-graph"))
+  else if(cmdline.isset("dependence-graph"))
     options.set_option("dependence-graph", true);
-    
-  if (!(options.get_bool_option("constants") ||
+
+  if(!(options.get_bool_option("constants") ||
       options.get_bool_option("intervals") ||
       options.get_bool_option("non-null") ||
       options.get_bool_option("dependence-graph")))
@@ -408,7 +408,7 @@ int goto_analyzer_parse_optionst::doit()
       return 0;
     }
 
-    if (set_properties())
+    if(set_properties())
       return 7;
 
     // Output file factory
@@ -452,7 +452,7 @@ int goto_analyzer_parse_optionst::doit()
       return 6;
     }
 
-    if (out!=&std::cout)
+    if(out!=&std::cout)
       delete out;
 
     return result?10:0;
