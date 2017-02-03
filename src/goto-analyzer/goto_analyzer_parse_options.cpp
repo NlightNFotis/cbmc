@@ -324,8 +324,8 @@ int goto_analyzer_parse_optionst::doit()
     if(goto_model(cmdline.args))
       return 6;
 
-    goto_functionst::function_mapt::const_iterator f_it
-      =goto_model.goto_functions.function_map.find(
+    goto_functionst::function_mapt::const_iterator f_it=
+      goto_model.goto_functions.function_map.find(
         goto_functionst::entry_point());
 
     if(f_it==goto_model.goto_functions.function_map.end())
@@ -372,8 +372,7 @@ int goto_analyzer_parse_optionst::doit()
         std::ofstream ofs(json_file);
         if(!ofs)
         {
-          error() << "Failed to open json output `"
-          << json_file << "'" << eom;
+          error() << "Failed to open json output `" << json_file << "'" << eom;
           return 6;
         }
 
@@ -433,22 +432,24 @@ int goto_analyzer_parse_optionst::doit()
     // Run the analysis
     bool result=true;
     if(options.get_bool_option("show"))
-      result=static_show_domain(
-        goto_model,
-        options,
-        get_message_handler(),
-        *out);
+      result=
+        static_show_domain(
+          goto_model,
+          options,
+          get_message_handler(),
+          *out);
     else if(options.get_bool_option("verify"))
       result=static_analyzer(goto_model, options, get_message_handler(), *out);
     else if(options.get_bool_option("simplify"))
-      result=static_simplifier(
-        goto_model,
-        options,
-        get_message_handler(),
-        *out);
+      result=
+        static_simplifier(
+          goto_model,
+          options,
+          get_message_handler(),
+          *out);
     else
     {
-      error()<<"No task given"<<eom;
+      error() << "No task given" << eom;
       return 6;
     }
 
@@ -457,21 +458,21 @@ int goto_analyzer_parse_optionst::doit()
 
     return result?10:0;
   }
-  catch (const char *e)
+  catch(const char *e)
   {
     error() << e << eom;
     return 6;
   }
-  catch (const std::string e)
+  catch(const std::string e)
   {
     error() << e << eom;
     return 6;
   }
-  catch (int x)
+  catch(int x)
   {
     return x;
   }
-  catch (std::bad_alloc)
+  catch(std::bad_alloc)
   {
     error() << "Out of memory" << eom;
     return 6;
@@ -627,7 +628,7 @@ void goto_analyzer_parse_optionst::help()
 {
   std::cout <<
     "\n"
-    "* * GOTO-ANALYZER " CBMC_VERSION " - Copyright (C) 2016 ";
+    "* * GOTO-ANALYZER " CBMC_VERSION " - Copyright (C) 2017 ";
 
   std::cout << "(" << (sizeof(void *)*8) << "-bit version)";
 
@@ -651,7 +652,7 @@ void goto_analyzer_parse_optionst::help()
     "\n"
     "Abstract interpreter options:\n"
     " --flow-sensitive             use flow-sensitive abstract interpreter\n"
-    " --concurrent                 use concurrent abstract interpreter\n"
+    " --concurrent                 use concurrency-aware abstract interpreter\n"
     "\n"
     "Domain options:\n"
     " --constants                  constant domain\n"
