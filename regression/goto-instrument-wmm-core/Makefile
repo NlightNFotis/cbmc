@@ -21,7 +21,7 @@ tests.log: ../test.pl
 clean:
 	@for dir in *; do \
                 if [ -d "$$dir" ]; then \
-                        rm $$dir/*.txt $$dir/*.dot $$dir/*.gb $$dir/*.out; \
+                        rm -f $$dir/*.txt $$dir/*.dot $$dir/*.gb $$dir/*.out; \
                 fi; \
         done;
 
@@ -31,3 +31,4 @@ show:
 			vim -o "$$dir/*.c" "$$dir/*.out"; \
 		fi; \
 	done;
+
