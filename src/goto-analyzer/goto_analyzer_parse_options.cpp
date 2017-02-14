@@ -257,6 +257,7 @@ void goto_analyzer_parse_optionst::get_command_line_options(optionst &options)
   options.set_option("constants", false);
   options.set_option("intervals", false);
   options.set_option("non-null", false);
+  options.set_option("variable", false);
   options.set_option("dependence-graph", false);
 
   if(cmdline.isset("intervals") ||
@@ -267,13 +268,16 @@ void goto_analyzer_parse_optionst::get_command_line_options(optionst &options)
     options.set_option("non-null", true);
   else if(cmdline.isset("constants"))
     options.set_option("constants", true);
+  else if(cmdline.isset("variable"))
+    options.set_option("variable", true);
   else if(cmdline.isset("dependence-graph"))
     options.set_option("dependence-graph", true);
 
   if(!(options.get_bool_option("constants") ||
       options.get_bool_option("intervals") ||
       options.get_bool_option("non-null") ||
-      options.get_bool_option("dependence-graph")))
+      options.get_bool_option("dependence-graph") ||
+      options.get_bool_option("variable")))
   {
     status() << "Domain defaults to --constants" << eom;
     options.set_option("constants", true);

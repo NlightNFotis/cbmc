@@ -39,6 +39,7 @@ class optionst;
   "(unreachable-instructions)" \
   "(intervals)(show-intervals)" \
   "(non-null)(show-non-null)" \
+  "(variable)" \
   "(constants)" \
   "(dependence-graph)" \
   "(show)(verify)(simplify):" \
