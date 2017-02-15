@@ -338,7 +338,9 @@ int goto_analyzer_parse_optionst::doit()
     }
 
     if(process_goto_program(options))
-    return 6;
+      return 6;
+
+    status() << "Starting analysis" << eom;
 
     if(cmdline.isset("taint"))
     {
