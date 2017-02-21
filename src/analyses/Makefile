@@ -12,6 +12,9 @@ SRC = natural_loops.cpp is_threaded.cpp dirty.cpp interval_analysis.cpp \
       variable-sensitivity/abstract_enviroment.cpp \
       variable-sensitivity/abstract_value.cpp \
       variable-sensitivity/constant_abstract_value.cpp \
+      variable-sensitivity/pointer_abstract_object.cpp \
+      variable-sensitivity/struct_abstract_object.cpp \
+      variable-sensitivity/array_abstract_object.cpp \
       # Empty last line
 
 INCLUDES= -I ..
