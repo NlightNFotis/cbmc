@@ -16,6 +16,6 @@ show:
 	done;
 
 clean:
-	find -name '*.out' -execdir rm -f '{}' \;
-	find -name '*.gb' -execdir rm -f '{}' \;
-	rm -f tests.log
+	find -name '*.out' -execdir $(RM) '{}' \;
+	find -name '*.gb' -execdir $(RM) '{}' \;
+	$(RM) tests.log
