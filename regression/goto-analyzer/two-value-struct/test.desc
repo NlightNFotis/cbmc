@@ -1,0 +1,9 @@
+CORE
+two-value-struct.c
+--variable
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] file two-value-struct.c line 11 function main, assertion x==0: Unknown$
+^\[main.assertion.2\] file two-value-struct.c line 12 function main, assertion x==1: Unknown$
+--
+^warning: ignoring

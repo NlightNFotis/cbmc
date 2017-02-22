@@ -1,0 +1,9 @@
+CORE
+two-value-pointer.c
+--variable
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] file two-value-pointer.c line 8 function main, assertion x==&y: Unknown$
+^\[main.assertion.2\] file two-value-pointer.c line 9 function main, assertion x==&z: Unknown$
+--
+^warning: ignoring

@@ -1,0 +1,9 @@
+CORE
+two-value-float.c
+--variable
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] file two-value-int.c line 5 function main, assertion x==0.0: Unknown$
+^\[main.assertion.2\] file two-value-int.c line 6 function main, assertion x==1.0: Unknown$
+--
+^warning: ignoring
