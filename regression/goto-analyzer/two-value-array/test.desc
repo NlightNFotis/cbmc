@@ -1,9 +1,0 @@
-CORE
-two-value-array.c
---variable
-^EXIT=0$
-^SIGNAL=0$
-^\[main.assertion.1\] file two-value-array.c line 5 function main, assertion x[1]==1: Unknown$
-^\[main.assertion.2\] file two-value-array.c line 6 function main, assertion x[1]==2: Unknown$
---
-^warning: ignoring

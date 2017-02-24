@@ -1,0 +1,22 @@
+CORE
+sensitivity_test_constants_int.c
+--variable --constants --verify
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] .* assertion x==0: Success$
+^\[main.assertion.2\] .* assertion x==1: Failure \(if reachable\)$
+^\[main.assertion.3\] .* assertion x==argc: Unknown$
+^\[main.assertion.4\] .* assertion x<1: Success$
+^\[main.assertion.5\] .* assertion x<-1: Failure \(if reachable\)$
+^\[main.assertion.6\] .* assertion x<argc: Unknown$
+^\[main.assertion.7\] .* assertion x>-1: Success$
+^\[main.assertion.8\] .* assertion x>1: Failure \(if reachable\)$
+^\[main.assertion.9\] .* assertion x>argc: Unknown$
+^\[main.assertion.10\] .* assertion x!=1: Success$
+^\[main.assertion.11\] .* assertion x!=0: Failure \(if reachable\)$
+^\[main.assertion.12\] .* assertion x!=argc: Unknown$
+^\[main.assertion.13\] .* assertion !\(x==1\): Success$
+^\[main.assertion.14\] .* assertion !\(x==0\): Failure \(if reachable\)$
+^\[main.assertion.15\] .* assertion !\(x==argc\): Unknown$
+--
+^warning: ignoring

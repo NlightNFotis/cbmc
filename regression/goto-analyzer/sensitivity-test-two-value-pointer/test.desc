@@ -1,0 +1,11 @@
+CORE
+sensitivity_test_two_value_pointer.c
+--variable --constants --verify
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] .* assertion x==&y: Unknown$
+^\[main.assertion.2\] .* assertion x==&z: Unknown$
+^\[main.assertion.3\] .* assertion \*x==0: Unknown$
+^\[main.assertion.4\] .* assertion \*x==1: Unknown$
+--
+^warning: ignoring

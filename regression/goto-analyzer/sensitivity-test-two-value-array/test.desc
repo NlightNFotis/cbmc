@@ -1,0 +1,35 @@
+CORE
+sensitivity_test_two_value_array.c
+--variable --constants --verify
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] .* assertion x\[1\]==0: Unknown$
+^\[main.assertion.2\] .* assertion x\[1\]==1: Unknown$
+^\[main.assertion.3\] .* assertion x\[i\]==0: Unknown$
+^\[main.assertion.4\] .* assertion x\[i\]==1: Unknown$
+^\[main.assertion.5\] .* assertion x\[j\]==0: Unknown$
+^\[main.assertion.6\] .* assertion x\[j\]==1: Unknown$
+^\[main.assertion.7\] .* assertion x\[100\]==0: Unknown$
+^\[main.assertion.8\] .* assertion x\[k\]==0: Unknown$
+^\[main.assertion.9\] .* assertion x\[1\]==0: Unknown$
+^\[main.assertion.10\] .* assertion x\[1\]==1: Unknown$
+^\[main.assertion.11\] .* assertion x\[i\]==0: Unknown$
+^\[main.assertion.12\] .* assertion x\[i\]==1: Unknown$
+^\[main.assertion.13\] .* assertion x\[j\]==0: Unknown$
+^\[main.assertion.14\] .* assertion x\[j\]==1: Unknown$
+^\[main.assertion.15\] .* assertion x\[100\]==0: Unknown$
+^\[main.assertion.16\] .* assertion x\[k\]==0: Unknown$
+^\[main.assertion.17\] .* assertion x\[0\]==0: Unknown$
+^\[main.assertion.18\] .* assertion x\[0\]==1: Unknown$
+^\[main.assertion.19\] .* assertion x\[1\]==1: Unknown$
+^\[main.assertion.20\] .* assertion x\[1\]==0: Unknown$
+^\[main.assertion.21\] .* assertion x\[0\]==0: Unknown$
+^\[main.assertion.22\] .* assertion x\[0\]==1: Unknown$
+^\[main.assertion.23\] .* assertion x\[1\]==1: Unknown$
+^\[main.assertion.24\] .* assertion x\[1\]==0: Unknown$
+^\[main.assertion.25\] .* assertion x\[0\]==0: Unknown$
+^\[main.assertion.26\] .* assertion x\[0\]==1: Unknown$
+^\[main.assertion.27\] .* assertion x\[1\]==1: Unknown$
+^\[main.assertion.28\] .* assertion x\[1\]==0: Unknown$
+--
+^warning: ignoring

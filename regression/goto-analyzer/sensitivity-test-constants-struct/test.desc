@@ -1,0 +1,9 @@
+FUTURE
+sensitivity_test_constants_struct.c
+--variable --constants --structs --verify
+^EXIT=0$
+^SIGNAL=0$
+^\[main.assertion.1\] .* assertion x.a==0: Success$
+^\[main.assertion.2\] .* assertion x.a==1: Failure \(if reachable\)$
+--
+^warning: ignoring
