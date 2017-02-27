@@ -8,8 +8,12 @@ int main(int argc, char *argv[])
   	int a;
   	float b;
   };
+
   struct int_float x = {0, 1.0};
+
+  x.a = 0;
   assert(x.a==0);
   assert(x.a==1);
+
   return 0;
 }
