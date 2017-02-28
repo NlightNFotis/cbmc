@@ -1,6 +1,6 @@
 FUTURE
 sensitivity_test_constants_struct.c
---variable --constants --structs --verify
+--variable --structs --verify
 ^EXIT=0$
 ^SIGNAL=0$
 ^\[main.assertion.1\] .* assertion x.a==0: Success$

@@ -1,6 +1,6 @@
 CORE
 sensitivity_test_two_value_pointer.c
---variable --constants --verify
+--variable --verify
 ^EXIT=0$
 ^SIGNAL=0$
 ^\[main.assertion.1\] .* assertion x==&y: Unknown$

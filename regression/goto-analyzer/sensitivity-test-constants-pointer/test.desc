@@ -1,6 +1,6 @@
 FUTURE
 sensitivity_test_constants_pointer.c
---variable --constants --pointers --verify
+--variable --pointers --verify
 ^EXIT=0$
 ^SIGNAL=0$
 ^\[main.assertion.1\] .* assertion x==&y: Success$
