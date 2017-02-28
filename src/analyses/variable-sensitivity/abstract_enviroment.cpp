@@ -34,14 +34,16 @@ Function: abstract_environmentt::eval
 
  Outputs: The abstract_object representing the value of the expression
 
- Purpose: Evaluate the value of an expression
+ Purpose: Evaluate the value of an expression relative to the current domain
 
 \*******************************************************************/
 
 abstract_object_pointert abstract_environmentt::eval(
   const exprt &expr, const namespacet &ns) const
 {
-  assert(!is_bottom);
+  if (is_bottom)
+    return abstract_object_factory(expr.type(), ns, false, true);
+
   typedef std::function<abstract_object_pointert(const exprt &)> eval_handlert;
   std::map<irep_idt, eval_handlert> handlers=
   {
@@ -113,7 +115,7 @@ abstract_object_pointert abstract_environmentt::eval(
     }
   };
 
-  // first try to collapse constant folding
+  // first try to canonicalise, including constant folding
   const exprt &simplified_expr=simplify_expr(expr, ns);
 
   const auto &handler=handlers.find(simplified_expr.id());
@@ -206,6 +208,7 @@ bool abstract_environmentt::assign(
   }
 
   // Write the value for the root symbol back into the map
+  assert(symbol_expr.type() == final_value->get_type());
   if (final_value->is_top())
   {
     map.erase(symbol_expr);
@@ -370,6 +373,7 @@ bool abstract_environmentt::assume(const exprt &expr, const namespacet &ns)
     }
   }
 
+  // TODO - split up conjuncts and deal with each part separately
   // TODO - need a way of converting x==23 into an assign for the value of x
   
   return false;
