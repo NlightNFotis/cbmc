@@ -534,7 +534,7 @@ bool abstract_environmentt::merge(const abstract_environmentt &env)
 Function: abstract_environmentt::havoc
 
   Inputs:
-   havoc_string - debug string to track down havoc causing.
+   havoc_string - diagnostic string to track down havoc causing.
 
  Outputs: None
 
