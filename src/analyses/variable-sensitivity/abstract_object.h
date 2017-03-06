@@ -46,7 +46,7 @@ class namespacet;
     const abstract_object_pointert op, \
     bool &out_any_modifications) \
   {\
-    assert(type==op->get_type()); \
+    assert(type()==op->type());                                         \
     typedef std::remove_const<std::remove_reference<decltype(*this)>::type \
       >::type current_typet; \
     \
@@ -103,7 +103,7 @@ public:
 
   virtual ~abstract_objectt();
 
-  const typet &get_type() const;
+  const typet &type() const;
   virtual bool is_top() const;
   virtual bool is_bottom() const;
 
@@ -130,7 +130,7 @@ public:
   CLONE
 
 protected:
-  typet type;
+  typet t;
   bool top;
   bool bottom;
 };

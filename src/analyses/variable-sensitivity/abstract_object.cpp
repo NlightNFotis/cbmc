@@ -32,7 +32,7 @@ Function: abstract_objectt::abstract_objectt
 \*******************************************************************/
 
 abstract_objectt::abstract_objectt(const typet &type):
-type(type), top(true), bottom(false)
+t(type), top(true), bottom(false)
 {}
 
 /*******************************************************************\
@@ -52,7 +52,7 @@ Function: abstract_objectt::abstract_objectt
 \*******************************************************************/
 
 abstract_objectt::abstract_objectt(const typet &type, bool top, bool bottom):
-  type(type), top(top), bottom(bottom)
+  t(type), top(top), bottom(bottom)
 {
   assert(!(top && bottom));
 }
@@ -71,7 +71,7 @@ Function: abstract_objectt::abstract_objectt
 \*******************************************************************/
 
 abstract_objectt::abstract_objectt(const abstract_objectt &old):
-  type(old.type), top(old.top), bottom(old.bottom)
+  t(old.t), top(old.top), bottom(old.bottom)
 {}
 
 /*******************************************************************\
@@ -88,7 +88,7 @@ Function: abstract_objectt::abstract_objectt
 \*******************************************************************/
 
 abstract_objectt::abstract_objectt(const exprt &expr):
-type(expr.type()), top(true), bottom(false)
+t(expr.type()), top(true), bottom(false)
 {}
 
 abstract_objectt::~abstract_objectt()
@@ -96,9 +96,9 @@ abstract_objectt::~abstract_objectt()
 
 }
 
-const typet &abstract_objectt::get_type() const
+const typet &abstract_objectt::type() const
 {
-  return type;
+  return t;
 }
 
 /*******************************************************************\
@@ -144,7 +144,7 @@ Function: abstract_objectt::merge
 abstract_object_pointert abstract_objectt::merge(
   const abstract_object_pointert op, bool &out_any_modifications)
 {
-  assert(type==op->type);
+  assert(t==op->t);
   abstract_object_pointert m=abstract_object_pointert(new abstract_objectt(*this));
   out_any_modifications=m->merge_state(abstract_object_pointert(this), op);
   return m;
