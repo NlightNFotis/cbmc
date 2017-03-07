@@ -13,15 +13,9 @@ sensitivity_test_two_value_pointer.c
 ^\[main.assertion.8\] .* assertion \*x==0: Unknown$
 ^\[main.assertion.9\] .* assertion a==2: Unknown$
 ^\[main.assertion.10\] .* assertion a==0: Unknown$
-^\[main.assertion.11\] .* assertion x==&b: Unknown$
-^\[main.assertion.12\] .* assertion x==&a: Unknown$
-^\[main.assertion.13\] .* assertion x==y: Unknown$
-^\[main.assertion.14\] .* assertion x==x2: Unknown$
-^\[main.assertion.15\] .* assertion \*x==0: Unknown$
-^\[main.assertion.16\] .* assertion \*x==1: Unknown$
-^\[main.assertion.17\] .* assertion \*x==1: Unknown$
-^\[main.assertion.18\] .* assertion \*x==0: Unknown$
-^\[main.assertion.19\] .* assertion b==2: Unknown$
-^\[main.assertion.20\] .* assertion b==0: Unknown$
+^\[main.assertion.11\] .* assertion x==&a: Unknown$
+^\[main.assertion.12\] .* assertion \*x==0: Unknown$
+^\[main.assertion.13\] .* assertion x==&a: Unknown$
+^\[main.assertion.14\] .* assertion x==&b: Unknown$
 --
 ^warning: ignoring

@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
   // Basic use of addresses
   int a=0;
   int b=0;
+  int c=0;
   int *x=&a;
   int *x2=&a;
   int *y=&b;
@@ -26,26 +27,25 @@ int main(int argc, char *argv[])
   assert(a==2);
   assert(a==0);
 
-  // Reassign the pointer
-  x=&b;
-
-  // Basic use of addresses, after reassigning the pointer
-  assert(x==&b);
+  // Conditionally reassign the pointer, but to the same value
+  if(argc>2)
+  {
+    x=&a;
+  }
   assert(x==&a);
-  assert(x==y);
-  assert(x==x2);
 
-  // Reading from a dereferenced pointer, after reassigning the pointer
+  // Conditionally reassign the pointer, to a different value this time
+  if(argc>3)
+  {
+    x=&b;
+  }
+  else
+  {
+    x=&c;
+  }
   assert(*x==0);
-  assert(*x==1);
-  b=1;
-  assert(*x==1);
-  assert(*x==0);
-
-  // Writing to a dereferenced pointer, after reassigning the pointer
-  *x=2;
-  assert(b==2);
-  assert(b==0);
+  assert(x==&a);
+  assert(x==&b);
 
   return 0;
 }
