@@ -5,5 +5,12 @@ sensitivity_test_constants_struct.c
 ^SIGNAL=0$
 ^\[main.assertion.1\] .* assertion x.a==0: Success$
 ^\[main.assertion.2\] .* assertion x.a==1: Failure \(if reachable\)$
+^\[main.assertion.3\] .* assertion x.a==0: Unknown$
+^\[main.assertion.4\] .* assertion x.a==0: Unknown$
+^\[main.assertion.5\] .* assertion x.b>0.0: Unknown$
+^\[main.assertion.6\] .* assertion x.b==1.0: Unknown$
+^\[main.assertion.7\] .* assertion x.a<2: Unknown$
+^\[main.assertion.8\] .* assertion x.a>2: Unknown$
+^\[main.assertion.9\] .* assertion x.a==1: Unknown$
 --
 ^warning: ignoring
