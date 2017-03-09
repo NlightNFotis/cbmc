@@ -77,7 +77,7 @@ abstract_object_pointert abstract_environmentt::eval(
         member_exprt member_expr(to_member_expr(expr));
 
         sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
-          std::dynamic_pointer_cast<struct_abstract_objectt>(
+          std::dynamic_pointer_cast<const struct_abstract_objectt>(
             eval(member_expr.compound(), ns));
 
         return struct_abstract_object->read_component(*this, member_expr, ns);
@@ -87,7 +87,7 @@ abstract_object_pointert abstract_environmentt::eval(
       ID_address_of, [&](const exprt &expr)
       {
         sharing_ptrt<pointer_abstract_objectt> pointer_object=
-          std::dynamic_pointer_cast<pointer_abstract_objectt>(
+          std::dynamic_pointer_cast<const pointer_abstract_objectt>(
             abstract_object_factory(expr.type(), expr, ns));
 
         // Store the abstract object in the pointer
@@ -99,7 +99,7 @@ abstract_object_pointert abstract_environmentt::eval(
       {
         dereference_exprt dereference(to_dereference_expr(expr));
         sharing_ptrt<pointer_abstract_objectt> pointer_abstract_object=
-          std::dynamic_pointer_cast<pointer_abstract_objectt>(
+          std::dynamic_pointer_cast<const pointer_abstract_objectt>(
             eval(dereference.pointer(), ns));
 
         return pointer_abstract_object->read_dereference(*this, ns);
@@ -110,7 +110,7 @@ abstract_object_pointert abstract_environmentt::eval(
       {
         index_exprt index_expr(to_index_expr(expr));
         sharing_ptrt<array_abstract_objectt> array_abstract_object=
-          std::dynamic_pointer_cast<array_abstract_objectt>(
+          std::dynamic_pointer_cast<const array_abstract_objectt>(
             eval(index_expr.array(), ns));
 
         return array_abstract_object->read_index(*this, index_expr, ns);
@@ -310,7 +310,7 @@ abstract_object_pointert abstract_environmentt::write(
         abstract_object_pointert rhs_object)
       {
         sharing_ptrt<array_abstract_objectt> array_abstract_object=
-          std::dynamic_pointer_cast<array_abstract_objectt>(lhs_object);
+          std::dynamic_pointer_cast<const array_abstract_objectt>(lhs_object);
 
         sharing_ptrt<array_abstract_objectt> modified_array=
           array_abstract_object->write_index(
@@ -330,7 +330,7 @@ abstract_object_pointert abstract_environmentt::write(
         abstract_object_pointert rhs_object)
       {
         sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
-          std::dynamic_pointer_cast<struct_abstract_objectt>(lhs_object);
+          std::dynamic_pointer_cast<const struct_abstract_objectt>(lhs_object);
 
         sharing_ptrt<struct_abstract_objectt> modified_struct=
           struct_abstract_object->write_component(
@@ -351,7 +351,7 @@ abstract_object_pointert abstract_environmentt::write(
         abstract_object_pointert rhs_object)
       {
         sharing_ptrt<pointer_abstract_objectt> pointer_abstract_object=
-          std::dynamic_pointer_cast<pointer_abstract_objectt>(lhs_object);
+          std::dynamic_pointer_cast<const pointer_abstract_objectt>(lhs_object);
 
         sharing_ptrt<pointer_abstract_objectt> modified_pointer=
           pointer_abstract_object->write_dereference(
