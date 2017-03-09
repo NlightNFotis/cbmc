@@ -65,6 +65,8 @@ public:
   // eagerly or lazily
   //virtual void havoc (std::string s, typet t);
 
+  bool verify() const;
+
 protected:
   bool bottom;
 
