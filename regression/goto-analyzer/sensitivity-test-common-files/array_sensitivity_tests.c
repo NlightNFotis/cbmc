@@ -70,6 +70,9 @@ int main(int argc, char *argv[])
 
   // Test how we deal with reading off the end of an array
   assert(a[100]==0);
+  x[0] = 0;
+  x[1] = 0;
+  x[2] = 2;
 
   // Test how we deal with writing off the end of an array
   a[100]=1;
