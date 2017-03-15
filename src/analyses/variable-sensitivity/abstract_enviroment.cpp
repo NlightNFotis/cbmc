@@ -451,7 +451,8 @@ abstract_object_pointert abstract_environmentt::abstract_object_factory(
   const typet type, const namespacet &ns, bool top, bool bottom) const
 {
   exprt empty_constant_expr=exprt();
-  return abstract_object_factory(type, top, bottom, empty_constant_expr, ns);
+  return abstract_object_factory(
+    type, top, bottom, empty_constant_expr, *this, ns);
 }
 
 /*******************************************************************\
@@ -472,7 +473,7 @@ Function: abstract_environmentt::abstract_object_factory
 abstract_object_pointert abstract_environmentt::abstract_object_factory(
   const typet type, const exprt &e, const namespacet &ns) const
 {
-  return abstract_object_factory(type, false, false, e, ns);
+  return abstract_object_factory(type, false, false, e, *this, ns);
 }
 
 /*******************************************************************\
@@ -494,10 +495,10 @@ Function: abstract_environmentt::abstract_object_factory
 
 abstract_object_pointert abstract_environmentt::abstract_object_factory(
   const typet type, bool top, bool bottom, const exprt &e,
-  const namespacet &ns) const
+  const abstract_environmentt &environment, const namespacet &ns) const
 {
   return variable_sensitivity_object_factoryt::instance().get_abstract_object(
-    type, top, bottom, e, ns);
+    type, top, bottom, e, environment, ns);
 }
 
 /*******************************************************************\
