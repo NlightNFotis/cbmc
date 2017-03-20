@@ -1,4 +1,4 @@
-CORE
+FUTURE
 sensitivity_test_constants_array_of_two_value_pointer.c
 --variable --arrays --verify
 ^EXIT=0$
@@ -42,11 +42,11 @@ sensitivity_test_constants_array_of_two_value_pointer.c
 ^\[main.assertion.37\] .* assertion b\[i\]==&b0: Unknown$
 ^\[main.assertion.38\] .* assertion b\[i\]==&b1: Unknown$
 ^\[main.assertion.39\] .* assertion b\[j\]==&b0: Unknown$
-^\[main.assertion.40\] .* assertion b\[j\]==&b4: Unknown$
+^\[main.assertion.40\] .* assertion b\[j\]==&b3: Unknown$
 ^\[main.assertion.41\] .* assertion \*b\[i\]==10: Unknown$
 ^\[main.assertion.42\] .* assertion \*b\[i\]==11: Unknown$
 ^\[main.assertion.43\] .* assertion \*b\[j\]==10: Unknown$
-^\[main.assertion.44\] .* assertion \*b\[j\]==14: Unknown$
+^\[main.assertion.44\] .* assertion \*b\[j\]==13: Unknown$
 ^\[main.assertion.45\] .* assertion a\[100\]==&a2: Unknown$
 ^\[main.assertion.46\] .* assertion \*a\[100\]==2: Unknown$
 ^\[main.assertion.47\] .* assertion b\[1\]==&b1: Unknown$

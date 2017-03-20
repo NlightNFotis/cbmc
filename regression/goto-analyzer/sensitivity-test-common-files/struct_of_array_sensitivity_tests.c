@@ -8,7 +8,13 @@ int main(int argc, char *argv[])
   	int a[3];
   	float b[3];
   };
-  struct int_array_float_array x={.a:{0, 1, 2}, .b:{3.0f, 4.0f, 5.0f}};
+  struct int_array_float_array x={{0, 1, 2}, {3.0f, 4.0f, 5.0f}};
+  x.a[0]=0;
+  x.a[1]=1;
+  x.a[2]=2;
+  x.b[0]=3.0f;
+  x.b[1]=4.0f;
+  x.b[2]=5.0f;
   assert(x.a[0]==0);
   assert(*(x.a+0)==0);
   assert(*(0+x.a)==0);

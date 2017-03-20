@@ -18,6 +18,8 @@ int main(int argc, char *argv[])
   // Reading from a dereferenced pointer
   assert(*x==0);
   assert(*x==1);
+
+  // Modify the referenced value and access it through the pointer again
   a=1;
   assert(*x==1);
   assert(*x==0);

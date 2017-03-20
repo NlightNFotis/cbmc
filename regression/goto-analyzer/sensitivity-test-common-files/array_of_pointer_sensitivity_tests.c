@@ -23,30 +23,6 @@ int main(int argc, char *argv[])
   int *a[3]={&a0, &a0, &a0};
   // A non-uniform constant array
   int *b[3]={&b0, &b1, &b2};
-  // c and d are arrays whose values requiring merging paths in the CFG. For
-  // c[0] there is only one possibility after merging and for d[0] there are
-  // two.
-  int *c[3]={&c0, &c1, &c2};
-  int *d[3]={&d0, &d1, &d2};
-  if(argc>2)
-  {
-    c[0]=&c3;
-    d[0]=&d3;
-  }
-  // The variables i, j, k and m will be used as indexes into arrays of size 3.
-  // They all require merging paths in the CFG. For i there is only one value on
-  // both paths, which is a valid index. The rest can each take two different 
-  // values. For j both of these values are valid indexes, for k one is and one
-  // isn't, and for m neither of them are.
-  int i=0;
-  int j=0;
-  int k=0;
-  if(argc>3)
-  {
-    i=0;
-    j=1;
-    k=100;
-  }
 
   // Test if we can represent uniform constant arrays
   assert(a[1]==&a0);
@@ -74,6 +50,17 @@ int main(int argc, char *argv[])
   assert(*1[b]==11);
   assert(*1[b]==13);
 
+  // c and d are arrays whose values requiring merging paths in the CFG. For
+  // c[0] there is only one possibility after merging and for d[0] there are
+  // two.
+  int *c[3]={&c0, &c1, &c2};
+  int *d[3]={&d0, &d1, &d2};
+  if(argc>2)
+  {
+    c[0]=&c3;
+    d[0]=&d3;
+  }
+
   // Test how well we can deal with merging for an array value
   assert(c[0]==&c0);
   assert(c[0]==&c3);
@@ -83,6 +70,21 @@ int main(int argc, char *argv[])
   assert(*c[0]==23);
   assert(*d[0]==30);
   assert(*d[0]==33);
+
+  // The variables i, j and k will be used as indexes into arrays of size 3.
+  // They all require merging paths in the CFG. For i there is only one value on
+  // both paths, which is a valid index. The rest can each take two different
+  // values. For j both of these values are valid indexes. For k one is and one
+  // isn't.
+  int i=0;
+  int j=0;
+  int k=0;
+  if(argc>3)
+  {
+    i=0;
+    j=1;
+    k=100;
+  }
 
   // Test how well we can deal with merging for an index on a uniform array
   assert(a[i]==&a0);
@@ -98,11 +100,11 @@ int main(int argc, char *argv[])
   assert(b[i]==&b0);
   assert(b[i]==&b1);
   assert(b[j]==&b0);
-  assert(b[j]==&b4);
+  assert(b[j]==&b3);
   assert(*b[i]==10);
   assert(*b[i]==11);
   assert(*b[j]==10);
-  assert(*b[j]==14);
+  assert(*b[j]==13);
 
   // Test how we deal with reading off the end of an array
   assert(a[100]==&a2);
@@ -145,7 +147,7 @@ int main(int argc, char *argv[])
   // it means writing to an array element that may be out of bounds
   int ek0=60;
   int ek1=61;
-  int ek[3]={&ek0, &ek0, &ek0};
+  int *ek[3]={&ek0, &ek0, &ek0};
   ek[k]=&ek1;
   assert(ek[0]==&ek0);
   assert(*ek[0]==60);

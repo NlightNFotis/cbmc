@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
   {
     struct int_float s1;
     struct int_float s2;
-  }
+  };
   struct two_int_floats x;
   x.s1.a=0;
   x.s1.b=1.0;

@@ -1,4 +1,4 @@
-CORE
+FUTURE
 sensitivity_test_constants_struct_of_two_value_array.c
 --variable --structs --verify
 ^EXIT=0$

@@ -3,19 +3,19 @@ sensitivity_test_constants_struct_of_two_value_pointer.c
 --variable --structs --verify
 ^EXIT=0$
 ^SIGNAL=0$
-^\[main.assertion.1\] .* assertion x.a==&a1: Success$
-^\[main.assertion.2\] .* assertion x.a==&a2: Failure \(if reachable\)$
-^\[main.assertion.3\] .* assertion x.b==&b1: Success$
-^\[main.assertion.4\] .* assertion x.b==&b2: Failure \(if reachable\)$
+^\[main.assertion.1\] .* assertion x.a==&a1: Unknown$
+^\[main.assertion.2\] .* assertion x.a==&a2: Unknown$
+^\[main.assertion.3\] .* assertion x.b==&b1: Unknown$
+^\[main.assertion.4\] .* assertion x.b==&b2: Unknown$
 ^\[main.assertion.5\] .* assertion \*x.a==0: Unknown$
 ^\[main.assertion.6\] .* assertion \*x.a==100: Unknown$
 ^\[main.assertion.7\] .* assertion \*x.b==10.0f: Unknown$
 ^\[main.assertion.8\] .* assertion \*x.b==110.0f: Unknown$
-^\[main.assertion.9\] .* assertion x.a==&a1: Success$
-^\[main.assertion.10\] .* assertion x.a==&a2: Failure \(if reachable\)$
+^\[main.assertion.9\] .* assertion x.a==&a1: Unknown$
+^\[main.assertion.10\] .* assertion x.a==&a2: Unknown$
 ^\[main.assertion.11\] .* assertion \*x.a==0: Unknown$
 ^\[main.assertion.12\] .* assertion \*x.a==100: Unknown$
-^\[main.assertion.13\] .* assertion x.a==&a1: Success$
+^\[main.assertion.13\] .* assertion x.a==&a1: Unknown$
 ^\[main.assertion.14\] .* assertion x.b==&b2: Unknown$
 ^\[main.assertion.15\] .* assertion x.b==&b3: Unknown$
 ^\[main.assertion.16\] .* assertion \*x.a==0: Unknown$

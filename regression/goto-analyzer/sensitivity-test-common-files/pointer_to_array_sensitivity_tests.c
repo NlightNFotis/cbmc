@@ -1,5 +1,5 @@
 #include <assert.h>
-// #include <stddef.h>
+#include <stddef.h>
 
 int main(int argc, char *argv[])
 {
@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
     i=2;
   }
 
-  // Test reading from an array using a pointer with more than one possible 
+  // Test reading from an array using a pointer with more than one possible
   // value
   assert(*r==2);
   assert(*r==1);

@@ -6,30 +6,6 @@ int main(int argc, char *argv[])
   int a[3]={0, 0, 0};
   // A non-uniform constant array
   int b[3]={1, 0, 0};
-  // c and d are arrays whose values requiring merging paths in the CFG. For
-  // c[0] there is only one possibility after merging and for d[0] there are
-  // two.
-  int c[3]={0, 0, 0};
-  int d[3]={0, 0, 0};
-  if(argc>2)
-  {
-    c[0]=0;
-    d[0]=1;
-  }
-  // The variables i, j, k and m will be used as indexes into arrays of size 3.
-  // They all require merging paths in the CFG. For i there is only one value on
-  // both paths, which is a valid index. The rest can each take two different 
-  // values. For j both of these values are valid indexes, for k one is and one
-  // isn't, and for m neither of them are.
-  int i=0;
-  int j=0;
-  int k=0;
-  if(argc>3)
-  {
-    i=0;
-    j=1;
-    k=100;
-  }
 
   // Test if we can represent uniform constant arrays
   assert(a[1]==0);
@@ -47,11 +23,38 @@ int main(int argc, char *argv[])
   assert(1[b]==0);
   assert(1[b]==1);
 
+  // c and d are arrays whose values requiring merging paths in the CFG. For
+  // c[0] there is only one possibility after merging and for d[0] there are
+  // two.
+  int c[3]={0, 0, 0};
+  int d[3]={0, 0, 0};
+  if(argc>2)
+  {
+    c[0]=0;
+    d[0]=1;
+  }
+
   // Test how well we can deal with merging for an array value
   assert(c[0]==0);
   assert(c[0]==1);
   assert(d[0]==0);
   assert(d[0]==2);
+  assert(d[1]==0);
+
+  // The variables i, j and k will be used as indexes into arrays of size 3.
+  // They all require merging paths in the CFG. For i there is only one value on
+  // both paths, which is a valid index. The rest can each take two different
+  // values. For j both of these values are valid indexes. For k one is and one
+  // isn't.
+  int i=0;
+  int j=0;
+  int k=0;
+  if(argc>3)
+  {
+    i=0;
+    j=1;
+    k=100;
+  }
 
   // Test how well we can deal with merging for an index on a uniform array
   assert(a[i]==0);

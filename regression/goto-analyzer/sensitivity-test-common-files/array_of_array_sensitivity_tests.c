@@ -57,11 +57,11 @@ int main(int argc, char *argv[])
   assert(b[0][1]==3);
   assert(b[0][2]==3);
 
-  // The variables i, j, k and m will be used as indexes into arrays of size 3.
+  // The variables i, j and k will be used as indexes into arrays of size 3.
   // They all require merging paths in the CFG. For i there is only one value on
-  // both paths, which is a valid index. The rest can each take two different 
-  // values. For j both of these values are valid indexes, for k one is and one
-  // isn't, and for m neither of them are.
+  // both paths, which is a valid index. The rest can each take two different
+  // values. For j both of these values are valid indexes. For k one is and one
+  // isn't.
   int i=0;
   int j=0;
   int k=0;

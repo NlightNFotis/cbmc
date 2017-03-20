@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
   assert(x.a==&a1);
   assert(x.a==&a2);
   assert(*x.a==0);
-  assert(*x.a==10);
+  assert(*x.a==100);
 
   // Test merging when there is one value for a and two values for b, to test if
   // we are representing them separately

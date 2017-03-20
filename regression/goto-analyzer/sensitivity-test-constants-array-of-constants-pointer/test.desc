@@ -1,4 +1,4 @@
-CORE
+FUTURE
 sensitivity_test_constants_array_of_constants_pointer.c
 --variable --arrays --pointers --verify
 ^EXIT=0$
@@ -42,23 +42,23 @@ sensitivity_test_constants_array_of_constants_pointer.c
 ^\[main.assertion.37\] .* assertion b\[i\]==&b0: Success$
 ^\[main.assertion.38\] .* assertion b\[i\]==&b1: Failure \(if reachable\)$
 ^\[main.assertion.39\] .* assertion b\[j\]==&b0: Unknown$
-^\[main.assertion.40\] .* assertion b\[j\]==&b4: Unknown$
+^\[main.assertion.40\] .* assertion b\[j\]==&b3: Unknown$
 ^\[main.assertion.41\] .* assertion \*b\[i\]==10: Success$
 ^\[main.assertion.42\] .* assertion \*b\[i\]==11: Failure \(if reachable\)$
 ^\[main.assertion.43\] .* assertion \*b\[j\]==10: Unknown$
-^\[main.assertion.44\] .* assertion \*b\[j\]==14: Unknown$
+^\[main.assertion.44\] .* assertion \*b\[j\]==13: Unknown$
 ^\[main.assertion.45\] .* assertion a\[100\]==&a2: Unknown$
 ^\[main.assertion.46\] .* assertion \*a\[100\]==2: Unknown$
-^\[main.assertion.47\] .* assertion b\[1\]==&b1: Unknown$
-^\[main.assertion.48\] .* assertion \*b\[1\]==11: Unknown$
+^\[main.assertion.47\] .* assertion b\[1\]==&b1: Success$
+^\[main.assertion.48\] .* assertion \*b\[1\]==11: Success$
 ^\[main.assertion.49\] .* assertion ei\[0\]==&ei1: Success$
-^\[main.assertion.50\] .* assertion ei\[0\]==&ei0: $
+^\[main.assertion.50\] .* assertion ei\[0\]==&ei0: Failure \(if reachable\)$
 ^\[main.assertion.51\] .* assertion ei\[2\]==&ei0: Success$
-^\[main.assertion.52\] .* assertion ei\[2\]==&ei1: $
+^\[main.assertion.52\] .* assertion ei\[2\]==&ei1: Failure \(if reachable\)$
 ^\[main.assertion.53\] .* assertion \*ei\[0\]==41: Success$
-^\[main.assertion.54\] .* assertion \*ei\[0\]==40: $
+^\[main.assertion.54\] .* assertion \*ei\[0\]==40: Failure \(if reachable\)$
 ^\[main.assertion.55\] .* assertion \*ei\[2\]==40: Success$
-^\[main.assertion.56\] .* assertion \*ei\[2\]==41: $
+^\[main.assertion.56\] .* assertion \*ei\[2\]==41: Failure \(if reachable\)$
 ^\[main.assertion.57\] .* assertion ej\[0\]==&ej0: Unknown$
 ^\[main.assertion.58\] .* assertion ej\[2\]==&ej0: Unknown$
 ^\[main.assertion.59\] .* assertion ej\[2\]==&ej1: Unknown$

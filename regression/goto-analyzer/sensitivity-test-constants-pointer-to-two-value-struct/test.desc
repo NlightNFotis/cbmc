@@ -6,7 +6,7 @@ sensitivity_test_constants_pointer_to_two_value_struct.c
 ^\[main.assertion.1\] .* assertion \(\*p\).a==0: Unknown$
 ^\[main.assertion.2\] .* assertion \(\*p\).a==1: Unknown$
 ^\[main.assertion.3\] .* assertion p->a==0: Unknown$
-^\[main.assertion.4\] .* assertion p->a==0: Unknown$
+^\[main.assertion.4\] .* assertion p->a==1: Unknown$
 ^\[main.assertion.5\] .* assertion p->b==2.0: Unknown$
 ^\[main.assertion.6\] .* assertion p->b==1.0: Unknown$
 --

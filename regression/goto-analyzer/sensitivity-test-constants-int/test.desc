@@ -21,5 +21,10 @@ sensitivity_test_constants_int.c
 ^\[main.assertion.16\] .* assertion y<2: Unknown$
 ^\[main.assertion.17\] .* assertion y>2: Unknown$
 ^\[main.assertion.18\] .* assertion y==1: Unknown$
+^\[main.assertion.19\] .* assertion z==0: Success$
+^\[main.assertion.20\] .* assertion z==10: Failure \(if reachable\)$
+^\[main.assertion.21\] .* assertion x==0: Success \(unreachable\)$
+^\[main.assertion.22\] .* assertion x==1: Success \(unreachable\)$
+^\[main.assertion.23\] .* assertion y==0: Success \(unreachable\)$
 --
 ^warning: ignoring
