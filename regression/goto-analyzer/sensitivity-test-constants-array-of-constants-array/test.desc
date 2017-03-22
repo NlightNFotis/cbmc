@@ -59,9 +59,8 @@ sensitivity_test_constants_array_of_constants_array.c
 ^\[main.assertion.54\] .* assertion b\[j\]\[j\]==11: Unknown$
 ^\[main.assertion.55\] .* assertion a\[100\]\[0\]==0: Unknown$
 ^\[main.assertion.56\] .* assertion a\[0\]\[100\]==0: Unknown$
-^\[main.assertion.57\] .* assertion c==0: Unknown$
-^\[main.assertion.58\] .* assertion c==0: Unknown$
-^\[main.assertion.66\] .* assertion c==0: Unknown$
+^\[main.assertion.57\] .* assertion c==0: Success$
+^\[main.assertion.58\] .* assertion c==0: Success$
 ^\[main.assertion.59\] .* assertion ei\[0\]\[1\]==1: Success$
 ^\[main.assertion.60\] .* assertion ei\[0\]\[1\]==0: Failure \(if reachable\)$
 ^\[main.assertion.61\] .* assertion ei\[2\]\[1\]==0: Success$
@@ -69,5 +68,6 @@ sensitivity_test_constants_array_of_constants_array.c
 ^\[main.assertion.63\] .* assertion ej\[0\]\[1\]==0: Unknown$
 ^\[main.assertion.64\] .* assertion ej\[2\]\[1\]==0: Unknown$
 ^\[main.assertion.65\] .* assertion ek\[0\]\[1\]==0: Unknown$
+^\[main.assertion.66\] .* assertion c==0: Success$
 --
 ^warning: ignoring
