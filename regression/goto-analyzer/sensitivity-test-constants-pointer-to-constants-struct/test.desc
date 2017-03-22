@@ -11,3 +11,6 @@ sensitivity_test_constants_pointer_to_constants_struct.c
 ^\[main.assertion.6\] .* assertion p->b==1.0: Failure \(if reachable\)$
 --
 ^warning: ignoring
+--
+The final two assertions are the wrong way round as modifying the pointer
+does not seem to be propogating through. See #96

@@ -55,7 +55,10 @@ int main(int argc, char *argv[])
   }
   assert(b[0][1]==2);
   assert(b[0][1]==3);
-  assert(b[0][2]==3);
+  assert(b[0][2]==2);
+
+  // Reset this change to ensure tests later work as expected
+  b[0][1]=1;
 
   // The variables i, j and k will be used as indexes into arrays of size 3.
   // They all require merging paths in the CFG. For i there is only one value on
@@ -89,15 +92,16 @@ int main(int argc, char *argv[])
   assert(a[1][j]==1);
   assert(a[j][j]==0);
   assert(a[j][j]==1);
-  
+
   // Test how well we can deal with merging for an index on a non-uniform array
+
   assert(b[i][1]==1);
   assert(b[i][1]==11);
   assert(b[1][i]==3);
   assert(b[1][i]==11);
   assert(b[i][i]==0);
   assert(b[i][i]==11);
-  
+
   // Test how well we can deal with merging for an index on a non-uniform array
   assert(b[j][1]==1);
   assert(b[j][1]==11);
