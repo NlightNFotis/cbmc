@@ -1,4 +1,4 @@
-FUTURE
+CORE
 sensitivity_test_constants_array_of_constants_pointer.c
 --variable --arrays --pointers --verify
 ^EXIT=0$
@@ -13,14 +13,14 @@ sensitivity_test_constants_array_of_constants_pointer.c
 ^\[main.assertion.8\] .* assertion \*b\[1\]==13: Failure \(if reachable\)$
 ^\[main.assertion.9\] .* assertion \*\(b\+1\)==&b1: Success$
 ^\[main.assertion.10\] .* assertion \*\(b\+1\)==&b3: Failure \(if reachable\)$
-^\[main.assertion.11\] .* assertion \*\(1\+b\)==&b1: Success$
-^\[main.assertion.12\] .* assertion \*\(1\+b\)==&b3: Failure \(if reachable\)$
+^\[main.assertion.11\] .* assertion \*\(1\+b\)==&b1: Unknown$
+^\[main.assertion.12\] .* assertion \*\(1\+b\)==&b3: Unknown$
 ^\[main.assertion.13\] .* assertion 1\[b\]==&b1: Success$
 ^\[main.assertion.14\] .* assertion 1\[b\]==&b3: Failure \(if reachable\)$
 ^\[main.assertion.15\] .* assertion \*\*\(b\+1\)==11: Success$
 ^\[main.assertion.16\] .* assertion \*\*\(b\+1\)==13: Failure \(if reachable\)$
-^\[main.assertion.17\] .* assertion \*\*\(1\+b\)==11: Success$
-^\[main.assertion.18\] .* assertion \*\*\(1\+b\)==13: Failure \(if reachable\)$
+^\[main.assertion.17\] .* assertion \*\*\(1\+b\)==11: Unknown$
+^\[main.assertion.18\] .* assertion \*\*\(1\+b\)==13: Unknown$
 ^\[main.assertion.19\] .* assertion \*1\[b\]==11: Success$
 ^\[main.assertion.20\] .* assertion \*1\[b\]==13: Failure \(if reachable\)$
 ^\[main.assertion.21\] .* assertion c\[0\]==&c0: Unknown$
