@@ -1,4 +1,4 @@
-KNOWNBUG
+CORE
 sensitivity_test_constants_struct_of_constants_struct.c
 --variable --structs --verify
 ^EXIT=0$
