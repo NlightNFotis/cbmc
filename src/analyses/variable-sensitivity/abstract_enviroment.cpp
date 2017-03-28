@@ -43,7 +43,7 @@ Function: abstract_environmentt::eval
 abstract_object_pointert abstract_environmentt::eval(
   const exprt &expr, const namespacet &ns) const
 {
-  if (bottom)
+  if(bottom)
     return abstract_object_factory(expr.type(), ns, false, true);
 
   typedef std::function<abstract_object_pointert(const exprt &)> eval_handlert;
@@ -198,9 +198,9 @@ bool abstract_environmentt::assign(
   // we will work through the relevant abstract objects
   exprt s = expr;
   std::stack<exprt> stactions;    // I'm not a continuation, honest guv'
-  while (s.id() != ID_symbol)
+  while(s.id() != ID_symbol)
   {
-    if (s.id() == ID_index || s.id() == ID_member || s.id() == ID_dereference)
+    if(s.id() == ID_index || s.id() == ID_member || s.id() == ID_dereference)
     {
       stactions.push(s);
       s = s.op0();
@@ -248,7 +248,7 @@ bool abstract_environmentt::assign(
 
   // Write the value for the root symbol back into the map
   assert(lhs_type==rhs_type);
-  if (final_value->is_top())
+  if(final_value->is_top())
   {
     map.erase(symbol_expr);
   }
@@ -404,11 +404,12 @@ bool abstract_environmentt::assume(const exprt &expr, const namespacet &ns)
 
   exprt possibly_constant = res->to_constant();
 
-  if (possibly_constant.id()!=ID_nil)  // I.E. actually a value
+  if(possibly_constant.id()!=ID_nil)  // I.E. actually a value
   {
-    assert(possibly_constant.type().id()==ID_bool); // Should be of the right type
+    // Should be of the right type
+    assert(possibly_constant.type().id()==ID_bool);
 
-    if (possibly_constant.is_false())
+    if(possibly_constant.is_false())
     {
       bool currently_bottom = is_bottom();
       make_bottom();
@@ -433,7 +434,7 @@ bool abstract_environmentt::assume(const exprt &expr, const namespacet &ns)
    * 5. compute the meet (not merge!) of the two abstract_objectt's
    * 6. assign the new value back to the environment.
    */
-  
+
   return false;
 }
 
@@ -544,7 +545,7 @@ bool abstract_environmentt::merge(const abstract_environmentt &env)
   else
   {
     bool modified=false;
-    for(const auto &entry:env.map)
+    for(const auto &entry : env.map)
     {
       if(map.find(entry.first)!=map.end())
       {

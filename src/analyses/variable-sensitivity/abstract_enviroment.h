@@ -64,15 +64,15 @@ public:
 
   // For the less havocy pointer we might need this, which can be applied
   // eagerly or lazily
-  //virtual void havoc (std::string s, typet t);
+  // virtual void havoc (std::string s, typet t);
 
   bool verify() const;
 
 protected:
   bool bottom;
 
- // We may need to break out more of these cases into these
- virtual abstract_object_pointert eval_expression(
+  // We may need to break out more of these cases into these
+  virtual abstract_object_pointert eval_expression(
     const exprt &e, const namespacet &ns) const;
 
   typedef symbol_exprt map_keyt;
