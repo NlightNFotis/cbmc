@@ -227,11 +227,28 @@ void goto_checkt::invalidate(const exprt &lhs)
   }
 }
 
+/*******************************************************************\
+
+Function: goto_checkt::div_by_zero_check
+
+  Inputs:
+
+ Outputs:
+
+ Purpose:
+
+\*******************************************************************/
+
+static bool div_by_zero_check_flag_set(const div_exprt &expr)
+{
+  return expr.get_bool("div_by_zero_check");
+}
+
 void goto_checkt::div_by_zero_check(
   const div_exprt &expr,
   const guardt &guard)
 {
-  if(!enable_div_by_zero_check)
+  if(!enable_div_by_zero_check && !div_by_zero_check_flag_set(expr))
     return;
 
   // add divison by zero subgoal
