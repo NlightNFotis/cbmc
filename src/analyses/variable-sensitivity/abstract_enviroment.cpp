@@ -50,7 +50,7 @@ abstract_object_pointert abstract_environmentt::eval(
   std::map<irep_idt, eval_handlert> handlers=
   {
     {
-      ID_symbol, [&](const exprt &expr) -> abstract_object_pointert
+      ID_symbol, [&](const exprt &expr)
       {
         const symbol_exprt &symbol(to_symbol_expr(expr));
         const auto &symbol_entry=map.find(symbol);
@@ -146,27 +146,6 @@ abstract_object_pointert abstract_environmentt::eval(
   else
   {
     return handler->second(simplified_expr);
-  }
-
-  // Debug code to see if appveyor trips up on this similar construct.
-  {
-    typedef std::shared_ptr<const int> const_pointert;
-
-    auto lambda = [&](const int &expr) {
-         const_pointert x(new int);
-         const const_pointert y(new int);
-         if(expr > 4)
-         {
-             return x;
-         }
-         else
-         {
-             return y;
-         }
-    };
-
-    const_pointert retx = lambda(5);
-    const_pointert rety = lambda(3);
   }
 }
 
