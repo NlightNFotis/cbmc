@@ -66,7 +66,7 @@ abstract_object_pointert abstract_environmentt::eval(
       }
     },
     {
-      ID_constant,[&](const exprt &expr)
+      ID_constant, [&](const exprt &expr)
       {
         return abstract_object_factory(
           expr.type(), to_constant_expr(expr), ns);
@@ -84,11 +84,25 @@ abstract_object_pointert abstract_environmentt::eval(
       {
         member_exprt member_expr(to_member_expr(expr));
 
-        sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
-          std::dynamic_pointer_cast<const struct_abstract_objectt>(
-            eval(member_expr.compound(), ns));
+        const exprt &parent = member_expr.compound();
+        bool is_union = ns.follow(parent.type()).id() == ID_union;
 
-        return struct_abstract_object->read_component(*this, member_expr, ns);
+        if(is_union)
+        {
+          sharing_ptrt<union_abstract_objectt> union_abstract_object=
+            std::dynamic_pointer_cast<const union_abstract_objectt>(
+              eval(parent, ns));
+
+          return union_abstract_object->read_component(*this, member_expr, ns);
+        }
+        else
+        { // is struct
+          sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
+            std::dynamic_pointer_cast<const struct_abstract_objectt>(
+              eval(member_expr.compound(), ns));
+
+          return struct_abstract_object->read_component(*this, member_expr, ns);
+        }
       }
     },
     {
@@ -336,21 +350,45 @@ abstract_object_pointert abstract_environmentt::write(
       ID_member, [&](
         const abstract_object_pointert lhs_object,
         std::stack<exprt> stack,
-        abstract_object_pointert rhs_object)
+        abstract_object_pointert rhs_object) -> abstract_object_pointert
       {
-        sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
-          std::dynamic_pointer_cast<const struct_abstract_objectt>(lhs_object);
+        const member_exprt &member_expr = to_member_expr(next_expr);
+        const exprt &parent = member_expr.compound();
+        bool is_union = ns.follow(parent.type()).id() == ID_union;
 
-        sharing_ptrt<struct_abstract_objectt> modified_struct=
-          struct_abstract_object->write_component(
-            *this,
-            ns,
-            stack,
-            to_member_expr(next_expr),
-            rhs_object,
-            merge_write);
+        if(is_union)
+        {
+          sharing_ptrt<union_abstract_objectt> union_abstract_object=
+            std::dynamic_pointer_cast<const union_abstract_objectt>(lhs_object);
 
-        return modified_struct;
+          sharing_ptrt<union_abstract_objectt> modified_union=
+            union_abstract_object->write_component(
+              *this,
+              ns,
+              stack,
+              member_expr,
+              rhs_object,
+              merge_write);
+
+          return modified_union;
+        }
+        else
+        {
+          sharing_ptrt<struct_abstract_objectt> struct_abstract_object=
+            std::dynamic_pointer_cast<const struct_abstract_objectt>(
+              lhs_object);
+
+          sharing_ptrt<struct_abstract_objectt> modified_struct=
+            struct_abstract_object->write_component(
+              *this,
+              ns,
+              stack,
+              member_expr,
+              rhs_object,
+              merge_write);
+
+          return modified_struct;
+       }
       }
     },
     {
