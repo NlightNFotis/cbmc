@@ -3443,6 +3443,45 @@ std::string expr2ct::convert_sizeof(
   return dest;
 }
 
+/*******************************************************************\
+
+Function: expr2ct::convert_let
+
+  Inputs:
+
+ Outputs:
+
+ Purpose:
+
+\*******************************************************************/
+
+std::string expr2ct::convert_let(
+  const exprt &src,
+  unsigned &precedence)
+{
+  const auto &let_expr=to_let_expr(src);
+  std::string dest="let ";
+  dest+=convert_with_precedence(let_expr.symbol(), precedence);
+  dest+=" = ";
+  dest+=convert_with_precedence(let_expr.value(), precedence);
+  dest+=" in (";
+  dest+=convert_with_precedence(let_expr.where(), precedence);
+  dest+=")";
+  return dest;
+}
+
+/*******************************************************************\
+
+Function: expr2ct::convert_with_precedence
+
+  Inputs:
+
+ Outputs:
+
+ Purpose:
+
+\*******************************************************************/
+
 std::string expr2ct::convert_with_precedence(
   const exprt &src,
   unsigned &precedence)
@@ -3946,6 +3985,9 @@ std::string expr2ct::convert_with_precedence(
 
   else if(src.id()==ID_type)
     return convert(src.type());
+
+  else if(src.id()==ID_let)
+    return convert_let(src, precedence);
 
   // no C language expression for internal representation
   return convert_norep(src, precedence);
