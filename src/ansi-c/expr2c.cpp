@@ -3472,6 +3472,42 @@ std::string expr2ct::convert_let(
 
 /*******************************************************************\
 
+Function: expr2ct::convert_cpp_new_array
+
+  Inputs:
+
+ Outputs:
+
+ Purpose:
+
+\*******************************************************************/
+
+std::string
+expr2ct::convert_cpp_new_array(const exprt &src, unsigned &precedence)
+{
+  std::string dest;
+
+  if(src.get(ID_statement) == ID_cpp_new_array)
+  {
+    dest = "new";
+
+    std::string tmp_size =
+      convert(static_cast<const exprt &>(src.find(ID_size)));
+
+    dest += ' ';
+    dest += convert(src.type().subtype());
+    dest += '[';
+    dest += tmp_size;
+    dest += ']';
+  }
+  else
+    dest = "new " + convert(src.type().subtype());
+
+  return dest;
+}
+
+/*******************************************************************\
+
 Function: expr2ct::convert_with_precedence
 
   Inputs:
@@ -3779,6 +3815,8 @@ std::string expr2ct::convert_with_precedence(
       return convert_statement_expression(src, precedence=15);
     else if(statement==ID_gcc_builtin_va_arg_next)
       return convert_function(src, "gcc_builtin_va_arg_next", precedence=16);
+    else if(statement == ID_cpp_new_array)
+      return convert_cpp_new_array(src, precedence = 16);
     else
       return convert_norep(src, precedence);
   }
