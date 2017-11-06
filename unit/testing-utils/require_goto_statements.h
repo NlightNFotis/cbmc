@@ -20,6 +20,7 @@
 #define CPROVER_TESTING_UTILS_CHECK_GOTO_FUNCTIONS_H
 
 
+
 namespace require_goto_statements
 {
   struct pointer_assignment_locationt
@@ -28,21 +29,11 @@ namespace require_goto_statements
     std::vector<code_assignt> non_null_assignments;
   };
 
-  class no_decl_found_exception : public std::exception
+  class no_decl_found_exception : public std::runtime_error
   {
   public:
-    explicit no_decl_found_exception(const std::string &varname) : _varname
-                                                                     (varname) {}
-
-    virtual const char *what() const throw() {
-      std::ostringstream stringStream;
-      stringStream << "Failed to find declaration for: "
-                   << _varname;
-      return stringStream.str().c_str();
-    }
-
-  private:
-    std::string _varname;
+    explicit no_decl_found_exception(const std::string &varname)
+      : runtime_error("Failed to find declaration for: "+varname) {}
   };
 
   std::vector<code_assignt> find_struct_component_assignments(

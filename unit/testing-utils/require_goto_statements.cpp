@@ -135,5 +135,5 @@ const code_declt & require_goto_statements::require_declaration_of_name(
       }
     }
   }
-  throw no_decl_found_exception(variable_name.c_str());
+  throw no_decl_found_exception(id2string(variable_name));
 }
