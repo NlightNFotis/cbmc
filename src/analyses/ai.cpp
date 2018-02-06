@@ -16,6 +16,9 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/simplify_expr.h>
 #include <util/std_expr.h>
 #include <util/std_code.h>
+#include <util/message.h>
+
+#include <goto-programs/remove_function_pointers.h>
 
 #include "is_threaded.h"
 
@@ -520,8 +523,12 @@ bool ai_baset::do_function_call_rec(
   }
   else if(function.id()==ID_dereference)
   {
-    // We can't really do this here -- we rely on
-    // these being removed by some previous analysis.
+    null_message_handlert message_handler;
+    symbol_tablet &symtab = const_cast<symbol_tablet&>(ns.get_symbol_table());
+    // get a list of possible function targets
+    remove_function_pointerst fpr(
+      message_handler, symtab, false, false, goto_functions);
+    std::vector<exprt> functions = fpr.potential_target_functions(goto_functions);
   }
   else if(function.id()=="NULL-object")
   {

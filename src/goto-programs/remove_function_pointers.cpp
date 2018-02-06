@@ -29,66 +29,6 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "compute_called_functions.h"
 #include "remove_const_function_pointers.h"
 
-class remove_function_pointerst:public messaget
-{
-public:
-  remove_function_pointerst(
-    message_handlert &_message_handler,
-    symbol_tablet &_symbol_table,
-    bool _add_safety_assertion,
-    bool only_resolve_const_fps,
-    const goto_functionst &goto_functions);
-
-  void operator()(goto_functionst &goto_functions);
-
-  bool remove_function_pointers(goto_programt &goto_program);
-
-protected:
-  const namespacet ns;
-  symbol_tablet &symbol_table;
-  bool add_safety_assertion;
-
-  // We can optionally halt the FP removal if we aren't able to use
-  // remove_const_function_pointerst to sucessfully narrow to a small
-  // subset of possible functions and just leave the function pointer
-  // as it is.
-  // This can be activated in goto-instrument using
-  // --remove-const-function-pointers instead of --remove-function-pointers
-  bool only_resolve_const_fps;
-
-  void remove_function_pointer(
-    goto_programt &goto_program,
-    goto_programt::targett target);
-
-  std::set<irep_idt> address_taken;
-
-  typedef std::map<irep_idt, code_typet> type_mapt;
-  type_mapt type_map;
-
-  bool is_type_compatible(
-    bool return_value_used,
-    const code_typet &call_type,
-    const code_typet &function_type);
-
-  bool arg_is_type_compatible(
-    const typet &call_type,
-    const typet &function_type);
-
-  void fix_argument_types(code_function_callt &function_call);
-  void fix_return_type(
-    code_function_callt &function_call,
-    goto_programt &dest);
-
-  void compute_address_taken_in_symbols(
-    std::set<irep_idt> &address_taken)
-  {
-    const symbol_tablet &symbol_table=ns.get_symbol_table();
-
-    for(const auto &s : symbol_table.symbols)
-      compute_address_taken_functions(s.second.value, address_taken);
-  }
-};
-
 remove_function_pointerst::remove_function_pointerst(
   message_handlert &_message_handler,
   symbol_tablet &_symbol_table,
@@ -138,6 +78,15 @@ bool remove_function_pointerst::arg_is_type_compatible(
   // which could be made more generous
 
   return false;
+}
+
+void remove_function_pointerst::compute_address_taken_in_symbols(
+    std::set<irep_idt> &address_taken)
+{
+  const symbol_tablet &symbol_table=ns.get_symbol_table();
+
+  for(const auto &s : symbol_table.symbols)
+    compute_address_taken_functions(s.second.value, address_taken);
 }
 
 bool remove_function_pointerst::is_type_compatible(
@@ -258,6 +207,30 @@ void remove_function_pointerst::remove_function_pointer(
   goto_programt &goto_program,
   goto_programt::targett target)
 {
+    remove_const_function_pointerst::functionst functions;
+    remove_function_pointer(goto_program, target, functions, false);
+}
+
+std::vector<exprt> remove_function_pointerst::potential_target_functions(
+  goto_programt &goto_program,
+  goto_programt::targett target)
+{
+    std::vector<exprt> potential_targets;
+    remove_const_function_pointerst::functionst functions;
+    remove_function_pointer(goto_program, target, functions, true);
+
+    for (const auto &function : functions)
+      potential_targets.push_back(function);
+
+    return potential_targets;
+}
+
+void remove_function_pointerst::remove_function_pointer(
+  goto_programt &goto_program,
+  goto_programt::targett target,
+  remove_const_function_pointerst::functionst &functions,
+  bool export_functions=false)
+{
   const code_function_callt &code=
     to_code_function_call(target->code);
 
@@ -282,7 +255,6 @@ void remove_function_pointerst::remove_function_pointer(
   bool found_functions;
 
   const exprt &pointer=function.op0();
-  remove_const_function_pointerst::functionst functions;
   does_remove_constt const_removal_check(goto_program, ns);
   if(const_removal_check())
   {
@@ -346,6 +318,10 @@ void remove_function_pointerst::remove_function_pointer(
         functions.insert(expr);
     }
   }
+
+  // we have found the functions we want at this point.
+  if (export_functions)
+    return;
 
   // the final target is a skip
   goto_programt final_skip;
