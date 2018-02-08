@@ -203,6 +203,103 @@ void remove_function_pointerst::fix_return_type(
     old_lhs, typecast_exprt(tmp_symbol_expr, old_lhs.type()));
 }
 
+remove_const_function_pointerst::functionst
+remove_function_pointerst::list_potential_targets(
+  goto_programt &goto_program,
+  goto_programt::targett target)
+{
+  const code_function_callt &code=
+    to_code_function_call(target->code);
+
+  const exprt &function=code.function();
+
+  // this better have the right type
+  code_typet call_type=to_code_type(function.type());
+
+  // refine the type in case the forward declaration was incomplete
+  if(call_type.has_ellipsis() &&
+     call_type.parameters().empty())
+  {
+    call_type.remove_ellipsis();
+    forall_expr(it, code.arguments())
+      call_type.parameters().push_back(
+        code_typet::parametert(it->type()));
+  }
+
+  assert(function.id()==ID_dereference);
+  assert(function.operands().size()==1);
+
+  bool found_functions;
+
+  const exprt &pointer=function.op0();
+  remove_const_function_pointerst::functionst functions;
+  does_remove_constt const_removal_check(goto_program, ns);
+  if(const_removal_check())
+  {
+    warning() << "Cast from const to non-const pointer found, only worst case"
+              << " function pointer removal will be done." << eom;
+    found_functions=false;
+  }
+  else
+  {
+    remove_const_function_pointerst fpr(
+    get_message_handler(), ns, symbol_table);
+
+    found_functions=fpr(pointer, functions);
+
+    // if found_functions is false, functions should be empty
+    // however, it is possible for found_functions to be true and functions
+    // to be empty (this happens if the pointer can only resolve to the null
+    // pointer)
+    CHECK_RETURN(found_functions || functions.empty());
+
+    if(functions.size()==1)
+    {
+      to_code_function_call(target->code).function()=*functions.cbegin();
+      return functions;
+    }
+  }
+
+  if(!found_functions)
+  {
+    if(only_resolve_const_fps)
+    {
+      // If this mode is enabled, we only remove function pointers
+      // that we can resolve either to an exact funciton, or an exact subset
+      // (e.g. a variable index in a constant array).
+      // Since we haven't found functions, we would now resort to
+      // replacing the function pointer with any function with a valid signature
+      // Since we don't want to do that, we abort.
+      return functions;
+    }
+
+    bool return_value_used=code.lhs().is_not_nil();
+
+    // get all type-compatible functions
+    // whose address is ever taken
+    for(const auto &t : type_map)
+    {
+      // address taken?
+      if(address_taken.find(t.first)==address_taken.end())
+        continue;
+
+      // type-compatible?
+      if(!is_type_compatible(return_value_used, call_type, t.second))
+        continue;
+
+      if(t.first=="pthread_mutex_cleanup")
+        continue;
+
+      symbol_exprt expr;
+      expr.type()=t.second;
+      expr.set_identifier(t.first);
+      functions.insert(expr);
+    } 
+  }
+
+  return functions;
+}
+
 void remove_function_pointerst::remove_function_pointer(
   goto_programt &goto_program,
   goto_programt::targett target)

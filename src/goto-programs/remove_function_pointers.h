@@ -15,6 +15,7 @@ Date: June 2003
 #define CPROVER_GOTO_PROGRAMS_REMOVE_FUNCTION_POINTERS_H
 
 #include "goto_model.h"
+#include "remove_const_function_pointers.h"
 #include <util/message.h>
 
 class remove_function_pointerst:public messaget
@@ -30,6 +31,12 @@ public:
   void operator()(goto_functionst &goto_functions);
 
   bool remove_function_pointers(goto_programt &goto_program);
+
+remove_const_function_pointerst::functionst
+list_potential_targets(
+  goto_programt &goto_program,
+  goto_programt::targett target);
+
 
 protected:
   const namespacet ns;
