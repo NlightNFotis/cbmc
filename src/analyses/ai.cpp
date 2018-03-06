@@ -16,6 +16,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <util/simplify_expr.h>
 #include <util/std_expr.h>
 #include <util/std_code.h>
+#include <goto-programs/remove_function_pointers.h>
 
 #include "is_threaded.h"
 
@@ -522,6 +523,18 @@ bool ai_baset::do_function_call_rec(
   {
     // We can't really do this here -- we rely on
     // these being removed by some previous analysis.
+
+    const irep_idt &identifier=function.get(ID_identifier);
+
+    goto_functionst::function_mapt::const_iterator it=
+      goto_functions.function_map.find(identifier);
+
+    // XXX: Placeholder for development
+    null_message_handlert msgh;
+    symbol_tablet temp = const_cast<symbol_tablet&>(ns.get_symbol_table());
+
+    remove_function_pointerst rfp(msgh, temp, false, false, goto_functions);
+    auto &functions = rfp.list_potential_targets(*it, l_call);
   }
   else if(function.id()=="NULL-object")
   {
