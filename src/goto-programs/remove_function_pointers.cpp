@@ -203,11 +203,16 @@ void remove_function_pointerst::fix_return_type(
     old_lhs, typecast_exprt(tmp_symbol_expr, old_lhs.type()));
 }
 
+#include <iostream>
+
 remove_const_function_pointerst::functionst
 remove_function_pointerst::list_potential_targets(
   goto_programt &goto_program,
-  goto_programt::targett target)
+  goto_programt::const_targett target)
 {
+  std::cout << "[DEBUG] In list_potential_targets"
+  << std::endl;
+
   const code_function_callt &code=
     to_code_function_call(target->code);
 
@@ -253,11 +258,11 @@ remove_function_pointerst::list_potential_targets(
     // pointer)
     CHECK_RETURN(found_functions || functions.empty());
 
-    if(functions.size()==1)
-    {
-      to_code_function_call(target->code).function()=*functions.cbegin();
-      return functions;
-    }
+    // if(functions.size()==1)
+    // {
+    //   to_code_function_call(target->code).function()=*functions.cbegin();
+    //   return functions;
+    // }
   }
 
   if(!found_functions)

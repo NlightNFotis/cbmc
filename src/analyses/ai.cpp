@@ -12,6 +12,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <cassert>
 #include <memory>
 #include <sstream>
+#include <iostream>
 
 #include <util/simplify_expr.h>
 #include <util/std_expr.h>
@@ -534,7 +535,10 @@ bool ai_baset::do_function_call_rec(
     symbol_tablet temp = const_cast<symbol_tablet&>(ns.get_symbol_table());
 
     remove_function_pointerst rfp(msgh, temp, false, false, goto_functions);
-    auto &functions = rfp.list_potential_targets(it->second.body, *l_call);
+    const auto &functions = rfp.list_potential_targets(
+      const_cast<goto_programt&>(it->second.body), l_call);
+    // XXX: just to test things out
+    std::cout << "BERRY BERRY" << functions.size() << std::endl;
   }
   else if(function.id()=="NULL-object")
   {
