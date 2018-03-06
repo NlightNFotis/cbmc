@@ -534,7 +534,7 @@ bool ai_baset::do_function_call_rec(
     symbol_tablet temp = const_cast<symbol_tablet&>(ns.get_symbol_table());
 
     remove_function_pointerst rfp(msgh, temp, false, false, goto_functions);
-    auto &functions = rfp.list_potential_targets(*it, l_call);
+    auto &functions = rfp.list_potential_targets(it->second.body, *l_call);
   }
   else if(function.id()=="NULL-object")
   {
