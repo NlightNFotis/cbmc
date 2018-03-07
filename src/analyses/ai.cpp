@@ -475,13 +475,18 @@ bool ai_baset::do_function_call_rec(
   const goto_functionst &goto_functions,
   const namespacet &ns)
 {
+  std::cout << "[DEBUG] In do_function_call_rec"
+  << std::endl;
   assert(!goto_functions.function_map.empty());
 
   bool new_data=false;
 
   if(function.id()==ID_symbol)
   {
+    std::cout << "[DEBUG] Is symbol" << std::endl; 
     const irep_idt &identifier=function.get(ID_identifier);
+    std::cout << "[DEBUG] Symbol identifier: " << identifier
+    << std::endl;
 
     goto_functionst::function_mapt::const_iterator it=
       goto_functions.function_map.find(identifier);
