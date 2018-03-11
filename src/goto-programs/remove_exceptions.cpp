@@ -269,6 +269,10 @@ void remove_exceptionst::instrument_function_call(
   next_it++;
 
   code_function_callt &function_call=to_code_function_call(instr_it->code);
+  // Assume that for an id_dereference in the goto-program, we
+  // let it propagate to the abstract_interpreter.
+  if (function_call.function().id()==ID_dereference)
+    return;
   assert(function_call.function().id()==ID_symbol);
   const irep_idt &callee_id=
     to_symbol_expr(function_call.function()).get_identifier();

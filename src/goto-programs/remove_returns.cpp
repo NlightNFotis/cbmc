@@ -124,6 +124,11 @@ void remove_returnst::do_function_calls(
     {
       code_function_callt &function_call=to_code_function_call(i_it->code);
 
+      // Assume that for an id_dereference in the goto-program, we
+      // let it propagate to the abstract_interpreter.
+      if (function_call.function().id()==ID_dereference)
+        return;
+
       code_typet old_type=to_code_type(function_call.function().type());
 
       // Do we return anything?
