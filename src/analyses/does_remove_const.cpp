@@ -29,21 +29,35 @@ does_remove_constt::does_remove_constt(
     ns(ns)
 {}
 
+#include <iostream>
+
 /// A naive analysis to look for casts that remove const-ness from pointers.
 /// \return Returns true if the program contains a const-removing cast
 bool does_remove_constt::operator()() const
 {
+  std::cout << "In does_remove_constt::operator() "
+            << std::endl;
+
+  std::cout << "[DEBUG] Length of program instructions: "
+            << goto_program.instructions.size() << std::endl;
   for(const goto_programt::instructiont &instruction :
     goto_program.instructions)
   {
-    if(!instruction.is_assign())
+    std::cout << "[DEBUG] In the for loop" << std::endl;
+    bool is_not_assign = !instruction.is_assign();
+    std::cout << "[DEBUG] instruction.is_assign() crashed" << std::endl;
+    if(is_not_assign)
     {
       continue;
     }
 
+    std::cout << "[DEBUG] Instruction is not assign, and is being deconstructed " << std::endl;
     const code_assignt &assign=to_code_assign(instruction.code);
     const typet &rhs_type=assign.rhs().type();
     const typet &lhs_type=assign.lhs().type();
+
+    std::cout << "[DEBUG] Deconstructed successfully. "
+              << std::endl;
 
     // Compare the types recursively for a point where the rhs is more
     // const that the lhs
