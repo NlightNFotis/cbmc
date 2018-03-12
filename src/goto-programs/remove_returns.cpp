@@ -113,6 +113,8 @@ void remove_returnst::replace_returns(
   }
 }
 
+#include <iostream>
+
 /// turns x=f(...) into f(...); lhs=f#return_value;
 void remove_returnst::do_function_calls(
   goto_functionst &goto_functions,
@@ -120,6 +122,9 @@ void remove_returnst::do_function_calls(
 {
   Forall_goto_program_instructions(i_it, goto_program)
   {
+    std::cout << "[DEBUG] In remove_returnst::do_function_calls, goto_program instruction size is "
+        << goto_program.instructions.size() << std::endl;
+
     if(i_it->is_function_call())
     {
       code_function_callt &function_call=to_code_function_call(i_it->code);

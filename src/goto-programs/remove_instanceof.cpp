@@ -145,6 +145,8 @@ void remove_instanceoft::lower_instanceof(
   }
 }
 
+#include <iostream>
+
 /// See function above
 /// \par parameters: GOTO program instruction `target` whose instanceof
 ///   expressions,
@@ -156,6 +158,9 @@ void remove_instanceoft::lower_instanceof(
   goto_programt::targett target,
   instanceof_instt &inst_switch)
 {
+  std::cout << "[DEBUG] In remove_instanceoft::lower_instanceof2, goto_program instruction size is "
+    << goto_program.instructions.size() << std::endl;
+
   bool code_iof=contains_instanceof(target->code);
   bool guard_iof=contains_instanceof(target->guard);
   // The instruction-switching step below will malfunction if a check
@@ -189,6 +194,8 @@ bool remove_instanceoft::lower_instanceof(goto_programt &goto_program)
       this_inst->swap(*newinst);
     }
     goto_program.update();
+    std::cout << "[DEBUG] In lower_instanceof, goto_program instruction size is "
+        << goto_program.instructions.size() << std::endl;
     return true;
   }
   else

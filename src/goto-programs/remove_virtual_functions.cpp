@@ -314,6 +314,8 @@ exprt remove_virtual_functionst::get_method(
   return symbol->symbol_expr();
 }
 
+#include <iostream>
+
 bool remove_virtual_functionst::remove_virtual_functions(
   goto_programt &goto_program)
 {
@@ -336,6 +338,9 @@ bool remove_virtual_functionst::remove_virtual_functions(
   {
     goto_program.update();
   }
+
+  std::cout << "[DEBUG] In remove_virtual_functions, goto_program instruction size is "
+            << goto_program.instructions.size() << std::endl;
 
   return did_something;
 }

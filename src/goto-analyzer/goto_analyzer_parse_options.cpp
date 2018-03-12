@@ -293,9 +293,6 @@ int goto_analyzer_parse_optionst::doit()
       return 6;
     }
 
-    if(process_goto_program(options))
-      return 6;
-
     status() << "Starting analysis" << eom;
 
     if(cmdline.isset("taint"))
@@ -583,6 +580,9 @@ bool goto_analyzer_parse_optionst::set_properties()
   return false;
 }
 
+#include <iostream>
+
+
 bool goto_analyzer_parse_optionst::process_goto_program(
   const optionst &options)
 {
@@ -661,6 +661,12 @@ bool goto_analyzer_parse_optionst::process_goto_program(
   {
     error() << "Out of memory" << eom;
     return true;
+  }
+
+  Forall_goto_functions(it, goto_model.goto_functions)
+  {
+    std::cout << "[DEBUG] At the end of process_goto_program, goto_program instruction size is: " <<
+    it->second.body.instructions.size() << std::endl;;
   }
 
   return false;

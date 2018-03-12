@@ -251,6 +251,8 @@ void remove_exceptionst::instrument_throw(
   instr_it->code=assignment;
 }
 
+#include <iostream>
+
 /// instruments each function call that may escape exceptions with conditional
 /// GOTOS to the corresponding exception handlers
 void remove_exceptionst::instrument_function_call(
@@ -263,6 +265,9 @@ void remove_exceptionst::instrument_function_call(
 
   goto_programt &goto_program=func_it->second.body;
   const irep_idt &function_id=func_it->first;
+
+  std::cout << "[DEBUG] In remove_exceptionst::instrument_function_call, goto_program instruction size is "
+        << goto_program.instructions.size() << std::endl;
 
   // save the address of the next instruction
   goto_programt::instructionst::iterator next_it=instr_it;
