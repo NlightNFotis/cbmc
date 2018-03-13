@@ -307,6 +307,8 @@ bool ai_baset::fixedpoint(
   const goto_functionst &goto_functions,
   const namespacet &ns)
 {
+  std::cout << "[DEBUG] In ai_baset::fixedpoint " << std::endl;
+
   working_sett working_set;
 
   // Put the first location in the working set
@@ -321,9 +323,16 @@ bool ai_baset::fixedpoint(
   {
     locationt l=get_next(working_set);
 
+    std::cout << "[DEBUG] In ai_baset::fixedpoint, just before a call to visit" << std::endl;
+    // XXX: Verified GOTO_PROGRAM VALID UP UNTIL THIS POINT
+    // std::cout << "[DEBUG] Just before running constant_propagator_ait on the goto_model, goto_program instruction size is: " <<
+    //   goto_program.instructions.size() << std::endl;;
+    
     if(visit(l, working_set, goto_program, goto_functions, ns))
       new_data=true;
   }
+
+  std::cout << "[DEBUG] In ai_baset::fixedpoint, just before it returns" << std::endl;
 
   return new_data;
 }
@@ -354,6 +363,7 @@ bool ai_baset::visit(
     if(l->is_function_call() &&
        !goto_functions.function_map.empty())
     {
+      std::cout << "[DEBUG] In ai_baset::visit, in the if statement " << std::endl;
       // this is a big special case
       const code_function_callt &code=
         to_code_function_call(l->code);
@@ -395,6 +405,8 @@ bool ai_baset::do_function_call(
   const exprt::operandst &arguments,
   const namespacet &ns)
 {
+  std::cout << "[DEBUG] In ai_baset::do_function_call, in the beginning " << std::endl;
+
   // initialize state, if necessary
   get_state(l_return);
 
@@ -486,7 +498,7 @@ bool ai_baset::do_function_call_rec(
     std::cout << "[DEBUG] Is symbol" << std::endl; 
     const irep_idt &identifier=function.get(ID_identifier);
     std::cout << "[DEBUG] Symbol identifier: " << identifier
-    << std::endl;
+      << std::endl;
 
     goto_functionst::function_mapt::const_iterator it=
       goto_functions.function_map.find(identifier);
@@ -529,11 +541,22 @@ bool ai_baset::do_function_call_rec(
   {
     // We can't really do this here -- we rely on
     // these being removed by some previous analysis.
-
+    std::cout << "[DEBUG] In ai_baset::do_function_call_rec, function is id_dereference" << std::endl;
     const irep_idt &identifier=function.get(ID_identifier);
+    std::cout << function.pretty() << std::endl;
 
     goto_functionst::function_mapt::const_iterator it=
       goto_functions.function_map.find(identifier);
+
+    /// XXX: I have identified the error in most likely being that the function
+    /// map doesn't contain what I expect it to contain. Below, I test this hypothesis:
+    for( goto_functionst::function_mapt::const_iterator it = goto_functions.function_map.begin(); 
+      it != goto_functions.function_map.end(); ++it )
+    {
+      auto key = it->first;
+      std::cout << "[DEBUG] Content of function_mapt " << id2string(key) << std::endl;
+    }
+    std::cout << "[DEBUG] Identifier we were looking for " << id2string(identifier) << std::endl;
 
     // XXX: Placeholder for development
     null_message_handlert msgh;
@@ -559,13 +582,19 @@ bool ai_baset::do_function_call_rec(
       function.id_string();
   }
 
+  std::cout << "[DEBUG] IN ai_baset::do_function_call_rec, just before returning" << std::endl;
+
   return new_data;
 }
+
+#include <iostream>
 
 void ai_baset::sequential_fixedpoint(
   const goto_functionst &goto_functions,
   const namespacet &ns)
 {
+  std::cout << "[DEBUG] In ai_baset::sequential_fixedpoint " << std::endl;
+
   goto_functionst::function_mapt::const_iterator
     f_it=goto_functions.function_map.find(goto_functions.entry_point());
 

@@ -503,19 +503,29 @@ int goto_analyzer_parse_optionst::doit()
         delete out;
 
       return 0;
+    } 
+
+    Forall_goto_functions(it, goto_model.goto_functions)
+    {
+      std::cout << "[DEBUG] At the end of do_it, but before running analysis goto_program instruction size is: " <<
+      it->second.body.instructions.size() << std::endl;;
     }
 
     // Run the analysis
     bool result=true;
-    if(options.get_bool_option("show"))
+    if(options.get_bool_option("show")){
+      std::cout << "[DEBUG] Initializing a static_show_domain " << std::endl;
       result=
         static_show_domain(
           goto_model,
           options,
           get_message_handler(),
           *out);
-    else if(options.get_bool_option("verify"))
+    }
+    else if(options.get_bool_option("verify")) {
+      std::cout << "[DEBUG Initializing an abstract interpreter " << std::endl;
       result=static_analyzer(goto_model, options, get_message_handler(), *out);
+    }
     else if(options.get_bool_option("simplify"))
       result=
         static_simplifier(

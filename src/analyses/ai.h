@@ -119,6 +119,8 @@ public:
 
 };
 
+#include <iostream>
+
 // don't use me -- I am just a base class
 // use ait instead
 class ai_baset
@@ -158,8 +160,24 @@ public:
   {
     const namespacet ns(goto_model.symbol_table);
     initialize(goto_model.goto_functions);
+    forall_goto_functions(it, goto_model.goto_functions)
+    {
+      std::cout << "[DEBUG] In operator(), after initialize goto_program instruction size is: " <<
+      it->second.body.instructions.size() << std::endl;;
+    }
     entry_state(goto_model.goto_functions);
+    forall_goto_functions(it, goto_model.goto_functions)
+    {
+      std::cout << "[DEBUG] In operator(), after entry_state goto_program instruction size is: " <<
+      it->second.body.instructions.size() << std::endl;;
+    }
     fixedpoint(goto_model.goto_functions, ns);
+    std::cout << "[DEBUG] After fixedpoint " << std::endl;
+    forall_goto_functions(it, goto_model.goto_functions)
+    {
+      std::cout << "[DEBUG] In operator(), after fixedpoint goto_program instruction size is: " <<
+      it->second.body.instructions.size() << std::endl;;
+    }
   }
 
   void operator()(
@@ -435,6 +453,7 @@ protected:
     const goto_functionst &goto_functions,
     const namespacet &ns) override
   {
+    std::cout << "[DEBUG] In ait::fixedpoint " << std::endl;
     sequential_fixedpoint(goto_functions, ns);
   }
 

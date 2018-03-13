@@ -12,6 +12,7 @@ Author: Martin Brain, martin.brain@cs.ox.ac.uk
 #include <iostream>
 #endif
 
+#include <iostream>
 #include <fstream>
 #include <memory>
 
@@ -48,10 +49,16 @@ bool static_show_domain(
   {
     if(options.get_bool_option("constants"))
     {
+      std::cout << "[DEBUG] Initializing a new constant_propagator_ait" << std::endl;
       domain=
         new constant_propagator_ait(
           goto_model.goto_functions,
           options.get_bool_option("ignore-unresolved-calls"));
+        forall_goto_functions(it, goto_model.goto_functions)
+        {
+          std::cout << "[DEBUG] Just after initializing constant_propagator_ait goto_program instruction size is: " <<
+          it->second.body.instructions.size() << std::endl;;
+        }
     }
     else if(options.get_bool_option("intervals"))
       domain=new ait<interval_domaint>();
@@ -83,6 +90,11 @@ bool static_show_domain(
   }
 
   m.status() << "Computing abstract states" << messaget::eom;
+  forall_goto_functions(it, goto_model.goto_functions)
+  {
+    std::cout << "[DEBUG] Just before running constant_propagator_ait on the goto_model, goto_program instruction size is: " <<
+    it->second.body.instructions.size() << std::endl;;
+  }
   (*domain)(goto_model);
 
   m.status() << "Outputting abstract states" << messaget::eom;
