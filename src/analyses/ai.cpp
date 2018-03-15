@@ -543,7 +543,8 @@ bool ai_baset::do_function_call_rec(
     // these being removed by some previous analysis.
     std::cout << "[DEBUG] In ai_baset::do_function_call_rec, function is id_dereference" << std::endl;
     const irep_idt &identifier=function.get(ID_identifier);
-    std::cout << function.pretty() << std::endl;
+    auto pointer = to_dereference_expr(function).pointer();
+    std::cout << pointer.pretty() << std::endl;
 
     goto_functionst::function_mapt::const_iterator it=
       goto_functions.function_map.find(identifier);
