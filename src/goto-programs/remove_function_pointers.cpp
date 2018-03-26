@@ -210,8 +210,8 @@ remove_function_pointerst::list_potential_targets(
   const exprt &function,
   goto_programt::const_targett target)
 {
-  std::cout << "[DEBUG] In list_potential_targets"
-  << std::endl;
+  std::cout << "[DEBUG] function.pretty "
+    << function.pretty() << std::endl;
 
   const code_function_callt &code=
     to_code_function_call(target->code);
@@ -232,18 +232,12 @@ remove_function_pointerst::list_potential_targets(
   assert(function.id()==ID_dereference);
   assert(function.operands().size()==1);
 
-  std::cout << "[DEBUG] At least till here" << std::endl;
-
   bool found_functions;
 
   // const exprt &pointer=function.op0();
-  std::cout << "[DEBUG] function.op0() didn't crash. " << std::endl;
   remove_const_function_pointerst::functionst functions;
-  std::cout << "[DEBUG] Initialization of functions crashed " << std::endl;
   // does_remove_constt const_removal_check(goto_program, ns);
-  std::cout << "[DEBUG] does_remove_constt init crashed" << std::endl;
   // auto crc_ret = const_removal_check();
-  std::cout << "[DEBUG] const_removal_check failed" << std::endl;
   found_functions = false;
   // if(crc_ret)
   // {
@@ -274,8 +268,6 @@ remove_function_pointerst::list_potential_targets(
   //   // }
   // }
 
-  std::cout << "[DEBUG] Didn't crash until here" << std::endl;
-
   if(!found_functions)
   {
     if(only_resolve_const_fps)
@@ -288,8 +280,6 @@ remove_function_pointerst::list_potential_targets(
       // Since we don't want to do that, we abort.
       return functions;
     }
-
-    std::cout << "[DEBUG] In not found_functions" << std::endl;
 
     bool return_value_used=code.lhs().is_not_nil();
 
