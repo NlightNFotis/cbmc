@@ -207,7 +207,7 @@ void remove_function_pointerst::fix_return_type(
 
 remove_const_function_pointerst::functionst
 remove_function_pointerst::list_potential_targets(
-  goto_programt &goto_program,
+  const exprt &function,
   goto_programt::const_targett target)
 {
   std::cout << "[DEBUG] In list_potential_targets"
@@ -215,8 +215,6 @@ remove_function_pointerst::list_potential_targets(
 
   const code_function_callt &code=
     to_code_function_call(target->code);
-
-  const exprt &function=code.function();
 
   // this better have the right type
   code_typet call_type=to_code_type(function.type());
@@ -237,53 +235,44 @@ remove_function_pointerst::list_potential_targets(
   std::cout << "[DEBUG] At least till here" << std::endl;
 
   bool found_functions;
-  std::cout << "[DEBUG] In list_potential_targets, goto_program instruction size is "
-            << goto_program.instructions.size() << std::endl;
 
-  for(const goto_programt::instructiont &instruction :
-    goto_program.instructions)
-  {
-    std::cout << "[DEBUG] In the for loop, in list_potential_targets" << std::endl;
-    bool is_not_assign = !instruction.is_assign();
-    std::cout << is_not_assign << std::endl;
-  }
-
-  const exprt &pointer=function.op0();
+  // const exprt &pointer=function.op0();
   std::cout << "[DEBUG] function.op0() didn't crash. " << std::endl;
   remove_const_function_pointerst::functionst functions;
   std::cout << "[DEBUG] Initialization of functions crashed " << std::endl;
-  does_remove_constt const_removal_check(goto_program, ns);
+  // does_remove_constt const_removal_check(goto_program, ns);
   std::cout << "[DEBUG] does_remove_constt init crashed" << std::endl;
-  auto crc_ret = const_removal_check();
+  // auto crc_ret = const_removal_check();
   std::cout << "[DEBUG] const_removal_check failed" << std::endl;
-  if(crc_ret)
-  {
-    std::cout << "[DEBUG] In the first if block. " << std::endl;
-    warning() << "Cast from const to non-const pointer found, only worst case"
-              << " function pointer removal will be done." << eom;
-    found_functions=false;
-  }
-  else
-  {
-    remove_const_function_pointerst fpr(
-    get_message_handler(), ns, symbol_table);
+  found_functions = false;
+  // if(crc_ret)
+  // {
+  //   std::cout << "[DEBUG] In the first if block. " << std::endl;
+  //   warning() << "Cast from const to non-const pointer found, only worst case"
+  //             << " function pointer removal will be done." << eom;
+  //   found_functions=false;
+  // }
+  // else
+  // {
+  //   remove_const_function_pointerst fpr(
+  //   get_message_handler(), ns, symbol_table);
 
-    std::cout << "[DEBUG] In else block, after const_fpr" << std::endl;
+  //   std::cout << "[DEBUG] In else block, after const_fpr" << std::endl;
 
-    found_functions=fpr(pointer, functions);
+  //   found_functions=fpr(pointer, functions);
 
-    // if found_functions is false, functions should be empty
-    // however, it is possible for found_functions to be true and functions
-    // to be empty (this happens if the pointer can only resolve to the null
-    // pointer)
-    CHECK_RETURN(found_functions || functions.empty());
+  //   // if found_functions is false, functions should be empty
+  //   // however, it is possible for found_functions to be true and functions
+  //   // to be empty (this happens if the pointer can only resolve to the null
+  //   // pointer)
+  //   CHECK_RETURN(found_functions || functions.empty());
 
-    // if(functions.size()==1)
-    // {
-    //   to_code_function_call(target->code).function()=*functions.cbegin();
-    //   return functions;
-    // }
-  }
+  //   // if(functions.size()==1)
+  //   // {
+  //   //   to_code_function_call(target->code).function()=*functions.cbegin();
+  //   //   return functions;
+  //   // }
+  // }
 
   std::cout << "[DEBUG] Didn't crash until here" << std::endl;
 

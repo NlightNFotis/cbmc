@@ -541,23 +541,27 @@ bool ai_baset::do_function_call_rec(
   {
     // We can't really do this here -- we rely on
     // these being removed by some previous analysis.
-    std::cout << "[DEBUG] In ai_baset::do_function_call_rec, function is id_dereference" << std::endl;
+    // std::cout << "[DEBUG] In ai_baset::do_function_call_rec, function is id_dereference" << std::endl;
     const irep_idt &identifier=function.get(ID_identifier);
     auto pointer = to_dereference_expr(function).pointer();
-    std::cout << pointer.pretty() << std::endl;
+    // std::cout << pointer.pretty() << std::endl;
+    // auto index = to_index_expr(pointer).array();
+    // std::cout << index.get_sub()[0].get("identifier") << std::endl;
+
+    // std::cout << "[DEBUG] function's form: " << function.pretty() << std::endl;
 
     goto_functionst::function_mapt::const_iterator it=
       goto_functions.function_map.find(identifier);
 
     /// XXX: I have identified the error in most likely being that the function
     /// map doesn't contain what I expect it to contain. Below, I test this hypothesis:
-    for( goto_functionst::function_mapt::const_iterator it = goto_functions.function_map.begin(); 
-      it != goto_functions.function_map.end(); ++it )
-    {
-      auto key = it->first;
-      std::cout << "[DEBUG] Content of function_mapt " << id2string(key) << std::endl;
-    }
-    std::cout << "[DEBUG] Identifier we were looking for " << id2string(identifier) << std::endl;
+    // for( goto_functionst::function_mapt::const_iterator it = goto_functions.function_map.begin(); 
+    //   it != goto_functions.function_map.end(); ++it )
+    // {
+    //   // auto key = it->first;
+    //   // std::cout << "[DEBUG] Content of function_mapt " << id2string(key) << std::endl;
+    // }
+    // std::cout << "[DEBUG] Identifier we were looking for " << id2string(identifier) << std::endl;
 
     // XXX: Placeholder for development
     null_message_handlert msgh;
@@ -565,9 +569,7 @@ bool ai_baset::do_function_call_rec(
 
     remove_function_pointerst rfp(msgh, temp, false, false, goto_functions);
     const auto &functions = rfp.list_potential_targets(
-      const_cast<goto_programt&>(it->second.body), l_call);
-    // XXX: just to test things out
-    std::cout << "BERRY BERRY" << functions.size() << std::endl;
+      function, l_call);
   }
   else if(function.id()=="NULL-object")
   {

@@ -34,7 +34,7 @@ public:
 
 remove_const_function_pointerst::functionst
 list_potential_targets(
-  goto_programt &goto_program,
+  const exprt &function,
   goto_programt::const_targett target);
 
 
