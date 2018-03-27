@@ -232,13 +232,12 @@ remove_function_pointerst::list_potential_targets(
   assert(function.id()==ID_dereference);
   assert(function.operands().size()==1);
 
-  bool found_functions;
+  bool found_functions = false;
 
-  // const exprt &pointer=function.op0();
+  const exprt &pointer=function.op0();
   remove_const_function_pointerst::functionst functions;
   // does_remove_constt const_removal_check(goto_program, ns);
   // auto crc_ret = const_removal_check();
-  found_functions = false;
   // if(crc_ret)
   // {
   //   std::cout << "[DEBUG] In the first if block. " << std::endl;
@@ -248,18 +247,20 @@ remove_function_pointerst::list_potential_targets(
   // }
   // else
   // {
-  //   remove_const_function_pointerst fpr(
-  //   get_message_handler(), ns, symbol_table);
+  std::cout << "[DEBUG] pointer.pretty: " << pointer.pretty() << std::endl;
+    remove_const_function_pointerst fpr(
+      get_message_handler(), ns, symbol_table);
 
-  //   std::cout << "[DEBUG] In else block, after const_fpr" << std::endl;
-
-  //   found_functions=fpr(pointer, functions);
+    // DEBUG: At this point:
+    //  * found_functions = false
+    //  * functions.empty = true
+    found_functions=fpr(function, functions);
 
   //   // if found_functions is false, functions should be empty
   //   // however, it is possible for found_functions to be true and functions
   //   // to be empty (this happens if the pointer can only resolve to the null
   //   // pointer)
-  //   CHECK_RETURN(found_functions || functions.empty());
+    CHECK_RETURN(found_functions || functions.empty());
 
   //   // if(functions.size()==1)
   //   // {
