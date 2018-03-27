@@ -248,19 +248,16 @@ remove_function_pointerst::list_potential_targets(
   // else
   // {
   std::cout << "[DEBUG] pointer.pretty: " << pointer.pretty() << std::endl;
-    remove_const_function_pointerst fpr(
-      get_message_handler(), ns, symbol_table);
+  remove_const_function_pointerst fpr(
+    get_message_handler(), ns, symbol_table);
 
-    // DEBUG: At this point:
-    //  * found_functions = false
-    //  * functions.empty = true
-    found_functions=fpr(function, functions);
+  found_functions=fpr(function, functions);
 
-  //   // if found_functions is false, functions should be empty
-  //   // however, it is possible for found_functions to be true and functions
-  //   // to be empty (this happens if the pointer can only resolve to the null
-  //   // pointer)
-    CHECK_RETURN(found_functions || functions.empty());
+  // if found_functions is false, functions should be empty
+  // however, it is possible for found_functions to be true and functions
+  // to be empty (this happens if the pointer can only resolve to the null
+  // pointer)
+  CHECK_RETURN(found_functions || functions.empty());
 
   //   // if(functions.size()==1)
   //   // {
@@ -288,21 +285,29 @@ remove_function_pointerst::list_potential_targets(
     // whose address is ever taken
     for(const auto &t : type_map)
     {
+      std::cout << "[DEBUG] Enumerating type map " << std::endl;
       // address taken?
-      if(address_taken.find(t.first)==address_taken.end())
+      if(address_taken.find(t.first)==address_taken.end()){
+        std::cout << "[DEBUG] Continuing at first " << std::endl;
         continue;
+      }
 
       // type-compatible?
-      if(!is_type_compatible(return_value_used, call_type, t.second))
-        continue;
+      if(!is_type_compatible(return_value_used, call_type, t.second)){
+        // std::cout << "[DEBUG] Continuing at second " << std::endl;
+        // continue;
+      }
 
-      if(t.first=="pthread_mutex_cleanup")
+      if(t.first=="pthread_mutex_cleanup"){
+        std::cout << "[DEBUG] Continuing at third " << std::endl;
         continue;
+      }
 
       symbol_exprt expr;
       expr.type()=t.second;
       expr.set_identifier(t.first);
       functions.insert(expr);
+      std::cout << "[DEBUG] Added expression into functions " << std::endl;
     } 
   }
 
