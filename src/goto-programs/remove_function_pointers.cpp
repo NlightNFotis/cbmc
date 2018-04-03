@@ -234,20 +234,7 @@ remove_function_pointerst::list_potential_targets(
 
   bool found_functions = false;
 
-  const exprt &pointer=function.op0();
   remove_const_function_pointerst::functionst functions;
-  // does_remove_constt const_removal_check(goto_program, ns);
-  // auto crc_ret = const_removal_check();
-  // if(crc_ret)
-  // {
-  //   std::cout << "[DEBUG] In the first if block. " << std::endl;
-  //   warning() << "Cast from const to non-const pointer found, only worst case"
-  //             << " function pointer removal will be done." << eom;
-  //   found_functions=false;
-  // }
-  // else
-  // {
-  std::cout << "[DEBUG] pointer.pretty: " << pointer.pretty() << std::endl;
   remove_const_function_pointerst fpr(
     get_message_handler(), ns, symbol_table);
 
@@ -259,15 +246,8 @@ remove_function_pointerst::list_potential_targets(
   // pointer)
   CHECK_RETURN(found_functions || functions.empty());
 
-  //   // if(functions.size()==1)
-  //   // {
-  //   //   to_code_function_call(target->code).function()=*functions.cbegin();
-  //   //   return functions;
-  //   // }
-  // }
-
-  if(!found_functions)
-  {
+  // if(!found_functions)
+  // {
     if(only_resolve_const_fps)
     {
       // If this mode is enabled, we only remove function pointers
@@ -280,6 +260,8 @@ remove_function_pointerst::list_potential_targets(
     }
 
     bool return_value_used=code.lhs().is_not_nil();
+
+    std::cout << "Before the type map. " << std::endl;
 
     // get all type-compatible functions
     // whose address is ever taken
@@ -309,7 +291,10 @@ remove_function_pointerst::list_potential_targets(
       functions.insert(expr);
       std::cout << "[DEBUG] Added expression into functions " << std::endl;
     } 
-  }
+  // }
+
+  std::cout << "[DEBUG] Just before returning from list_potential_targets, functions.size "
+    << functions.size() << std::endl;
 
   return functions;
 }

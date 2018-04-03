@@ -545,13 +545,13 @@ bool ai_baset::do_function_call_rec(
     const auto &functions = rfp.list_potential_targets(
       function, l_call);
     std::cout << "[DEBUG] function.size() " << functions.size() << std::endl;
-    // assert(!functions.empty());
-    for (const auto &function : functions)
+    for (const auto &f : functions)
     {
-      std::cout << "[DEBUG] Doing function call for " << function.pretty() << std::endl;
+      assert(l_call!=l_return);
+      std::cout << "[DEBUG] Doing function call for " << f.pretty() << std::endl;
       new_data |= do_function_call_rec(
         l_call, l_return,
-        function,
+        f,
         arguments,
         goto_functions,
         ns);
@@ -563,7 +563,6 @@ bool ai_baset::do_function_call_rec(
   }
   else if(function.id()==ID_member || function.id()==ID_index)
   {
-    std::cout << "[DEBUG] In ai.cpp in ID_index" << std::endl;
     // ignore, can't be a function
   }
   else
@@ -571,8 +570,6 @@ bool ai_baset::do_function_call_rec(
     throw "unexpected function_call argument: "+
       function.id_string();
   }
-
-  std::cout << "[DEBUG] IN ai_baset::do_function_call_rec, just before returning" << std::endl;
 
   return new_data;
 }
