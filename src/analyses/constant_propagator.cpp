@@ -41,9 +41,12 @@ void constant_propagator_domaint::assign_rec(
     values.set_to_top(s);
 }
 
+#include <iostream>
+
 void constant_propagator_domaint::transform(
   locationt from,
   locationt to,
+  const goto_functionst::function_mapt::const_iterator func,
   ai_baset &ai,
   const namespacet &ns)
 {
@@ -57,6 +60,8 @@ void constant_propagator_domaint::transform(
   std::cout << "Before:\n";
   output(std::cout, ai, ns);
 #endif
+
+  std::cout << "[DEBUG] In constant_propagator_domaint::transform " << std::endl;
 
   // When the domain is used with constant_propagator_ait,
   // information about dirty variables and config flags are
@@ -119,6 +124,8 @@ void constant_propagator_domaint::transform(
     const code_function_callt &function_call=to_code_function_call(from->code);
     const exprt &function=function_call.function();
 
+    std::cout << "[DEBUG] Thankfully, it's a function call " << std::endl;
+
     locationt next=from;
     next++;
 
@@ -176,10 +183,14 @@ void constant_propagator_domaint::transform(
         }
       }
     }
+    else if (function.id()==ID_dereference)
+    {
+      std::cout << "f_it->first " << func->first << std::endl;
+      assert(to==next);
+    }
     else
     {
       // unresolved call
-
       assert(to==next);
 
       if(!ignore_unresolved_calls)

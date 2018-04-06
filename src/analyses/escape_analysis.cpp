@@ -164,6 +164,7 @@ void escape_domaint::get_rhs_aliases_address_of(
 void escape_domaint::transform(
   locationt from,
   locationt to,
+  const goto_functionst::function_mapt::const_iterator func,
   ai_baset &ai,
   const namespacet &ns)
 {

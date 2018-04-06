@@ -380,7 +380,7 @@ bool ai_baset::visit(
       // initialize state, if necessary
       get_state(to_l);
 
-      new_values.transform(l, to_l, *this, ns);
+      new_values.transform(l, to_l, nullptr, *this, ns);
 
       if(merge(new_values, l, to_l))
         have_new_values=true;
@@ -415,6 +415,8 @@ bool ai_baset::do_function_call(
 
   if(!goto_function.body_available())
   {
+    std::cout << "[DEBUG] Inside the first if statement in the do_function_call, function body missing "
+      << std::endl;
     // if we don't have a body, we just do an edige call -> return
     std::unique_ptr<statet> tmp_state(make_temporary_state(get_state(l_call)));
     tmp_state->transform(l_call, l_return, *this, ns);
@@ -426,9 +428,12 @@ bool ai_baset::do_function_call(
 
   bool any_changes=false;
 
+
+  std::cout << "[DEBUG] Got out of the if statement in the do_function_call " << std::endl;
   // This is the edge from call site to function head.
 
   {
+    std::cout << "[DEBUG] Inside the first block " << std::endl;
     // get the state at the beginning of the function
     locationt l_begin=goto_function.body.instructions.begin();
     // initialize state, if necessary
@@ -436,8 +441,10 @@ bool ai_baset::do_function_call(
 
     // do the edge from the call site to the beginning of the function
     std::unique_ptr<statet> tmp_state(make_temporary_state(get_state(l_call)));
-    tmp_state->transform(l_call, l_begin, *this, ns);
+    std::cout << "[DEBUG] Just before calling statet->transform " << std::endl;
+    tmp_state->transform(l_call, l_begin, f_it, *this, ns);
 
+    std::cout << "[DEBUG] Managed to execute transform " << std::endl;
     bool new_data=false;
 
     // merge the new stuff
@@ -452,6 +459,7 @@ bool ai_baset::do_function_call(
 
   // This is the edge from function end to return site.
   {
+    std::cout << "[DEBUG] Inside the second block " << std::endl;
     // get location at end of the procedure we have called
     locationt l_end=--goto_function.body.instructions.end();
     assert(l_end->is_end_function());
@@ -466,7 +474,7 @@ bool ai_baset::do_function_call(
       return false; // function exit point not reachable
 
     std::unique_ptr<statet> tmp_state(make_temporary_state(end_state));
-    tmp_state->transform(l_end, l_return, *this, ns);
+    tmp_state->transform(l_end, l_return, f_it, *this, ns);
 
     std::unique_ptr<statet> pre_merge_tmp_state(make_temporary_state(*tmp_state));
 

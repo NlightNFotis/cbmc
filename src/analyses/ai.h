@@ -50,6 +50,7 @@ public:
   virtual void transform(
     locationt from,
     locationt to,
+    const goto_functionst::function_mapt::const_iterator func,
     ai_baset &ai,
     const namespacet &ns)=0;
 
