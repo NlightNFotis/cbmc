@@ -117,6 +117,8 @@ public:
     // of applying the changes in the function
   }
 
+  // XXX: Ugly, but want to see how it turns out.
+  exprt func;
 };
 
 #include <iostream>
@@ -351,6 +353,14 @@ protected:
     locationt l_call, locationt l_return,
     const goto_functionst &goto_functions,
     const goto_functionst::function_mapt::const_iterator f_it,
+    const exprt::operandst &arguments,
+    const namespacet &ns);
+
+  bool do_function_call(
+    locationt l_call, locationt l_return,
+    const goto_functionst &goto_functions,
+    const goto_functionst::function_mapt::const_iterator f_it,
+    const exprt &func,
     const exprt::operandst &arguments,
     const namespacet &ns);
 

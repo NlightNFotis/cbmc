@@ -480,6 +480,92 @@ bool ai_baset::do_function_call(
   return any_changes;
 }
 
+bool ai_baset::do_function_call(
+  locationt l_call, locationt l_return,
+  const goto_functionst &goto_functions,
+  const goto_functionst::function_mapt::const_iterator f_it,
+  const exprt &func,
+  const exprt::operandst &arguments,
+  const namespacet &ns)
+{
+  std::cout << "[DEBUG] In ai_baset::do_function_call with expr, in the beginning " << std::endl;
+
+  // initialize state, if necessary
+  get_state(l_return);
+
+  const goto_functionst::goto_functiont &goto_function=
+    f_it->second;
+
+  if(!goto_function.body_available())
+  {
+    // if we don't have a body, we just do an edige call -> return
+    std::unique_ptr<statet> tmp_state(make_temporary_state(get_state(l_call)));
+    tmp_state->func=func;
+    tmp_state->transform(l_call, l_return, *this, ns);
+
+    return merge(*tmp_state, l_call, l_return);
+  }
+
+  assert(!goto_function.body.instructions.empty());
+
+  bool any_changes=false;
+
+  // This is the edge from call site to function head.
+
+  {
+    // get the state at the beginning of the function
+    locationt l_begin=goto_function.body.instructions.begin();
+    // initialize state, if necessary
+    get_state(l_begin);
+
+    // do the edge from the call site to the beginning of the function
+    std::unique_ptr<statet> tmp_state(make_temporary_state(get_state(l_call)));
+    tmp_state->func=func;
+    tmp_state->transform(l_call, l_begin, *this, ns);
+
+    bool new_data=false;
+
+    // merge the new stuff
+    if(merge(*tmp_state, l_call, l_begin))
+      new_data=true;
+
+    // do we need to do/re-do the fixedpoint of the body?
+    if(new_data)
+      fixedpoint(goto_function.body, goto_functions, ns);
+  }
+
+
+  // This is the edge from function end to return site.
+  {
+    // get location at end of the procedure we have called
+    locationt l_end=--goto_function.body.instructions.end();
+    assert(l_end->is_end_function());
+
+    // do edge from end of function to instruction after call
+    const statet &end_state=get_state(l_end);
+
+    locationt l_begin=goto_function.body.instructions.begin();
+    //const statet &start_state=get_state(l_begin);
+
+    if(end_state.is_bottom())
+      return false; // function exit point not reachable
+
+    std::unique_ptr<statet> tmp_state(make_temporary_state(end_state));
+    tmp_state->func=func;
+    tmp_state->transform(l_end, l_return, *this, ns);
+
+    std::unique_ptr<statet> pre_merge_tmp_state(make_temporary_state(*tmp_state));
+
+    // We try to
+    tmp_state->merge_three_way_function_return(
+      get_state(l_call), get_state(l_begin), *pre_merge_tmp_state, ns);
+
+    any_changes|=merge(*tmp_state, l_end, l_return);
+  }
+
+  return any_changes;
+}
+
 bool ai_baset::do_function_call_rec(
   locationt l_call, locationt l_return,
   const exprt &function,
@@ -549,11 +635,23 @@ bool ai_baset::do_function_call_rec(
     {
       assert(l_call!=l_return);
       std::cout << "[DEBUG] Doing function call for " << f.pretty() << std::endl;
-      new_data |= do_function_call_rec(
+
+      // At this point it's an ID_code, and it for sure has an identifier,
+      const irep_idt &identifier=f.get(ID_identifier);
+      std::cout << "[DEBUG] Function identifier is: " << identifier << std::endl;
+
+      goto_functionst::function_mapt::const_iterator it=
+        goto_functions.function_map.find(identifier);
+
+      if(it==goto_functions.function_map.end())
+        throw "failed to find function "+id2string(identifier);
+
+      new_data |= do_function_call(
         l_call, l_return,
+        goto_functions,
+        it,
         f,
         arguments,
-        goto_functions,
         ns);
     }
   }

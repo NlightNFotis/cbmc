@@ -13,6 +13,7 @@ Author: Peter Schrammel
 #include <iostream>
 #endif
 
+#include <util/prefix.h>
 #include <util/find_symbols.h>
 #include <util/arith_tools.h>
 #include <util/simplify_expr.h>
@@ -122,10 +123,14 @@ void constant_propagator_domaint::transform(
     locationt next=from;
     next++;
 
-    if(function.id()==ID_symbol)
+    if(function.id()==ID_symbol||
+       function.id()==ID_dereference)
     {
       // called function identifier
-      const symbol_exprt &symbol_expr=to_symbol_expr(function);
+      const symbol_exprt &symbol_expr=
+        function.id()==ID_symbol?
+         to_symbol_expr(function):
+         to_symbol_expr(func);
       const irep_idt id=symbol_expr.get_identifier();
 
       if(to==next)
@@ -144,10 +149,15 @@ void constant_propagator_domaint::transform(
         {
           if(!ignore_unresolved_calls)
           {
-            if(have_dirty)
+            if(have_dirty){
+              std::cout << "[DEBUG] Setting dirty to top " << std::endl;
               values.set_dirty_to_top(cp->dirty, ns);
+            }
             else
+            {
+              std::cout << "[DEBUG] Setting values to top " << std::endl;
               values.set_to_top();
+            }
           }
         }
       }
@@ -359,11 +369,19 @@ void constant_propagator_domaint::valuest::set_dirty_to_top(
 
     const symbolt &symbol=ns.lookup(id);
 
+    std::cout << "[DEBUG] valuest::set_dirty_to_top::symbol pretty " << symbol << std::endl;
+
     if((!symbol.is_procedure_local() || dirty(id)) &&
-       !symbol.type.get_bool(ID_C_constant))
+       !symbol.type.get_bool(ID_C_constant) &&
+       !has_prefix(id2string(id), CPROVER_PREFIX))
+    {
       it=expr_map.erase(it);
+    }
     else
+    {
+      std::cout << "[DEBUG] skipping object " << std::endl;
       it++;
+    }
   }
 }
 
