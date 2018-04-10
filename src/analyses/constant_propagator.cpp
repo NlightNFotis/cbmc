@@ -372,8 +372,8 @@ void constant_propagator_domaint::valuest::set_dirty_to_top(
     std::cout << "[DEBUG] valuest::set_dirty_to_top::symbol pretty " << symbol << std::endl;
 
     if((!symbol.is_procedure_local() || dirty(id)) &&
-       !symbol.type.get_bool(ID_C_constant) &&
-       !has_prefix(id2string(id), CPROVER_PREFIX))
+       !symbol.type.get_bool(ID_C_constant)) // &&
+       // !has_prefix(id2string(id), CPROVER_PREFIX))
     {
       it=expr_map.erase(it);
     }

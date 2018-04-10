@@ -633,6 +633,15 @@ bool ai_baset::do_function_call_rec(
     std::cout << "[DEBUG] function.size() " << functions.size() << std::endl;
     for (const auto &f : functions)
     {
+      const auto &state_at_call=get_state(l_call);
+
+      auto &func = const_cast<exprt &>(f);
+      if (!state_at_call.ai_simplify(func, ns)) {
+        if (func.id()==ID_false) {
+          continue;
+        }
+      }
+
       assert(l_call!=l_return);
       std::cout << "[DEBUG] Doing function call for " << f.pretty() << std::endl;
 
@@ -650,7 +659,7 @@ bool ai_baset::do_function_call_rec(
         l_call, l_return,
         goto_functions,
         it,
-        f,
+        func,
         arguments,
         ns);
     }
