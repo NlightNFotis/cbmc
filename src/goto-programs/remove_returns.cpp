@@ -139,9 +139,10 @@ void remove_returnst::do_function_calls(
       // Do we return anything?
       if(old_type.return_type()!=empty_typet())
       {
-        // replace "lhs=f(...)" by
+        // repWlace "lhs=f(...)" by
         // "f(...); lhs=f#return_value; DEAD f#return_value;"
-        assert(function_call.function().id()==ID_symbol);
+        assert(function_call.function().id()==ID_symbol||
+          function_call.function().id()==ID_dereference);
 
         const irep_idt function_id=
           to_symbol_expr(function_call.function()).get_identifier();

@@ -8,6 +8,9 @@ Date: April 2016
 
 \*******************************************************************/
 
+
+#define DEBUG
+
 #include <ostream>
 
 #include <util/message.h>
@@ -80,6 +83,8 @@ void variable_sensitivity_domaint::transform(
       // TODO : check return values
       const code_assignt &inst = to_code_assign(instruction.code);
 
+      std::cout << "[DEBUG] inst.pretty() " << inst.lhs().pretty() << std::endl;
+
       const abstract_objectt::locationst write_location={ from };
       abstract_object_pointert rhs = abstract_state.eval(inst.rhs(), ns)
           ->update_last_written_locations(write_location, true);
@@ -120,7 +125,28 @@ void variable_sensitivity_domaint::transform(
 
   case FUNCTION_CALL:
   {
+    const auto &inst = to_code_function_call(instruction.code); // XXX: In Jon Skeet we trust
+    std::cout << "[DEBUG] function_call inst.pretty() " << to_code_function_call(instruction.code).lhs().pretty() << std::endl;
+    
     transform_function_call(from, to, ai, ns);
+    
+    if(inst.lhs().id()!=ID_nil) {
+      // std::cout << "[HALP]" << std::endl;
+      // abstract_state.output(std::cout, ai, ns);
+      // std::cout << "[HALP END]" << std::endl;
+      const symbol_exprt &symbol_expr=to_symbol_expr(func);
+      const irep_idt function_id=symbol_expr.get_identifier();
+
+      const abstract_objectt::locationst write_location={ from };
+      const auto disgusting=symbol_exprt(irep_idt(id2string(function_id)+"#return_value"),
+        inst.lhs().type());
+      abstract_object_pointert rhs = abstract_state.eval(symbol_exprt(irep_idt(id2string(function_id)+"#return_value"),
+        inst.lhs().type()), ns)
+        ->update_last_written_locations(write_location, true);
+      std::cout << "[DE£UG] HELP " << rhs->is_top() << std::endl;;
+      std::cout << "[DISGUSTING] " << disgusting.pretty() << std::endl;
+      abstract_state.assign(inst.lhs(), rhs, ns);
+    }
     break;
   }
 
@@ -403,10 +429,14 @@ void variable_sensitivity_domaint::transform_function_call(
 
   const locationt next=std::next(from);
 
-  if(function.id()==ID_symbol)
+  if(function.id()==ID_symbol ||
+    function.id()==ID_dereference)
   {
+    std::cout << "[DEBUG] Dereference in transform_function_call: " << function.id() << std::endl;
     // called function identifier
-    const symbol_exprt &symbol_expr=to_symbol_expr(function);
+    const symbol_exprt &symbol_expr=function.id()==ID_symbol?
+         to_symbol_expr(function):
+         to_symbol_expr(func);
     const irep_idt function_id=symbol_expr.get_identifier();
 
     const code_function_callt::argumentst &called_arguments=
@@ -462,6 +492,7 @@ void variable_sensitivity_domaint::transform_function_call(
     }
     else
     {
+      std::cout << "[DEBUG] We have an actual call " << function_id << std::endl;
       // we have an actual call
       const symbolt &symbol=ns.lookup(function_id);
       const code_typet &code_type=to_code_type(symbol.type);

@@ -39,6 +39,8 @@ Function: abstract_environmentt::eval
 
 \*******************************************************************/
 
+#include <iostream>
+
 abstract_object_pointert abstract_environmentt::eval(
   const exprt &expr, const namespacet &ns) const
 {
@@ -55,6 +57,7 @@ abstract_object_pointert abstract_environmentt::eval(
     const auto &symbol_entry=map.find(symbol);
     if(symbol_entry==map.cend())
     {
+      std::cout << "[DEBUG] Didn't find symbol " << symbol.get_identifier() << std::endl;
       return abstract_object_factory(simplified_expr.type(), ns, true);
     }
     else
