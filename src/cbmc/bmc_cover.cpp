@@ -221,7 +221,7 @@ bool bmc_covert::operator()()
   {
     if(it->is_assert())
     {
-      assert(it->source.pc->is_assert());
+      PRECONDITION(it->source.pc->is_assert());
       const and_exprt c(
         literal_exprt(it->guard_literal), literal_exprt(!it->cond_literal));
       literalt l_c=solver.convert(c);
@@ -241,7 +241,8 @@ bool bmc_covert::operator()()
     cover_goals.add(l);
   }
 
-  assert(cover_goals.size()==goal_map.size());
+  INVARIANT(cover_goals.size()==goal_map.size(),
+    "We add coverage for each goal");
 
   status() << "Running " << solver.decision_procedure_text() << eom;
 
