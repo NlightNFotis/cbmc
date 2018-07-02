@@ -17,6 +17,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include <langapi/mode.h>
 #include <langapi/language_util.h>
 
+#include <util/exception_utils.h>
 #include <util/json.h>
 #include <util/json_expr.h>
 
@@ -143,7 +144,8 @@ void bmct::show_vcc()
   {
     of.open(filename);
     if(!of)
-      throw "failed to open file "+filename;
+      throw invalid_user_input_exceptiont(
+        "Failed to open file: " + filename, "--outfile");
   }
 
   std::ostream &out=have_file?of:std::cout;

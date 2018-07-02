@@ -241,8 +241,8 @@ bool bmc_covert::operator()()
     cover_goals.add(l);
   }
 
-  INVARIANT(cover_goals.size()==goal_map.size(),
-    "We add coverage for each goal");
+  INVARIANT(cover_goals.size() == goal_map.size(),
+    "we add coverage for each goal");
 
   status() << "Running " << solver.decision_procedure_text() << eom;
 

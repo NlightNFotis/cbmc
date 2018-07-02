@@ -9,16 +9,13 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "bv_cbmc.h"
 
 #include <util/arith_tools.h>
+#include <util/invariant.h>
 #include <util/replace_expr.h>
 
 bvt bv_cbmct::convert_waitfor(const exprt &expr)
 {
-  if(expr.operands().size()!=4)
-  {
-    error().source_location=expr.find_source_location();
-    error() << "waitfor expected to have four operands" << eom;
-    throw 0;
-  }
+  DATA_INVARIANT(expr.operands().size() != 4,
+  	"waitfor expression is expected to have four operands");
 
   const exprt &old_cycle=expr.op0();
   const exprt &cycle_var=expr.op1();
@@ -27,12 +24,8 @@ bvt bv_cbmct::convert_waitfor(const exprt &expr)
   const exprt new_cycle = make_free_bv_expr(expr.type());
 
   mp_integer bound_value;
-  if(to_integer(bound, bound_value))
-  {
-    error().source_location=expr.find_source_location();
-    error() << "waitfor bound must be a constant" << eom;
-    throw 0;
-  }
+  bool successful_cast = to_integer(bound, bound_value);
+  INVARIANT(successful_cast, "waitfor bound must be a constant");
 
   {
     // constraint: new_cycle>=old_cycle
