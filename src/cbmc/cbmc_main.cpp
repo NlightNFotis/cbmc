@@ -41,9 +41,11 @@ int wmain(int argc, const wchar_t **argv_wide)
 int main(int argc, const char **argv)
 {
 #endif
-  cbmc_parse_optionst parse_options(argc, argv);
+  try
+  {
+    cbmc_parse_optionst parse_options(argc, argv);
 
-  int res=parse_options.main();
+    int res = parse_options.main();
 
   #ifdef IREP_HASH_STATS
   std::cout << "IREP_HASH_CNT=" << irep_hash_cnt << '\n';
@@ -52,4 +54,9 @@ int main(int argc, const char **argv)
   #endif
 
   return res;
+  }
+  catch(invalid_user_input_exceptiont &e)
+  {
+    std::cerr << e.what() << std::endl;
+  }
 }
