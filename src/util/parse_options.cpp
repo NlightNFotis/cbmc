@@ -18,6 +18,8 @@ Author: Daniel Kroening, kroening@kroening.com
 #endif
 
 #include "cmdline.h"
+#include "exception_utils.h"
+#include "exit_codes.h"
 #include "signal_catcher.h"
 
 parse_options_baset::parse_options_baset(
@@ -47,23 +49,31 @@ void parse_options_baset::unknown_option_msg()
 
 int parse_options_baset::main()
 {
-  if(parse_result)
-  {
-    usage_error();
-    unknown_option_msg();
-    return EX_USAGE;
-  }
+	// catch all exceptions here so that this code is not duplicated
+  // for each tool
+	try {
+	  if(parse_result)
+	  {
+	    usage_error();
+	    unknown_option_msg();
+	    return EX_USAGE;
+	  }
 
-  if(cmdline.isset('?') || cmdline.isset('h') || cmdline.isset("help"))
-  {
-    help();
-    return EX_OK;
-  }
+	  if(cmdline.isset('?') || cmdline.isset('h') || cmdline.isset("help"))
+	  {
+	    help();
+	    return EX_OK;
+	  }
 
-  // install signal catcher
-  install_signal_catcher();
+	  // install signal catcher
+	  install_signal_catcher();
 
-  return doit();
+	  return doit();
+	} catch(invalid_user_input_exceptiont &e) {
+		std::cerr << e.what() << "\n";
+    return CPROVER_EXIT_USAGE_ERROR;
+	}
+	return CPROVER_EXIT_SUCCESS;
 }
 
 std::string
