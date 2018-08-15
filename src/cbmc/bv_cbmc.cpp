@@ -23,9 +23,9 @@ bvt bv_cbmct::convert_waitfor(const exprt &expr)
   const exprt &predicate=expr.op3();
   const exprt new_cycle = make_free_bv_expr(expr.type());
 
-  mp_integer bound_value;
-  bool successful_cast = to_integer(bound, bound_value);
-  INVARIANT(successful_cast, "waitfor bound must be a constant");
+  optionalt<mp_integer> bound_converted = numeric_cast<mp_integer>(bound);
+  INVARIANT(bound_converted.has_value(), "waitfor bound must be a constant");
+  mp_integer bound_value = bound_converted.value();
 
   {
     // constraint: new_cycle>=old_cycle
