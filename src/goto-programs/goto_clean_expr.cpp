@@ -527,18 +527,12 @@ void goto_convertt::remove_gcc_conditional_expression(
   clean_expr(expr, dest, mode);
 }
 
-/*******************************************************************\
-
-Function: goto_convertt::rewrite_let
-
-  Inputs:
-
- Outputs:
-
- Purpose:
-
-\*******************************************************************/
-
+/// Create a new code block, with a simplified version of let,
+/// and pass it to convert so that it can substituted for the
+/// original expression.
+/// \param expr: The let expression to be rewritten
+/// \param dest: A goto function that contains the expression
+/// \param mode: The language mode
 void goto_convertt::rewrite_let(
   exprt &expr,
   goto_programt &dest,
