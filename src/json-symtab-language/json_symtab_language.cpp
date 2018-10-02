@@ -13,6 +13,10 @@ Author: Chris Smowton, chris.smowton@diffblue.com
 #include <util/json_symbol_table.h>
 #include <util/namespace.h>
 
+/// Parse a goto program in json form.
+/// \param instream: The input stream
+/// \param path: A file path
+/// \return: boolean signifying success or failure of the parsing
 bool json_symtab_languaget::parse(
   std::istream &instream,
   const std::string &path)
@@ -24,6 +28,10 @@ bool json_symtab_languaget::parse(
     parsed_json_file);
 }
 
+/// Typecheck a goto program in json form.
+/// \param symbol_table: The symbol table containing symbols read from file.
+/// \param module: A useless parameter, there for interface consistency.
+/// \return: boolean signifying success or failure of the typechecking.
 bool json_symtab_languaget::typecheck(
   symbol_tablet &symbol_table,
   const std::string &module)
@@ -41,6 +49,10 @@ bool json_symtab_languaget::typecheck(
   }
 }
 
+/// Follow type symbols present in the irep using the passed irep
+/// as the root for this operation.
+/// \param irep: An irep `irep` to use as a root for the recursive following.
+/// \param ns: The namespace to use for symbol following.
 void json_symtab_languaget::follow_type_symbols(
   irept &irep,
   const namespacet &ns)
@@ -60,6 +72,10 @@ void json_symtab_languaget::follow_type_symbols(
   }
 }
 
+/// Follow type symbols present in every symbol in the symbol table.
+/// \param symbol_table: The symbol table `symbol_table` that has been produced as part
+///                      of the parsing and the typechecking of the goto program in json
+///                      form.
 void json_symtab_languaget::follow_type_symbols(symbol_tablet &symbol_table)
 {
   const namespacet ns(symbol_table);
@@ -86,6 +102,9 @@ void json_symtab_languaget::follow_type_symbols(symbol_tablet &symbol_table)
   }
 }
 
+/// Output the result of the parsed json file to the output stream
+/// passed as a parameter to this function.
+/// \param out: The stream to use to output the parsed_json_file.
 void json_symtab_languaget::show_parse(std::ostream &out)
 {
   parsed_json_file.output(out);
