@@ -3443,18 +3443,11 @@ std::string expr2ct::convert_sizeof(
   return dest;
 }
 
-/*******************************************************************\
-
-Function: expr2ct::convert_let
-
-  Inputs:
-
- Outputs:
-
- Purpose:
-
-\*******************************************************************/
-
+/// Convert a let expression from an irep to a string, taking into account
+/// precedence.
+/// \param src: The let expression to be converted.
+/// \param precedence: The precedence to be obeyed during conversion.
+/// \return: A string representation of the expression.
 std::string expr2ct::convert_let(
   const exprt &src,
   unsigned &precedence)
@@ -3470,18 +3463,11 @@ std::string expr2ct::convert_let(
   return dest;
 }
 
-/*******************************************************************\
-
-Function: expr2ct::convert_cpp_new_array
-
-  Inputs:
-
- Outputs:
-
- Purpose:
-
-\*******************************************************************/
-
+/// Convert a expression representing a cpp array initialisation
+/// from an irep to a string, taking into account precedence.
+/// \param src: The cpp array initialisation expression to be converted.
+/// \param precedence: The precedence to be obeyed during conversion.
+/// \return: A string representation of the expression.
 std::string
 expr2ct::convert_cpp_new_array(const exprt &src, unsigned &precedence)
 {
@@ -3506,18 +3492,13 @@ expr2ct::convert_cpp_new_array(const exprt &src, unsigned &precedence)
   return dest;
 }
 
-/*******************************************************************\
-
-Function: expr2ct::convert_with_precedence
-
-  Inputs:
-
- Outputs:
-
- Purpose:
-
-\*******************************************************************/
-
+/// Convert an irep expression into a string, taking into account
+/// precedence. This is just a highly level dispatching function
+/// that delegates the actual conversion to specialised versions
+/// of the function for each particular type.
+/// \param src: The expression to be converted.
+/// \param precedence: The precedence to be obeyed during conversion.
+/// \return: A string representation of the expression.
 std::string expr2ct::convert_with_precedence(
   const exprt &src,
   unsigned &precedence)
