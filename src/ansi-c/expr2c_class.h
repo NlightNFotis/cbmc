@@ -265,6 +265,10 @@ protected:
     const exprt &src,
     unsigned &precedence,
     bool include_padding_components);
+
+  std::string convert_let(const exprt &src, unsigned &precedence);
+
+  std::string convert_cpp_new_array(const exprt &src, unsigned &precedence);
 };
 
 #endif // CPROVER_ANSI_C_EXPR2C_CLASS_H

@@ -111,6 +111,7 @@ protected:
   conditionst address_check(const exprt &address, const exprt &size);
   void integer_overflow_check(const exprt &, const guardt &);
   void conversion_check(const exprt &, const guardt &);
+  void ranged_type_check(const exprt &, const guardt &);
   void float_overflow_check(const exprt &, const guardt &);
   void nan_check(const exprt &, const guardt &);
   void rw_ok_check(exprt &);
@@ -226,16 +227,29 @@ void goto_checkt::invalidate(const exprt &lhs)
   }
 }
 
+/// Check if the frontend has flagged a given expression for division
+/// by zero checking.
+/// \param e: The expression that is to be checked.
+/// \return: True or false based on whether the flag was set or not.
+static bool div_by_zero_check_flag_set(const div_exprt &expr)
+{
+  return expr.get_bool("div_by_zero_check");
+}
+
+/// Add a new division by zero check on an arithmetic expression 
+/// in the list of assertions.
+/// \param expr: The arithmetic expression
+/// \param guard: A guard expression.
 void goto_checkt::div_by_zero_check(
   const div_exprt &expr,
   const guardt &guard)
 {
-  if(!enable_div_by_zero_check)
+  if(!enable_div_by_zero_check && !div_by_zero_check_flag_set(expr))
     return;
 
   // add divison by zero subgoal
 
-  exprt zero=from_integer(0, expr.op1().type());
+  exprt zero=from_integer(0, ns.follow(expr.op1().type()));
 
   if(zero.is_nil())
     throw "no zero of argument type of operator "+expr.id_string();
@@ -351,6 +365,53 @@ void goto_checkt::mod_by_zero_check(
     guard);
 }
 
+/// Check if the frontend has flagged a given expression for range checking.
+/// \param e: The expression that is to be checked.
+/// \return: True or false based on whether the flag was set or not.
+static bool range_check_flag_set(const exprt &e)
+{
+  return e.get_bool("range_check");
+}
+
+/// Add a new range check on an arithmetic expression in the list
+/// of assertions.
+/// \param expr: The arithmetic expression
+/// \param guard: A guard expression.
+void goto_checkt::ranged_type_check(const exprt &expr, const guardt &guard)
+{
+  if(!range_check_flag_set(expr))
+    return;
+
+  const typet &real_type = ns.follow(expr.type());
+  if(real_type.id() != ID_signedbv)
+    return;
+  const exprt &lower_bound =
+    static_cast<const exprt &>(real_type.find("lower_bound"));
+  const exprt &upper_bound =
+    static_cast<const exprt &>(real_type.find("upper_bound"));
+
+  binary_relation_exprt no_overflow_upper(ID_le);
+  no_overflow_upper.lhs() = expr.op0();
+  no_overflow_upper.rhs() = upper_bound;
+
+  binary_relation_exprt no_overflow_lower(ID_ge);
+  no_overflow_lower.lhs() = expr.op0();
+  no_overflow_lower.rhs() = lower_bound;
+
+  add_guarded_claim(
+    and_exprt(no_overflow_lower, no_overflow_upper),
+    "overflow on bounded type conversion",
+    "overflow",
+    expr.find_source_location(),
+    expr,
+    guard);
+}
+
+/// Add arithmetic overflow guards in the list of assertions 
+/// based on the type of the arithmetic expression that was
+/// input to be converted to a different type.
+/// \param expr: The arithmetic expression.
+/// \param guard: A guard expression.
 void goto_checkt::conversion_check(
   const exprt &expr,
   const guardt &guard)
@@ -523,22 +584,44 @@ void goto_checkt::conversion_check(
   }
 }
 
+/// Check if the frontend has flagged a given expression for overflow
+/// checking.
+/// \param e: The expression that is to be checked.
+/// \return: True or false based on whether the flag was set or not.
+static bool overflow_check_flag_set(const exprt &e)
+{
+  return e.get_bool("overflow_check");
+}
+
+/// Add arithmetic overflow guards in the list of assertions 
+/// based on the type of the arithmetic expression that was input.
+/// \param expr: The arithmetic expression that will be checked.
+/// \param guard: The guard expression.
 void goto_checkt::integer_overflow_check(
   const exprt &expr,
   const guardt &guard)
 {
   if(!enable_signed_overflow_check &&
-     !enable_unsigned_overflow_check)
+     !enable_unsigned_overflow_check &&
+     !overflow_check_flag_set(expr))
     return;
 
   // First, check type.
   const typet &type=ns.follow(expr.type());
 
-  if(type.id()==ID_signedbv && !enable_signed_overflow_check)
+  if(type.id()==ID_signedbv &&
+     !enable_signed_overflow_check &&
+     !overflow_check_flag_set(expr))
+  {
     return;
+  }
 
-  if(type.id()==ID_unsignedbv && !enable_unsigned_overflow_check)
+  if(type.id()==ID_unsignedbv &&
+     !enable_unsigned_overflow_check &&
+     !overflow_check_flag_set(expr))
+  {
     return;
+  }
 
   // add overflow subgoal
 
@@ -1296,8 +1379,16 @@ void goto_checkt::add_guarded_claim(
   }
 }
 
+/// Recursively add assertions and guards to the list of assertions
+/// based on the type of the expression passed.
+/// \param expr: An expression
+/// \param guard: A guard expression
+/// \param address: Denotes if the expression passed is representing an
+//                  object with an address, like a pointer or reference.
 void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
 {
+  const auto &type=ns.follow(expr.type());
+
   // we don't look into quantifiers
   if(expr.id()==ID_exists || expr.id()==ID_forall)
     return;
@@ -1331,7 +1422,7 @@ void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
   }
   else if(expr.id()==ID_and || expr.id()==ID_or)
   {
-    if(!expr.is_boolean())
+    if(ns.follow(expr.type()).id() != ID_bool)
       throw "`"+expr.id_string()+"' must be Boolean, but got "+
             expr.pretty();
 
@@ -1339,16 +1430,18 @@ void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
 
     for(const auto &op : expr.operands())
     {
-      if(!op.is_boolean())
+      auto op_followed = op;
+      op_followed.type() = ns.follow(op_followed.type());
+      if(op_followed.type().id() != ID_bool)
         throw "`"+expr.id_string()+"' takes Boolean operands only, but got "+
-              op.pretty();
+              op_followed.pretty();
 
-      check_rec(op, guard, false);
+      check_rec(op_followed, guard, false);
 
       if(expr.id()==ID_or)
-        guard.add(not_exprt(op));
+        guard.add(not_exprt(op_followed));
       else
-        guard.add(op);
+        guard.add(op_followed);
     }
 
     guard.swap(old_guard);
@@ -1442,9 +1535,9 @@ void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
   {
     div_by_zero_check(to_div_expr(expr), guard);
 
-    if(expr.type().id()==ID_signedbv)
+    if(type.id()==ID_signedbv)
       integer_overflow_check(expr, guard);
-    else if(expr.type().id()==ID_floatbv)
+    else if(type.id()==ID_floatbv)
     {
       nan_check(expr, guard);
       float_overflow_check(expr, guard);
@@ -1465,8 +1558,8 @@ void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
           expr.id()==ID_mult ||
           expr.id()==ID_unary_minus)
   {
-    if(expr.type().id()==ID_signedbv ||
-       expr.type().id()==ID_unsignedbv)
+    if(type.id()==ID_signedbv ||
+       type.id()==ID_unsignedbv)
     {
       if(expr.operands().size()==2 &&
          expr.op0().type().id()==ID_pointer)
@@ -1474,18 +1567,21 @@ void goto_checkt::check_rec(const exprt &expr, guardt &guard, bool address)
       else
         integer_overflow_check(expr, guard);
     }
-    else if(expr.type().id()==ID_floatbv)
+    else if(type.id()==ID_floatbv)
     {
       nan_check(expr, guard);
       float_overflow_check(expr, guard);
     }
-    else if(expr.type().id()==ID_pointer)
+    else if(type.id()==ID_pointer)
     {
       pointer_overflow_check(expr, guard);
     }
   }
   else if(expr.id()==ID_typecast)
+  {
     conversion_check(expr, guard);
+    ranged_type_check(expr, guard);
+  }
   else if(expr.id()==ID_le || expr.id()==ID_lt ||
           expr.id()==ID_ge || expr.id()==ID_gt)
     pointer_rel_check(expr, guard);

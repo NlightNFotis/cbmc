@@ -1038,9 +1038,11 @@ void goto_convertt::convert_while(
   z->make_skip();
   z->source_location=source_location;
 
+  exprt followed_cond = cond;
+  followed_cond.type() = ns.follow(followed_cond.type());
   goto_programt tmp_branch;
   generate_conditional_branch(
-    boolean_negate(cond), z, source_location, tmp_branch, mode);
+    boolean_negate(followed_cond), z, source_location, tmp_branch, mode);
 
   // do the v label
   goto_programt::targett v=tmp_branch.instructions.begin();
@@ -1651,8 +1653,10 @@ void goto_convertt::generate_ifthenelse(
 
   // v: if(!c) goto z/y;
   goto_programt tmp_v;
+  exprt followed_guard = guard;
+  followed_guard.type() = ns.follow(followed_guard.type());
   generate_conditional_branch(
-    boolean_negate(guard), has_else ? y : z, source_location, tmp_v, mode);
+    boolean_negate(followed_guard), has_else ? y : z, source_location, tmp_v, mode);
 
   // w: P;
   goto_programt tmp_w;
