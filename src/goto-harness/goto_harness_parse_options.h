@@ -12,9 +12,13 @@ Author: Diffblue Ltd.
 #include <util/parse_options.h>
 #include <util/ui_message.h>
 
-#define GOTO_HARNESS_OPTIONS "(version)" // end GOTO_HARNESS_OPTIONS
+#define GOTO_HARNESS_OPTIONS \
+  "(version)" \
+  // end GOTO_HARNESS_OPTIONS
 
-class goto_harness_parse_optionst : public parse_options_baset
+class goto_harness_parse_optionst
+  : public parse_options_baset
+  , public messaget
 {
 public:
   int doit() override;

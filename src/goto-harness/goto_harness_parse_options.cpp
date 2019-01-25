@@ -8,12 +8,22 @@ Author: Diffblue Ltd.
 
 #include <cstddef>
 #include <iostream>
+#include <utility>
 #include <string>
 
 #include <util/exit_codes.h>
+#include <util/exception_utils.h>
 #include <util/version.h>
+#include <goto-programs/read_goto_binary.h>
+#include <goto-programs/write_goto_binary.h>
+#include <goto-programs/goto_model.h>
 
 #include "goto_harness_parse_options.h"
+
+
+// input binary
+// --> harness generator (with some config)
+// --> output binary
 
 int goto_harness_parse_optionst::doit()
 {
@@ -22,9 +32,26 @@ int goto_harness_parse_optionst::doit()
     std::cout << CBMC_VERSION << '\n';
     return CPROVER_EXIT_SUCCESS;
   }
-
-  help();
-  return CPROVER_EXIT_USAGE_ERROR;
+  if(cmdline.args.size() != 2)
+  {
+    help();
+    throw invalid_command_line_argument_exceptiont {
+      "need to specify both input and output goto binary file names (may be the same)",
+      "<in goto binary> <out goto binary>"
+    };
+  }
+  auto read_goto_binary_result = read_goto_binary(cmdline.args[0], get_message_handler());
+  if(!read_goto_binary_result.has_value()) {
+    throw deserialization_exceptiont {
+      "failed to read goto program from file `" + cmdline.args[0] + "'"
+    };
+  }
+  if(write_goto_binary(cmdline.args[1], read_goto_binary_result.value(), get_message_handler())) {
+    throw system_exceptiont {
+      "failed to write goto program from file `" + cmdline.args[1] + "'"
+    };
+  }
+  return CPROVER_EXIT_SUCCESS;
 }
 
 void goto_harness_parse_optionst::help()
