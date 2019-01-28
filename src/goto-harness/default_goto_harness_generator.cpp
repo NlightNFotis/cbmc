@@ -2,6 +2,9 @@
 #include "default_goto_harness_generator_options.h"
 
 #include <iostream>
+
+#include <goto-programs/goto_model.h>
+
 #include <util/exception_utils.h>
 
 void default_goto_harness_generatort::handle_option(const irep_idt &option, const cmdlinet &cmdline)
@@ -14,7 +17,7 @@ void default_goto_harness_generatort::handle_option(const irep_idt &option, cons
   }
 }
 
-void default_goto_harness_generatort::generate()
+void default_goto_harness_generatort::generate(goto_modelt &goto_model)
 {
   if(got_greeted) {
     std::cout << "Hello to you too!\n";

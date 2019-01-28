@@ -207,6 +207,12 @@ public:
   {
   }
 
+  messaget(message_handlert &&other):
+    message_handler(&other),
+    mstream(M_DEBUG, *this)
+  {
+  }
+
   virtual ~messaget();
 
   // \brief Class that stores an individual 'message' with a verbosity 'level'.

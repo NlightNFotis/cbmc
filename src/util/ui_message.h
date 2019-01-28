@@ -23,6 +23,8 @@ public:
 
   ui_message_handlert(const class cmdlinet &, const std::string &program);
 
+  ui_message_handlert(const ui_message_handlert&) = delete;
+
   explicit ui_message_handlert(message_handlert &);
 
   virtual ~ui_message_handlert();

@@ -12,6 +12,8 @@ Author: Diffblue Ltd.
 #include <memory>
 #include <sstream>
 
+#include <goto-programs/goto_model.h>
+
 #include <util/cmdline.h>
 #include <util/irep.h>
 #include <util/invariant.h>
@@ -29,7 +31,7 @@ public:
   virtual void handle_option(const irep_idt& option, const cmdlinet& cmdline) = 0;
 
   /// Generate a harness according to the set options
-  virtual void generate() = 0;
+  virtual void generate(goto_modelt &model) = 0;
 };
 
 std::unique_ptr<goto_harness_generatort> goto_harness_generator_factory(const irep_idt &generator_name);

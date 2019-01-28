@@ -1,10 +1,13 @@
 SRC = \
   goto_harness_main.cpp \
   goto_harness_parse_options.cpp \
+  goto_harness_factory.cpp \
+  default_goto_harness_generator.cpp
   # Empty last line
 
 OBJ += \
   ../util/util$(LIBEXT) \
+  ../goto-programs/goto-programs$(LIBEXT) \
   # Empty last line
 
 INCLUDES= -I ..
