@@ -54,7 +54,7 @@ public:
   typedef std::set<irep_idt>  possible_fp_targetst;
   // to be used to construct map from all program call sites
   // to potential targets.
-  typedef  std::map<irep_idt, possible_fp_targetst> possible_fp_targets_mapt;
+  typedef std::map<irep_idt, possible_fp_targetst> possible_fp_targets_mapt;
 
   /// Replace a call to a dynamic function at location
   /// target in the given goto-program by a case-split
@@ -69,10 +69,15 @@ public:
     goto_programt::targett target,
     const functionst &functions);
 
-possible_fp_targetst
-list_potential_targets(
-  goto_programt &goto_program,
-  goto_programt::targett target);
+  /// For a call-site, return a list of potential targets.
+  /// param goto_program: the goto_program containing the call site.
+  /// param target: the actual call-site.
+  /// return: A list of potential function identifiers that can be
+  ///         the targets of this call-site.
+  possible_fp_targetst
+  list_potential_targets(
+    goto_programt &goto_program,
+    goto_programt::targett target);
 
 protected:
   messaget log;
@@ -373,22 +378,16 @@ void remove_function_pointerst::remove_function_pointer(
   remove_function_pointer(goto_program, function_id, target, functions);
 }
 
-
-/// For a call site, return a list of potential targets.
-/// param goto_program: the goto_program containing the call site
-/// param target: the actual callsite
-/// return: A list of potential function identifiers that can be
-///         the targets of this callsite.
 remove_function_pointerst::possible_fp_targetst
 remove_function_pointerst::list_potential_targets(
   goto_programt &goto_program,
   goto_programt::targett target)
 {
-  remove_function_pointerst::possible_fp_targetst targets;
+  possible_fp_targetst targets;
   bool found_functions;
 
   const code_function_callt &code =
-    to_code_function_call(target->code);
+    target->get_function_call();
 
   const exprt &function = code.function();
 
@@ -405,7 +404,8 @@ remove_function_pointerst::list_potential_targets(
         code_typet::parametert(it->type()));
   }
 
-  const exprt &pointer = function.op0();
+  const exprt &pointer = 
+    to_dereference_expr(function).pointer();
   functionst functions;
   does_remove_constt const_removal_check(goto_program, ns);
   const auto does_remove_const = const_removal_check();
@@ -442,7 +442,7 @@ remove_function_pointerst::list_potential_targets(
     if(only_resolve_const_fps)
     {
       // If this mode is enabled, we only remove function pointers
-      // that we can resolve either to an exact funciton, or an exact subset
+      // that we can resolve either to an exact function, or an exact subset
       // (e.g. a variable index in a constant array).
       // Since we haven't found functions, we would now resort to
       // replacing the function pointer with any function with a valid signature
