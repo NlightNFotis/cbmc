@@ -16,11 +16,21 @@ Date: June 2003
 
 #include <util/irep.h>
 
+#include <map>
+#include <set>
+
+#include "goto_program.h"
+
 class goto_functionst;
 class goto_programt;
 class goto_modelt;
 class message_handlert;
 class symbol_tablet;
+
+using possible_fp_targetst = std::set<irep_idt>;
+using possible_fp_targets_mapt = std::map<irep_idt, possible_fp_targetst>;
+
+possible_fp_targets_mapt get_function_pointer_targets(const goto_modelt &m);
 
 // remove indirect function calls
 // and replace by case-split
