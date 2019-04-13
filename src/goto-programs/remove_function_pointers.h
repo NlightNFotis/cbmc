@@ -19,7 +19,7 @@ Date: June 2003
 #include <map>
 #include <set>
 
-#include "goto_program.h"
+#include "remove_const_function_pointers.h"
 
 class goto_functionst;
 class goto_programt;
@@ -27,7 +27,7 @@ class goto_modelt;
 class message_handlert;
 class symbol_tablet;
 
-using possible_fp_targetst = std::set<irep_idt>;
+using possible_fp_targetst = remove_const_function_pointerst::functionst;
 using possible_fp_targets_mapt = std::map<irep_idt, possible_fp_targetst>;
 
 possible_fp_targets_mapt get_function_pointer_targets(

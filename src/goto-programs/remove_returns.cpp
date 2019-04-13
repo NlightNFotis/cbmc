@@ -468,8 +468,9 @@ void remove_returnst::do_function_call_complete(
   cond_exprt rhs(exprt::operandst{}, function_call.lhs().type());
   std::vector<symbol_exprt> return_values;
 
-  for(const auto &target_id : possible_fp_targets)
+  for(const auto &target_expr : possible_fp_targets)
   {
+    irep_idt target_id = target_expr.get_identifier();
     const symbolt *target_symbol = symbol_table.lookup(target_id);
     CHECK_RETURN(target_symbol);
 
