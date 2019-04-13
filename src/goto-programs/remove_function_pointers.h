@@ -30,7 +30,9 @@ class symbol_tablet;
 using possible_fp_targetst = std::set<irep_idt>;
 using possible_fp_targets_mapt = std::map<irep_idt, possible_fp_targetst>;
 
-possible_fp_targets_mapt get_function_pointer_targets(const goto_modelt &m);
+possible_fp_targets_mapt get_function_pointer_targets(
+  message_handlert &message_handler,
+  goto_modelt &goto_model);
 
 // remove indirect function calls
 // and replace by case-split

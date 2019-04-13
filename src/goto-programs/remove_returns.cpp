@@ -24,8 +24,10 @@ Date:   September 2009
 class remove_returnst
 {
 public:
-  explicit remove_returnst(symbol_table_baset &_symbol_table):
-    symbol_table(_symbol_table)
+  explicit remove_returnst(
+    message_handlert &m,
+    symbol_table_baset &_symbol_table)
+    : log(m), symbol_table(_symbol_table)
   {
   }
 
@@ -39,7 +41,14 @@ public:
   void restore(
     goto_functionst &goto_functions);
 
+  void build_fp_targets(goto_modelt &goto_model)
+  {
+    possible_fp_targets_map =
+      get_function_pointer_targets(log.get_message_handler(), goto_model);
+  }
+
 protected:
+  messaget log;
   symbol_table_baset &symbol_table;
   possible_fp_targets_mapt possible_fp_targets_map;
 
@@ -259,10 +268,11 @@ void remove_returnst::operator()(
 
 /// removes returns
 void remove_returns(
+  message_handlert &m,
   symbol_table_baset &symbol_table,
   goto_functionst &goto_functions)
 {
-  remove_returnst rr(symbol_table);
+  remove_returnst rr(m, symbol_table);
   rr(goto_functions);
 }
 
@@ -278,17 +288,19 @@ void remove_returns(
 ///   callee has been or will be given a body. It should return true if so, or
 ///   false if the function will remain a bodyless stub.
 void remove_returns(
+  message_handlert &m,
   goto_model_functiont &goto_model_function,
   function_is_stubt function_is_stub)
 {
-  remove_returnst rr(goto_model_function.get_symbol_table());
+  remove_returnst rr(m, goto_model_function.get_symbol_table());
   rr(goto_model_function, function_is_stub);
 }
 
 /// removes returns
-void remove_returns(goto_modelt &goto_model)
+void remove_returns(message_handlert &m, goto_modelt &goto_model)
 {
-  remove_returnst rr(goto_model.symbol_table);
+  remove_returnst rr(m, goto_model.symbol_table);
+  rr.build_fp_targets(goto_model);
   rr(goto_model.goto_functions);
 }
 
@@ -411,9 +423,9 @@ void remove_returnst::restore(goto_functionst &goto_functions)
 }
 
 /// restores return statements
-void restore_returns(goto_modelt &goto_model)
+void restore_returns(message_handlert &m, goto_modelt &goto_model)
 {
-  remove_returnst rr(goto_model.symbol_table);
+  remove_returnst rr(m, goto_model.symbol_table);
   rr.restore(goto_model.goto_functions);
 }
 

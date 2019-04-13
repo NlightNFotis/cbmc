@@ -73,6 +73,7 @@ Date:   September 2009
 
 #include <functional>
 
+#include <util/message.h>
 #include <util/std_types.h>
 
 #define RETURN_VALUE_SUFFIX "#return_value"
@@ -82,13 +83,19 @@ class goto_model_functiont;
 class goto_modelt;
 class symbol_table_baset;
 
-void remove_returns(symbol_table_baset &, goto_functionst &);
+void remove_returns(
+  message_handlert &m,
+  symbol_table_baset &,
+  goto_functionst &);
 
 typedef std::function<bool(const irep_idt &)> function_is_stubt;
 
-void remove_returns(goto_model_functiont &, function_is_stubt);
+void remove_returns(
+  message_handlert &m,
+  goto_model_functiont &,
+  function_is_stubt);
 
-void remove_returns(goto_modelt &);
+void remove_returns(message_handlert &m, goto_modelt &);
 
 // reverse the above operations
 void restore_returns(symbol_table_baset &, goto_functionst &);

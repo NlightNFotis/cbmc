@@ -906,7 +906,7 @@ void goto_instrument_parse_optionst::do_remove_returns()
   remove_returns_done=true;
 
   log.status() << "Removing returns" << messaget::eom;
-  remove_returns(goto_model);
+  remove_returns(log.get_message_handler(), goto_model);
 }
 
 void goto_instrument_parse_optionst::get_goto_program()
