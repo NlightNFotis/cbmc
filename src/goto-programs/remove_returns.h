@@ -100,6 +100,6 @@ void remove_returns(message_handlert &m, goto_modelt &);
 // reverse the above operations
 void restore_returns(symbol_table_baset &, goto_functionst &);
 
-void restore_returns(goto_modelt &);
+void restore_returns(message_handlert &m, goto_modelt &);
 
 #endif // CPROVER_GOTO_PROGRAMS_REMOVE_RETURNS_H

@@ -46,6 +46,7 @@ public:
 
   // a set of function symbols
   using functionst = remove_const_function_pointerst::functionst;
+  using flagged_functionst = std::pair<functionst, bool>;
 
   /// Replace a call to a dynamic function at location
   /// target in the given goto-program by a case-split
@@ -74,7 +75,7 @@ public:
   /// \param goto_program: function body to search for potential functions
   /// \param call_site: the call site of the function pointer under analysis
   /// \return the set of the potential functions
-  functionst get_function_pointer_targets(
+  flagged_functionst get_function_pointer_targets(
     const goto_programt &goto_program,
     goto_programt::const_targett &call_site);
 
@@ -362,14 +363,15 @@ remove_function_pointerst::get_function_pointer_targets(
   for(const auto &function_pair : goto_model.goto_functions.function_map)
   {
     const auto &function_body = function_pair.second.body;
-    const auto &candidate_functions =
+    const auto &candidates_pair =
       get_function_pointer_targets(function_body, call_site);
-    functions.insert(candidate_functions.begin(), candidate_functions.end());
+    functions.insert(
+      candidates_pair.first.begin(), candidates_pair.first.end());
   }
   return functions;
 }
 
-remove_function_pointerst::functionst
+remove_function_pointerst::flagged_functionst
 remove_function_pointerst::get_function_pointer_targets(
   const goto_programt &goto_program,
   goto_programt::const_targett &call_site)
@@ -385,7 +387,7 @@ remove_function_pointerst::get_function_pointer_targets(
   bool const_removal_applied_and_is_the_only_one_allowed =
     try_remove_const_fp(goto_program, functions, function.pointer());
   if(const_removal_applied_and_is_the_only_one_allowed)
-    return functions;
+    return {functions, true};
 
   // get all type-compatible functions
   // whose address is ever taken
@@ -409,7 +411,7 @@ remove_function_pointerst::get_function_pointer_targets(
     }
   }
 
-  return functions;
+  return {functions, false};
 }
 
 void remove_function_pointerst::remove_function_pointer(
@@ -418,16 +420,18 @@ void remove_function_pointerst::remove_function_pointer(
   goto_programt::targett target)
 {
   goto_programt::const_targett const_target = target;
-  const auto &functions =
+  const auto candidates_pair =
     get_function_pointer_targets(goto_program, const_target);
+  const auto &functions = candidates_pair.first;
+  const bool const_functions_removal_success = candidates_pair.second;
 
-  if(functions.size() == 1)
+  if(const_functions_removal_success && functions.size() == 1)
   {
     auto call = target->get_function_call();
     call.function() = *functions.cbegin();
     target->set_function_call(call);
   }
-  else
+  else if(!const_functions_removal_success && !only_resolve_const_fps)
   {
     remove_function_pointer(goto_program, function_id, target, functions);
   }

@@ -651,7 +651,7 @@ int goto_instrument_parse_optionst::doit()
 
       // restore RETURN instructions in case remove_returns had been
       // applied
-      restore_returns(goto_model);
+      restore_returns(log.get_message_handler(), goto_model);
 
       if(cmdline.args.size()==2)
       {
