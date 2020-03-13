@@ -15,6 +15,7 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include <util/std_expr.h>
 #include <util/byte_operators.h>
+#include <util/optional.h>
 
 #if !HASH_CODE
 #  include <util/irep_hash_container.h>
@@ -48,6 +49,11 @@ public:
     YICES,
     Z3,
     SMT_SWITCH
+  };
+
+  struct SortKind {
+    smt::SortKind kind;
+    optionalt<std::size_t> width;
   };
 
   smt2_convt(
@@ -132,6 +138,8 @@ protected:
 
   void convert_expr(const exprt &);
   void convert_type(const typet &);
+  // smt-switch specific convert_type
+  smt2_convt::SortKind convert_type_smt_switch(const typet &type);
   void convert_literal(const literalt);
 
   literalt convert(const exprt &expr);

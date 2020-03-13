@@ -185,3 +185,9 @@ smt::Term smt2_ifilet::make_term(const smt::Op op, const smt::Term &t) const
 {
   return smt::Term{};
 }
+
+smt::Term smt2_ifilet::make_symbol(const std::string name, const smt::Sort &sort)
+{
+  out << "(declare-fun " << name << " () " << sort->to_string() << ")";
+  return smt::Term{};
+}

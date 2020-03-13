@@ -4648,6 +4648,143 @@ void smt2_convt::convert_type(const typet &type)
   }
 }
 
+smt2_convt::SortKind smt2_convt::convert_type_smt_switch(const typet &type)
+{
+  if(type.id()==ID_array)
+  {
+    const array_typet &array_type=to_array_type(type);
+    CHECK_RETURN(array_type.size().is_not_nil());
+
+    // we always use array theory for top-level arrays
+    const typet &subtype = array_type.subtype();
+
+    out << "(Array ";
+    convert_type(array_type.size().type());
+    out << " ";
+
+    if(subtype.id()==ID_bool && !use_array_of_bool)
+      out << "(_ BitVec 1)";
+    else
+      convert_type(array_type.subtype());
+
+    out << ")";
+  }
+  else if(type.id()==ID_bool)
+  {
+    return {smt::SortKind::BOOL, {}};
+  }
+  else if(type.id() == ID_struct || type.id() == ID_struct_tag)
+  {
+    if(use_datatypes)
+    {
+      // TODO: See what to do with the datatype map
+      out << datatype_map.at(type);
+    }
+    else
+    {
+      std::size_t width=boolbv_width(type);
+      CHECK_RETURN_WITH_DIAGNOSTICS(
+        width != 0, "failed to get width of struct");
+
+      return {smt::SortKind::BV, width};
+    }
+  }
+  else if(type.id()==ID_vector)
+  {
+    if(use_datatypes)
+    {
+      // TODO: See what to do with the datatype map
+      out << datatype_map.at(type);
+    }
+    else
+    {
+      std::size_t width=boolbv_width(type);
+      CHECK_RETURN_WITH_DIAGNOSTICS(
+        width != 0, "failed to get width of vector");
+
+      return {smt::SortKind::BV, width};
+    }
+  }
+  else if(type.id()==ID_code)
+  {
+    // These may appear in structs.
+    // We replace this by "Bool" in order to keep the same
+    // member count.
+    return {smt::SortKind::BOOL, {}};
+  }
+  else if(type.id() == ID_union || type.id() == ID_union_tag)
+  {
+    std::size_t width=boolbv_width(type);
+    CHECK_RETURN_WITH_DIAGNOSTICS(width != 0, "failed to get width of union");
+
+    return {smt::SortKind::BV, width};
+  }
+  else if(type.id()==ID_pointer)
+  {
+    std::size_t width=boolbv_width(type);
+    CHECK_RETURN_WITH_DIAGNOSTICS(width != 0, "failed to get width of pointer");
+
+    return {smt::SortKind::BV, width};
+  }
+  else if(type.id()==ID_bv ||
+          type.id()==ID_fixedbv ||
+          type.id()==ID_unsignedbv ||
+          type.id()==ID_signedbv ||
+          type.id()==ID_c_bool)
+  {
+    return {smt::SortKind::BV, to_bitvector_type(type).get_width()};
+  }
+  else if(type.id()==ID_c_enum)
+  {
+    // these have a subtype
+    return {smt::SortKind::BV, to_bitvector_type(type.subtype()).get_width()};
+  }
+  else if(type.id()==ID_c_enum_tag)
+  {
+    convert_type(ns.follow_tag(to_c_enum_tag_type(type)));
+  }
+  else if(type.id()==ID_floatbv)
+  {
+    const floatbv_typet &floatbv_type=to_floatbv_type(type);
+
+    if(use_FPA_theory)
+      out << "(_ FloatingPoint "
+          << floatbv_type.get_e() << " "
+          << floatbv_type.get_f() + 1 << ")";
+    else
+      return {smt::SortKind::BV, floatbv_type.get_width()};
+  }
+  else if(type.id()==ID_rational ||
+          type.id()==ID_real)
+    return {smt::SortKind::REAL, {}};
+  else if(type.id()==ID_integer)
+    return {smt::SortKind::INT, {}};
+  else if(type.id()==ID_complex)
+  {
+    if(use_datatypes)
+    {
+      // TODO: See what to do with the datatype.
+      out << datatype_map.at(type);
+    }
+    else
+    {
+      std::size_t width=boolbv_width(type);
+      CHECK_RETURN_WITH_DIAGNOSTICS(
+        width != 0, "failed to get width of complex");
+
+      return {smt::SortKind::BV, width};
+    }
+  }
+  else if(type.id()==ID_c_bit_field)
+  {
+    convert_type(c_bit_field_replacement_type(to_c_bit_field_type(type), ns));
+  }
+  else
+  {
+    UNEXPECTEDCASE("unsupported type: "+type.id_string());
+  }
+}
+
 void smt2_convt::find_symbols(const typet &type)
 {
   std::set<irep_idt> recstack;
