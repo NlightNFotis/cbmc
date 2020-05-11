@@ -505,8 +505,7 @@ symbol_exprt recursive_initializationt::get_fresh_global_symexpr(
   return fresh_symbol.symbol_expr();
 }
 
-symbol_exprt recursive_initializationt::get_fresh_local_symexpr(
-  const std::string &symbol_name) const
+symbol_exprt recursive_initializationt::get_fresh_local_symexpr(const std::string &symbol_name) const
 {
   symbolt &fresh_symbol = get_fresh_aux_symbol(
     signed_int_type(),
@@ -979,6 +978,7 @@ code_blockt recursive_initializationt::build_function_pointer_constructor(
 
   const auto function_pointer_selector =
     get_fresh_local_symexpr("function_pointer_selector");
+  body.add(code_declt{function_pointer_selector});
   body.add(
     code_assignt{function_pointer_selector,
                  side_effect_expr_nondett{function_pointer_selector.type(),
