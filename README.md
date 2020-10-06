@@ -43,6 +43,22 @@ already have these, if not please download and run vcredist.x64.exe from
 [Microsoft](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads) to install them prior to running
 cbmc.
 
+### Linux
+
+For different linux environments, you have these choices:
+
+1. Install CBMC through the distribution's repositories, with the downside
+   that this might install an older version of cbmc, depending on what the
+   package maintenance policy of the distribution is, or
+2. Install CBMC through the `.deb` package build by each release, available
+   on the [releases](https://github.com/diffblue/cbmc/releases) page. To
+   do that, download the `.deb` package and run `apt install cbmc-x.y.deb`
+   with `root` privileges, with `x.y` being substituted for the version
+   you are attempting to install.
+   *NOTE*: This is only available on distributions that are using debian's
+   packaging tools.
+3. Compile from source using the instructions [here](COMPILING.md)
+
 ### macOS
 
 For macOS there is a [Homebrew](https://brew.sh) package
