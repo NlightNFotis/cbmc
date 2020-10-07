@@ -15,15 +15,16 @@ jobs:
         with:
           msg: ${{ github.ref }}
           seperator: '/'
-        run:
-          echo ${{ steps.split.outputs._0 }}
-          echo ${{ steps.split.outputs._1 }}
-          echo ${{ steps.split.outputs._2 }}
   perform-release:
     name: Perform Release
     runs-on: ubuntu-20.04
     needs: get-version-information
     steps:
+      - name: Checkout split variables
+        run: |
+          echo ${{ steps.split.outputs._0 }}
+          echo ${{ steps.split.outputs._1 }}
+          echo ${{ steps.split.outputs._2 }}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Create release
