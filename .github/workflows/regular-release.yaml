@@ -6,6 +6,15 @@ on:
 name: Create Release
 
 jobs:
+  get-version-information:
+    name: Get Version Information
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jungwinter/split@v1
+        id: split
+        with:
+          msg: ${{ github.ref }}
+          seperator: '/'
   perform-release:
     name: Perform Release
     runs-on: ubuntu-20.04
@@ -16,10 +25,10 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FOTIS_GITHUB_TOKEN }}
-          CBMC_TAG: ${{ github.ref }}
+          CBMC_TAG: ${{ steps.split.outputs._2 }}
         with:
-          tag_name: $CBMC_TAG
-          release_name: $CBMC_TAG
+          tag_name: ${{ env.CBMC_TAG }}
+          release_name: ${{ env.CBMC_TAG }}
           body: |
             **Installation instructions**:
               * For Windows, execute the installer `$CBMC_TAG-win64.msi`.
