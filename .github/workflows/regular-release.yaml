@@ -18,6 +18,7 @@ jobs:
   perform-release:
     name: Perform Release
     runs-on: ubuntu-20.04
+    needs: get-version-information
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,7 +26,7 @@ jobs:
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FOTIS_GITHUB_TOKEN }}
-          CBMC_TAG: ${{ steps.split.outputs._2 }}
+          CBMC_TAG: ${{ needs.get-version-information.steps.split.outputs._2 }}
         with:
           tag_name: ${{ env.CBMC_TAG }}
           release_name: ${{ env.CBMC_TAG }}
