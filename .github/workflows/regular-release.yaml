@@ -15,7 +15,6 @@ jobs:
       - name: Create release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.DB_CI_CPROVER_ACCESS_TOKEN }}
           CBMC_TAG: ${{ github.ref }}
         with:
           tag_name: $CBMC_TAG
