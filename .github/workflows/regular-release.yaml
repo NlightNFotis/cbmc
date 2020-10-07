@@ -22,9 +22,9 @@ jobs:
     steps:
       - name: Checkout split variables
         run: |
-          echo ${{ steps.split.outputs._0 }}
-          echo ${{ steps.split.outputs._1 }}
-          echo ${{ steps.split.outputs._2 }}
+          echo ${{ needs.get-version-information.steps.split.outputs._0 }}
+          echo ${{ needs.get-version-information.steps.split.outputs._1 }}
+          echo ${{ needs.get-version-information.steps.split.outputs._2 }}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Create release
