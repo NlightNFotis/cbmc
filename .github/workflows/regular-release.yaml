@@ -34,7 +34,7 @@ jobs:
           release_name: ${{ env.CBMC_TAG }}
           body: |
             **Installation instructions**:
-              * For Windows, execute the installer `$CBMC_TAG-win64.msi`.
+              * For Windows, execute the installer `${{ tag_name }}-win64.msi`.
               * For Linux, install the `.deb` package with 
                 `sudo apt install $CBMC_TAG-Linux.deb` on Debian-like systems
               * For macOS, install with `brew install cbmc` or upgrade with
