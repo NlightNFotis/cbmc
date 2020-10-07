@@ -52,11 +52,35 @@ jobs:
 
             ## Ubuntu
 
-            
-              * For Windows, execute the installer `${{ env.CBMC_TAG }}-win64.msi`.
-              * For Linux, install the `.deb` package with 
-                `sudo apt install $CBMC_TAG-Linux.deb` on Debian-like systems
-              * For macOS, install with `brew install cbmc` or upgrade with
-                `brew upgrade cbmc`
+            On Ubuntu, install CBMC by downloading the *.deb package below for your version of Ubuntu
+            and install with one of
+
+            ```sh
+            # Ubuntu 18:
+            $ dpkg -i ubuntu-18.04-${{ env.CBMC_TAG }}-Linux.deb
+            # Ubuntu 20:
+            $ dpkg -i ubuntu-20.04-${{ env.CBMC_TAG }}-Linux.deb
+            ```
+
+            ## Windows
+
+            On Windows, install CBMC by downloading the `${{ env.CBMC_TAG }}-win64.msi` installer
+            below, double-clicking on the installer to run it, and adding the folder
+            `C:\Program Files\cbmc\bin` in your `PATH` environment variable.
+
+            For installation from the windows command prompt, run:
+
+            ```sh
+            msiexec /i ${{ env.CBMC_TAG }}-win64.msi
+            PATH="c:\program files\cbmc\bin";%PATH%
+            ```
+
+            Note that we depend on the Visual C++ redistributables. You likely already have these,
+            if not please download and run vcredist.x64.exe from Microsoft to install them prior
+            to running cbmc, or make sure you have Visual Studio 2019 installed.
+
+            You can download either [Visual Studio 2019 Community Edition](https://visualstudio.microsoft.com/vs/community/)
+            or the [Visual C++ Redistributables](https://support.microsoft.com/en-gb/help/2977003/the-latest-supported-visual-c-downloads)
+            from Microsoft for free.
           draft: false
           prerelease: false
