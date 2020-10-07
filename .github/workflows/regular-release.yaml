@@ -15,6 +15,10 @@ jobs:
         with:
           msg: ${{ github.ref }}
           seperator: '/'
+        run:
+          echo ${{ steps.split.outputs._0 }}
+          echo ${{ steps.split.outputs._1 }}
+          echo ${{ steps.split.outputs._2 }}
   perform-release:
     name: Perform Release
     runs-on: ubuntu-20.04
