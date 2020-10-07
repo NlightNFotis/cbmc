@@ -9,6 +9,8 @@ jobs:
   get-version-information:
     name: Get Version Information
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.split.outputs._2 }}
     steps:
       - uses: jungwinter/split@v1
         id: split
@@ -20,18 +22,13 @@ jobs:
     runs-on: ubuntu-20.04
     needs: get-version-information
     steps:
-      - name: Checkout split variables
-        run: |
-          echo ${{ needs.get-version-information.steps.split.outputs._0 }}
-          echo ${{ needs.get-version-information.steps.split.outputs._1 }}
-          echo ${{ needs.get-version-information.steps.split.outputs._2 }}
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Create release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.FOTIS_GITHUB_TOKEN }}
-          CBMC_TAG: ${{ needs.get-version-information.steps.split.outputs._2 }}
+          CBMC_TAG: ${{ needs.get-version-information.outputs.version }}
         with:
           tag_name: ${{ env.CBMC_TAG }}
           release_name: ${{ env.CBMC_TAG }}
