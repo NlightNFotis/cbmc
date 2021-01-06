@@ -349,3 +349,10 @@ jobs:
       - uses: actions/checkout@v2
       - name: Check for unused irep ids
         run: ./scripts/string_table_check.sh
+
+  check-docker-image:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        run: docker build -t cbmc .
