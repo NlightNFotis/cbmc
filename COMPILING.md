@@ -300,6 +300,16 @@ the need to integrate JBMC as a separate project. Be aware that you need to
 change the build location (Select project in Eclipse -> Properties -> C/C++ 
 Build) to one of the src directories.
 
+# WORKING WITH DOCKER
+
+To compile and run the tools in a Docker container, do the following:
+
+1. From the root folder of the project, run `$ docker built -t cbmc .`
+2. After the building phase has finished, there should be a new 
+   image with the CProver binaries installed under `/usr/bin/`.
+
+   To start a container using that image as a base, run `$ docker run -i -t cbmc`
+   This will result in dropping you to a new terminal inside the container.
 
 # OPTIONS AND VARIABLES
 
