@@ -356,3 +356,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker image
         run: docker build -t cbmc .
+      - name: Smoke test goto-cc
+        run: |
+          docker run -v ${PWD}/.github/workflows/smoke_test_assets:/mnt/smoke -t -i cbmc 
+          goto-cc -o test.goto test_nonexistent.c
+          exit
