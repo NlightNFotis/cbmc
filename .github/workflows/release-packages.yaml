@@ -122,19 +122,19 @@ jobs:
           asset_content_type: application/x-deb
 
 
-  homebrew-pr:
-    runs-on: macos-10.15
-    steps:
-      - name: Get release tag name
-        # The GITHUB_REF we get has refs/tags/ in front of the tag name so we
-        # strip that here
-        run: echo "RELEASE_TAG=${GITHUB_REF/refs\/tags\/}" >> $GITHUB_ENV
-      - name: Create homebrew PR
-        run: |
-          brew update-reset
-          brew bump-formula-pr --tag "$RELEASE_TAG" --revision "$GITHUB_SHA" cbmc
-        env:
-          HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.DB_CI_CPROVER_ACCESS_TOKEN }}
+  # homebrew-pr:
+  #   runs-on: macos-10.15
+  #   steps:
+  #     - name: Get release tag name
+  #       # The GITHUB_REF we get has refs/tags/ in front of the tag name so we
+  #       # strip that here
+  #       run: echo "RELEASE_TAG=${GITHUB_REF/refs\/tags\/}" >> $GITHUB_ENV
+  #     - name: Create homebrew PR
+  #       run: |
+  #         brew update-reset
+  #         brew bump-formula-pr --tag "$RELEASE_TAG" --revision "$GITHUB_SHA" cbmc
+  #       env:
+  #         HOMEBREW_GITHUB_API_TOKEN: ${{ secrets.DB_CI_CPROVER_ACCESS_TOKEN }}
 
   windows-msi-package:
     runs-on: windows-2019
