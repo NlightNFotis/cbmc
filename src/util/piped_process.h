@@ -1,5 +1,9 @@
-#pragma once
+#ifndef CPROVER_UTIL_PIPED_PROCESS_H
+#define CPROVER_UTIL_PIPED_PROCESS_H
 
+// TODO: Revisit buffer size and storage location.
+// Note that this may impact number of characters correctly communicated
+// by the pipe, to check/fix.
 #define BUFSIZE 2048
 
 class piped_processt {
@@ -14,8 +18,6 @@ class piped_processt {
 protected:
     FILE *response_stream;
     FILE *command_stream;
-    // TODO: Revisit buffer size and storage location
-    // const int BUFSIZE = 2048;
     int pipe_input[2];
     int pipe_output[2];
     process_statet process_state;
@@ -31,3 +33,5 @@ public:
     piped_processt(const std::string &command);
     // ~piped_processt();
 };
+
+#endif
