@@ -11,7 +11,8 @@
 
 TEST_CASE("We create a pipe and we can read from it", "[core][util][piped_process]")
 {
-    std::string to_be_echoed = "The Jaberwocky";
+    std::string to_be_echoed = "The Jabberwocky";
+    // Need to give up to avoid shell built-in invocation
     std::string binary       = "/bin/echo";
     std::string command      = binary + " " + to_be_echoed;
     piped_processt process = piped_processt(command);
@@ -29,7 +30,7 @@ TEST_CASE("We create a pipe and we can read from it", "[core][util][piped_proces
 
 TEST_CASE("We create a pipe, send and receive from it", "[core][util][piped_process]")
 {
-    std::string binary    = "/usr/local/bin/z3 -in";
+    std::string binary    = "z3 -in";
     std::string statement = "(echo \"hi\")";
     std::string termination_statement = "(exit)";
     piped_processt process = piped_processt(binary);
@@ -55,7 +56,7 @@ TEST_CASE("We create a pipe, send and receive from it", "[core][util][piped_proc
 
 TEST_CASE("We create a pipe, interact", "[core][util][piped_process]")
 {
-    std::string binary    = "/usr/local/bin/z3 -in";
+    std::string binary    = "z3 -in";
     std::string statement = "(echo \"hi\")";
     std::string termination_statement = "(exit)";
     piped_processt process = piped_processt(binary);

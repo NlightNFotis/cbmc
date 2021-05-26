@@ -18,6 +18,7 @@ piped_processt::piped_processt(const std::string &command)
     // This should use the new error state from PR #6131 once that is done
     INVARIANT(false, "New SMT2 backend WIP: Windows piped_process constructor.");
     #else
+
     if (pipe(pipe_input) == -1) {
         throw std::runtime_error("Input pipe creation failed");
     }
@@ -25,6 +26,7 @@ piped_processt::piped_processt(const std::string &command)
     if (pipe(pipe_output) == -1) {
         throw std::runtime_error("Output pipe creation failed");
     }
+    
     // Default state
     process_state = process_statet::NOT_CREATED;
     
@@ -74,19 +76,23 @@ bool piped_processt::send(const std::string &message)
     // This should use the new error state from PR #6131 once that is done
     INVARIANT(false, "New SMT2 backend WIP: Windows piped_processt::send.");
     #else
+    
     if(process_state != process_statet::CREATED)
     {
         return false;
     }
+    
     // send message to solver process
     int send_status = fputs(message.c_str(), command_stream);
     fflush(command_stream);
+    
     if(send_status == EOF)
     {
         // Some kind of error occured, maybe we should update the
         // solver status here?
         return false;
     }
+
     return true;
     #endif
 }
@@ -97,11 +103,14 @@ std::string piped_processt::receive()
     // This should use the new error state from PR #6131 once that is done
     INVARIANT(false, "New SMT2 backend WIP: Windows piped_processt::receive.");
     #else
+
     if(process_state != process_statet::CREATED)
         return NULL;
+    
     std::string response = std::string("");
     int nbytes;
     char buff[BUFSIZE];
+    
     while (true)
     {
         nbytes = read(pipe_output[0], buff, BUFSIZE);
@@ -121,6 +130,7 @@ std::string piped_processt::receive()
                 response.append(buff, nbytes);
         }
     }
+    
     UNREACHABLE;
     #endif
 }
@@ -131,6 +141,7 @@ char ** piped_processt::split_command_args(const std::string &command)
     char ** res  = NULL;
     int n_spaces = 0;
     char *p = strtok(strdup(command.c_str()), " ");
+
     while(p)
     {
           res = (char **)realloc(res, sizeof (char*) * ++n_spaces);
@@ -139,16 +150,8 @@ char ** piped_processt::split_command_args(const std::string &command)
           res[n_spaces-1] = p;
           p = strtok (NULL, " ");
     }
+
     res = (char **)realloc (res, sizeof (char*) * (n_spaces+1));
     res[n_spaces] = 0;
     return res;
 }
-
-// Below is simple testing code to see that things (mostly) work.
-// int main(int argc, char *argv[])
-// {
-//     piped_processt subp = piped_processt("/usr/local/bin/z3 --help");
-//     std::string data = subp.receive();
-//     std::cout << data << std::endl;
-//     return 0;
-// }
