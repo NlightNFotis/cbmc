@@ -15,11 +15,15 @@
 #include "invariant.h"
 #include "piped_process.h"
 
+// TODO: Revisit buffer size and storage location.
+// Note that this may impact number of characters correctly communicated
+// by the pipe, to check/fix.
+#define BUFSIZE 2048
+
 piped_processt::piped_processt(const std::string &command)
 {
 #ifdef _WIN32
-  // This should use the new error state from PR #6131 once that is done
-  INVARIANT(false, "New SMT2 backend WIP: Windows piped_process constructor.");
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows.")
 #else
 
   if(pipe(pipe_input) == -1)
@@ -82,8 +86,7 @@ piped_processt::piped_processt(const std::string &command)
 bool piped_processt::send(const std::string &message)
 {
 #ifdef _WIN32
-  // This should use the new error state from PR #6131 once that is done
-  INVARIANT(false, "New SMT2 backend WIP: Windows piped_processt::send.");
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows")
 #else
 
   if(process_state != process_statet::CREATED)
@@ -109,12 +112,11 @@ bool piped_processt::send(const std::string &message)
 std::string piped_processt::receive()
 {
 #ifdef _WIN32
-  // This should use the new error state from PR #6131 once that is done
-  INVARIANT(false, "New SMT2 backend WIP: Windows piped_processt::receive.");
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows")
 #else
 
-  if(process_state != process_statet::CREATED)
-    return NULL;
+  INVARIANT(process_state == process_statet::CREATED,
+    "Can only receive() from a fully initialised process");
 
   std::string response = std::string("");
   int nbytes;
@@ -155,8 +157,7 @@ char **piped_processt::split_command_args(const std::string &command)
   while(p)
   {
     res = reinterpret_cast<char **>(realloc(res, sizeof(char *) * ++n_spaces));
-    if(res == NULL)
-      exit(-1); /* memory allocation failed */
+    INVARIANT(res != nullptr, "Memory allocation failed");
     res[n_spaces - 1] = p;
     p = strtok(NULL, " ");
   }

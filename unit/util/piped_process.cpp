@@ -59,7 +59,7 @@ TEST_CASE(
   REQUIRE(res == true);
 }
 
-TEST_CASE("We create a pipe, interact", "[core][util][piped_process]")
+TEST_CASE("Use pipe to solve a simple SMT problem", "[core][util][piped_process]")
 {
   std::string binary = "z3 -in";
   std::string statement = "(echo \"hi\")";
@@ -95,4 +95,70 @@ TEST_CASE("We create a pipe, interact", "[core][util][piped_process]")
   res = process.send(termination_statement);
   REQUIRE(res == true);
 }
+
+TEST_CASE("We create a pipe, interact", "[core][util][piped_process]")
+{
+  std::string binary = "z3 -in";
+  // std::string problem = 
+  //   "(declare-fun x () (_ BitVec 16))"
+  //   "(assert (= (bvadd x (_ bv3 16)) (_ bv17 16)))"
+  //   "(check-sat)";
+  std::string request_model = "(get-model)";
+  std::string termination_statement = "(exit)";
+  piped_processt process = piped_processt(binary);
+  // Wait a moment for z3 to start
+  sleep(1);
+
+  bool res = process.send("(declare-fun x () (_ BitVec 16))");
+  REQUIRE(res == true); // sending succeeded without problems
+
+  // sleep(1);
+  // std::string response = process.receive();
+  // Trim newline from response string that causes match to fail.
+  // response.erase(
+    // std::remove(response.begin(), response.end(), '\n'), response.end());
+  // REQUIRE(response == std::string(""));
+
+
+  res = process.send("(assert (= (bvadd x (_ bv3 16)) (_ bv17 16)))");
+  REQUIRE(res == true); // sending succeeded without problems
+
+  // sleep(1);
+  // response = process.receive();
+  // Trim newline from response string that causes match to fail.
+  // response.erase(
+    // std::remove(response.begin(), response.end(), '\n'), response.end());
+  // REQUIRE(response == std::string(""));
+
+
+//   res = process.send("(check-sat)");
+  res = process.send("(echo \"sat\")");
+  REQUIRE(res == true); // sending succeeded without problems
+
+  // Wait a moment for z3 to process the sent message
+  sleep(1);
+  std::string response = process.receive();
+  // Trim newline from response string that causes match to fail.
+  response.erase(
+    std::remove(response.begin(), response.end(), '\n'), response.end());
+  REQUIRE(response == std::string("sat"));
+
+  res = process.send(request_model);
+  REQUIRE(res == true); // sending succeeded without problems
+
+  // Wait a moment for z3 to process the sent message
+  sleep(1);
+  response = process.receive();
+  // Trim newline from response string that causes match to fail.
+  response.erase(
+    std::remove(response.begin(), response.end(), '\n'), response.end());
+  REQUIRE(response == std::string("(model\n(define-fun x () (_ BitVec 16)\n#x000e)\n)"));
+
+  // Tell z3 to terminate
+  res = process.send(termination_statement);
+  REQUIRE(res == true);
+}
+
+
+
 #endif

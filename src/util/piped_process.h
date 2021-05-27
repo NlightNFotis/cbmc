@@ -1,10 +1,9 @@
+/// \file Subprocess communication with pipes
+///
+/// \author Diffblue Ltd.
+
 #ifndef CPROVER_UTIL_PIPED_PROCESS_H
 #define CPROVER_UTIL_PIPED_PROCESS_H
-
-// TODO: Revisit buffer size and storage location.
-// Note that this may impact number of characters correctly communicated
-// by the pipe, to check/fix.
-#define BUFSIZE 2048
 
 class piped_processt
 {
