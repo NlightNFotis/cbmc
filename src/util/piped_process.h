@@ -7,14 +7,22 @@
 
 class piped_processt
 {
+  char **split_command_args(const std::string &command);
+
+public:
   enum class process_statet
   {
     NOT_CREATED,
     CREATED,
     STOPPED
   };
+  
+  bool send(const std::string &message);
+  std::string receive();
 
-  char **split_command_args(const std::string &command);
+  process_statet get_status();
+
+  piped_processt(const std::string &command);
 
 protected:
   FILE *response_stream;
@@ -23,16 +31,6 @@ protected:
   int pipe_output[2];
   process_statet process_state;
 
-public:
-  bool send(const std::string &message);
-  std::string receive();
-
-  process_statet get_status()
-  {
-    return process_state;
-  }
-
-  piped_processt(const std::string &command);
 };
 
 #endif

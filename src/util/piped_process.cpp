@@ -2,6 +2,20 @@
 ///
 /// \author Diffblue Ltd.
 
+// Things we need to do still:
+// 2. Handled process death/failure (signals?)
+// 3. Check an smt example, not just echo
+// 4. Reuse/fix string processing or command in constructor
+// 5. Doxygen
+// 6. Consider ostream/istream instead of current read/write
+// 8. Work out synchronisation/pipe has data
+
+
+// Done/fixed
+// A. INVARIANT -> UNIMPLEMNTED_FEATURE
+// 7. make the process_statet enum public
+// 1. Check/fix buffer size
+
 #ifdef _WIN32
 // Windows includes go here
 #else
@@ -9,15 +23,13 @@
 #  include <errno.h>
 #  include <fcntl.h> // library for fcntl function
 #  include <iostream>
+#  include <fstream>
 #  include <unistd.h>
 #endif
 
 #include "invariant.h"
 #include "piped_process.h"
 
-// TODO: Revisit buffer size and storage location.
-// Note that this may impact number of characters correctly communicated
-// by the pipe, to check/fix.
 #define BUFSIZE 2048
 
 piped_processt::piped_processt(const std::string &command)
@@ -146,6 +158,11 @@ std::string piped_processt::receive()
 
   UNREACHABLE;
 #endif
+}
+
+piped_processt::process_statet piped_processt::get_status()
+{
+  return process_state;
 }
 
 char **piped_processt::split_command_args(const std::string &command)
