@@ -4,17 +4,20 @@
 
 // Things we need to do still:
 // 2. Handled process death/failure (signals?)
-// 3. Check an smt example, not just echo
 // 4. Reuse/fix string processing or command in constructor
 // 5. Doxygen
-// 6. Consider ostream/istream instead of current read/write
 // 8. Work out synchronisation/pipe has data
 
+
+// Probably won't do:
+// 6. Consider ostream/istream instead of current read/write
+//    This looks messy and unstable
 
 // Done/fixed
 // A. INVARIANT -> UNIMPLEMNTED_FEATURE
 // 7. make the process_statet enum public
 // 1. Check/fix buffer size
+// 3. Check an smt example, not just echo
 
 #ifdef _WIN32
 // Windows includes go here
@@ -129,6 +132,11 @@ std::string piped_processt::receive()
 
   INVARIANT(process_state == process_statet::CREATED,
     "Can only receive() from a fully initialised process");
+
+  
+  // This is necessary to ensure the buffer is synced with the
+  // latest data.
+  fsync(pipe_output[0]);
 
   std::string response = std::string("");
   int nbytes;

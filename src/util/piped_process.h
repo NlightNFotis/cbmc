@@ -1,4 +1,4 @@
-/// \file Subprocess communication with pipes
+ /// \file Subprocess communication with pipes
 ///
 /// \author Diffblue Ltd.
 
@@ -25,7 +25,6 @@ public:
   piped_processt(const std::string &command);
 
 protected:
-  FILE *response_stream;
   FILE *command_stream;
   int pipe_input[2];
   int pipe_output[2];
