@@ -146,4 +146,14 @@ std::string wrap_line(
   const std::size_t left_margin = 0,
   const std::size_t width = 80);
 
+/// Split a string into an array of char*.
+///
+/// This was motivated by string handling for passing arguments to low
+/// level system calls, that have C style signatures.
+/// \param s: The string to split
+/// \param delims: The delimiter characters to split on
+/// \return a NULL terminated char** that has each of the space delimited
+///  substrings of the input.
+char **string_to_cstr_array(const std::string &s, const char* delims);
+
 #endif

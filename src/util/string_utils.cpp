@@ -1,3 +1,5 @@
+
+
 /*******************************************************************\
 
 Module:
@@ -251,4 +253,24 @@ std::string wrap_line(
   result.append(it_line_begin, right);
 
   return result;
+}
+
+char **string_to_cstr_array(const std::string &s, const char* delims)
+{
+  char **res = NULL;
+  int n_spaces = 0;
+  char *p = strtok(strdup(s.c_str()), delims);
+
+  while(p)
+  {
+    res = reinterpret_cast<char **>(realloc(res, sizeof(char *) * ++n_spaces));
+    INVARIANT(res != nullptr, "Memory allocation failed");
+    res[n_spaces - 1] = p;
+    p = strtok(NULL, delims);
+  }
+
+  res =
+    reinterpret_cast<char **>(realloc(res, sizeof(char *) * (n_spaces + 1)));
+  res[n_spaces] = 0;
+  return res;
 }

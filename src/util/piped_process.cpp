@@ -2,36 +2,19 @@
 ///
 /// \author Diffblue Ltd.
 
-// Things we need to do still:
-// 2. Handled process death/failure (signals?)
-// 4. Reuse/fix string processing or command in constructor
-// 5. Doxygen
-// 8. Work out synchronisation/pipe has data
-
-
-// Probably won't do:
-// 6. Consider ostream/istream instead of current read/write
-//    This looks messy and unstable
-
-// Done/fixed
-// A. INVARIANT -> UNIMPLEMNTED_FEATURE
-// 7. make the process_statet enum public
-// 1. Check/fix buffer size
-// 3. Check an smt example, not just echo
 
 #ifdef _WIN32
 // Windows includes go here
 #else
-#  include <cstring>
-#  include <errno.h>
-#  include <fcntl.h> // library for fcntl function
-#  include <iostream>
-#  include <fstream>
-#  include <unistd.h>
+#  include <fcntl.h>  // library for fcntl function
+#  include <poll.h>   // library for poll function
+#  include <signal.h> // library for kill function
+#  include <unistd.h> // library for read/write/sleep/etc. functions
 #endif
 
 #include "invariant.h"
 #include "piped_process.h"
+#include "string_utils.h"
 
 #define BUFSIZE 2048
 
@@ -61,7 +44,7 @@ piped_processt::piped_processt(const std::string &command)
 
   // Create a new process for the child that will execute the
   // command and receive information via pipes.
-  pid_t pid = fork();
+  pid = fork();
   if(pid == 0)
   {
     // child process here
@@ -77,9 +60,14 @@ piped_processt::piped_processt(const std::string &command)
     dup2(pipe_output[1], STDERR_FILENO);
 
     // Create the arguments to execvp from the construction string
-    char **args = split_command_args(command);
+    char **args = string_to_cstr_array(command, " ");
+
     // Execute the command
     execvp(args[0], args);
+    // The args variable will be handled by the OS if execvp succeeds, but
+    // if execvp fails then we should free it here (just in case the runtime
+    // error below continues execution.)
+    free(args);
     // Only reachable if execvp failed
     throw std::runtime_error(
       "Launching \"" + command + "\" failed with error: " + strerror(errno));
@@ -98,7 +86,21 @@ piped_processt::piped_processt(const std::string &command)
 #endif
 }
 
-bool piped_processt::send(const std::string &message)
+piped_processt::~piped_processt()
+{
+#ifdef _WIN32
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows")
+#else
+  // Close the parent side of the remaning pipes
+  fclose(command_stream);
+  // Note that the above will call close(pipe_input[1]);
+  close(pipe_output[0]);
+  // Send signal to the child process to terminate
+  kill(pid, SIGTERM);
+#endif
+}
+
+piped_processt::process_send_responset piped_processt::send(const std::string &message)
 {
 #ifdef _WIN32
   UNIMPLEMENTED_FEATURE("Pipe IPC on windows")
@@ -106,7 +108,7 @@ bool piped_processt::send(const std::string &message)
 
   if(process_state != process_statet::CREATED)
   {
-    return false;
+    return process_send_responset::ERROR;
   }
 
   // send message to solver process
@@ -116,23 +118,22 @@ bool piped_processt::send(const std::string &message)
   if(send_status == EOF)
   {
     // Some kind of error occured, maybe we should update the
-    // solver status here?
-    return false;
+    // process status here?
+    return process_send_responset::FAILED;
   }
 
-  return true;
+  return process_send_responset::SUCCEEDED;
 #endif
 }
 
 std::string piped_processt::receive()
 {
 #ifdef _WIN32
-  UNIMPLEMENTED_FEATURE("Pipe IPC on windows")
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows: receive()")
 #else
 
   INVARIANT(process_state == process_statet::CREATED,
     "Can only receive() from a fully initialised process");
-
   
   // This is necessary to ensure the buffer is synced with the
   // latest data.
@@ -153,10 +154,6 @@ std::string piped_processt::receive()
     case 0:
       // Pipe is closed.
       process_state = process_statet::STOPPED;
-      if(response == std::string(""))
-      {
-        return NULL;
-      }
       return response;
     default:
       // Read some bytes, append them to the response and continue
@@ -168,27 +165,64 @@ std::string piped_processt::receive()
 #endif
 }
 
+std::string piped_processt::wait_receive()
+{
+  // can_receive(-1) waits an ubounded time until there is some data
+  can_receive(-1);
+  return receive();
+}
+
 piped_processt::process_statet piped_processt::get_status()
 {
   return process_state;
 }
 
-char **piped_processt::split_command_args(const std::string &command)
+bool piped_processt::can_receive(int timeout)
 {
-  char **res = NULL;
-  int n_spaces = 0;
-  char *p = strtok(strdup(command.c_str()), " ");
-
-  while(p)
+#ifdef _WIN32
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows: can_receive(int timeout)")
+#else
+  int ready;
+  struct pollfd fds { pipe_output[0], POLLIN, 0 };
+  nfds_t nfds = POLLIN;
+  ready = poll(&fds, nfds, timeout);
+  switch (ready)
   {
-    res = reinterpret_cast<char **>(realloc(res, sizeof(char *) * ++n_spaces));
-    INVARIANT(res != nullptr, "Memory allocation failed");
-    res[n_spaces - 1] = p;
-    p = strtok(NULL, " ");
+  case -1:
+    // Error case
+    // Further error handling could go here
+    process_state = process_statet::ERROR;
+    // fallthrough intended
+  case 0:
+    // Timeout case
+    // Do nothing for timeout and error fallthrough, default is return false.
+    break;
+  default:
+    // Found some events, check for POLLIN
+    if(fds.revents & POLLIN)
+    {
+      // we can read from the pipe here
+      return true;
+    }
+    // Some revent we did not ask for or check for, can't read though.
   }
+  return false;
+#endif  
+}
 
-  res =
-    reinterpret_cast<char **>(realloc(res, sizeof(char *) * (n_spaces + 1)));
-  res[n_spaces] = 0;
-  return res;
+bool piped_processt::can_receive()
+{
+  return can_receive(0);
+}
+
+void piped_processt::wait_receivable(int wait_time)
+{
+#ifdef _WIN32
+  UNIMPLEMENTED_FEATURE("Pipe IPC on windows: wait_stopped(int wait_time)")
+#else
+  while(process_state == process_statet::CREATED && !can_receive(0))
+  {
+    usleep(wait_time);
+  }
+#endif
 }
