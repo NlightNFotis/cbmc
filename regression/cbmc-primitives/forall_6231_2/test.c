@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+// clang-format off
 int main() {
   char *a = malloc(128);
 
@@ -15,3 +16,4 @@ int main() {
     int j; !(0 <= j && j < 1) || (j == 0 && *(a+j) == *(a+j))
   });
 }
+// clang-format on

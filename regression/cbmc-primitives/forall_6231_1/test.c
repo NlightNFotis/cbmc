@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
+// clang-format off
 int main() {
   char *a = malloc(1);
 
@@ -14,3 +15,4 @@ int main() {
     }
   );
 }
+// clang-format on
