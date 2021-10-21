@@ -1,0 +1,11 @@
+CORE
+valid_index_range.c
+--pointer-check
+^EXIT=0$
+^SIGNAL=0$
+^VERIFICATION SUCCESSFUL$
+line 9 dereference failure:.*SUCCESS
+--
+--
+Check that memory checks pass for valid pointer dereferences inside an
+existential qualifier.
