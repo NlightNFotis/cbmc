@@ -9,10 +9,9 @@
 int main() {
   char *a = malloc(4);
 
-  // lots of errors with `--pointer-check` enabled
   assert(*a == *a);
 
-  // no errors even with `--pointer-check` enabled
+  // BUG: no errors even with `--pointer-check` enabled -- now fixed.
   assert(
     __CPROVER_forall {
       int i ; (0 <= i && i < 10) ==> *(a+i) == *(a+i)
