@@ -4,7 +4,7 @@ invalid_index_range.c
 ^EXIT=10$
 ^SIGNAL=0$
 ^VERIFICATION FAILED$
-line 9 dereference failure: pointer outside object bounds in a\[\(signed long int\)i\]: FAILURE
+line 9 dereference failure: pointer outside object bounds in a\[\(signed (long|long long) int\)i\]: FAILURE
 --
 --
 Check that memory checks fail for pointer dereferences inside an existential
