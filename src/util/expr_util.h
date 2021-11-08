@@ -18,6 +18,7 @@ Author: Daniel Kroening, kroening@kroening.com
 */
 
 #include "irep.h"
+#include "optional.h"
 
 #include <functional>
 
@@ -73,6 +74,13 @@ bool has_subtype(
 
 /// returns true if any of the contained types is id
 bool has_subtype(const typet &, const irep_idt &id, const namespacet &);
+
+optionalt<exprt> get_subexpr(
+  const exprt &expr,
+  const std::function<bool(const exprt &)> &pred);
+
+optionalt<exprt> get_subexpr(
+  const exprt &src, const irep_idt &id);
 
 /// lift up an if_exprt one level
 if_exprt lift_if(const exprt &, std::size_t operand_number);

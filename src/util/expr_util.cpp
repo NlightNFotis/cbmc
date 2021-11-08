@@ -15,6 +15,7 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "c_types.h"
 #include "expr_iterator.h"
 #include "namespace.h"
+#include "optional.h"
 #include "pointer_expr.h"
 #include "std_expr.h"
 
@@ -146,6 +147,21 @@ bool has_subexpr(
 bool has_subexpr(const exprt &src, const irep_idt &id)
 {
   return has_subexpr(
+    src, [&](const exprt &subexpr) { return subexpr.id() == id; });
+}
+
+optionalt<exprt> get_subexpr(
+  const exprt &expr,
+  const std::function<bool(const exprt &)> &pred)
+{
+  const auto it = std::find_if(expr.depth_begin(), expr.depth_end(), pred);
+  return it != expr.depth_end() ? *it : optionalt<exprt>{};
+}
+
+optionalt<exprt> get_subexpr(
+  const exprt &src, const irep_idt &id)
+{
+  return get_subexpr(
     src, [&](const exprt &subexpr) { return subexpr.id() == id; });
 }
 

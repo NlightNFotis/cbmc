@@ -65,6 +65,7 @@ SRC = allocate_objects.cpp \
       show_goto_functions_xml.cpp \
       show_properties.cpp \
       show_symbol_table.cpp \
+      skolemization.cpp \
       slice_global_inits.cpp \
       string_abstraction.cpp \
       string_instrumentation.cpp \

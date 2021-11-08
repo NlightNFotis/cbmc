@@ -23,6 +23,7 @@ Author: Martin Brain, martin.brain@cs.ox.ac.uk
 #include <goto-programs/remove_returns.h>
 #include <goto-programs/remove_vector.h>
 #include <goto-programs/rewrite_union.h>
+#include <goto-programs/skolemization.h>
 #include <goto-programs/string_abstraction.h>
 #include <goto-programs/string_instrumentation.h>
 
@@ -63,6 +64,8 @@ bool process_goto_program(
   remove_complex(goto_model);
   if(options.get_bool_option("rewrite-union"))
     rewrite_union(goto_model);
+
+  rename_variables_in_existential_quantifiers(goto_model);
 
   // add generic checks
   log.status() << "Generic Property Instrumentation" << messaget::eom;
