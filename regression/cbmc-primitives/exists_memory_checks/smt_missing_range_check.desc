@@ -1,4 +1,4 @@
-CORE
+CORE smt-backend
 smt_missing_range_check.c
 --pointer-check -z3
 ^EXIT=10$
