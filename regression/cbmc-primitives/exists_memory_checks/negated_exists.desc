@@ -1,5 +1,5 @@
 CORE
-valid_index_range.c
+negated_exists.c
 --pointer-check
 ^EXIT=0$
 ^SIGNAL=0$
