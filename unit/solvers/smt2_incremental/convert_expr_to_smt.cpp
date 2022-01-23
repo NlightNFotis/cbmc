@@ -252,6 +252,8 @@ TEST_CASE(
   // Just regular (bit-vector) integers, to be used for the comparison
   const auto one_bvint = from_integer({1}, signedbv_typet{8});
   const auto two_bvint = from_integer({2}, signedbv_typet{8});
+  const auto one_bvint_unsigned = from_integer({1}, unsignedbv_typet{8});
+  const auto two_bvint_unsigned = from_integer({2}, unsignedbv_typet{8});
 
   SECTION("Addition of two constant size bit-vectors")
   {
@@ -274,6 +276,22 @@ TEST_CASE(
   {
     const auto constructed_term = convert_expr_to_smt(mult_exprt{one_bvint, two_bvint});
     const auto expected_term = smt_bit_vector_theoryt::bitvector_multiplication(smt_term_one, smt_term_two);
+    CHECK(constructed_term == expected_term);
+  }
+
+  // Division is defined over unsigned numbers only (theory notes say it
+  // truncates over zero)
+  SECTION("Division of two constant size bit-vectors")
+  {
+    const auto constructed_term = convert_expr_to_smt(div_exprt{one_bvint_unsigned, two_bvint_unsigned});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_division(smt_term_one, smt_term_two);
+    CHECK(constructed_term == expected_term);
+  }
+
+  SECTION("Unsigned remainder (modulus) from truncating division of two constant size bit-vectors")
+  {
+    const auto constructed_term = convert_expr_to_smt(mod_exprt{one_bvint_unsigned, two_bvint_unsigned});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_modulus(smt_term_one, smt_term_two);
     CHECK(constructed_term == expected_term);
   }
 }

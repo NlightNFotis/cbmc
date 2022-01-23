@@ -339,6 +339,20 @@ convert_expr_to_smt(const binary_relation_exprt &binary_relation)
       smt_bit_vector_theoryt::bitvector_multiplication,
       smt_bit_vector_theoryt::bitvector_multiplication);
   }
+  if(can_cast_expr<div_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_division,
+      smt_bit_vector_theoryt::bitvector_division);
+  }
+  if(can_cast_expr<mod_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_modulus,
+      smt_bit_vector_theoryt::bitvector_modulus);
+  }
   UNIMPLEMENTED_FEATURE(
     "Generation of SMT formula for binary relation expression: " +
     binary_relation.pretty());
@@ -366,8 +380,12 @@ static smt_termt convert_expr_to_smt(const minus_exprt &minus)
 
 static smt_termt convert_expr_to_smt(const div_exprt &divide)
 {
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for divide expression: " + divide.pretty());
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{divide.lhs(), ID_div, divide.rhs()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_division,
+    smt_bit_vector_theoryt::bitvector_division);
 }
 
 static smt_termt convert_expr_to_smt(const ieee_float_op_exprt &float_operation)
@@ -381,9 +399,12 @@ static smt_termt convert_expr_to_smt(const ieee_float_op_exprt &float_operation)
 
 static smt_termt convert_expr_to_smt(const mod_exprt &truncation_modulo)
 {
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for truncation modulo expression: " +
-    truncation_modulo.pretty());
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{truncation_modulo.lhs(), ID_mod, truncation_modulo.rhs()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_division,
+    smt_bit_vector_theoryt::bitvector_division);
 }
 
 static smt_termt
