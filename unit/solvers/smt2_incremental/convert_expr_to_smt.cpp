@@ -239,3 +239,22 @@ TEST_CASE(
       smt_bit_vector_theoryt::unsigned_less_than_or_equal(one_term, two_term));
   }
 }
+
+TEST_CASE(
+  "expr to smt conversion for arithmetic operators",
+  "[core][smt2_incremental]")
+{
+  const smt_termt smt_term_one = smt_bit_vector_constant_termt{1, 8};
+  const smt_termt smt_term_two = smt_bit_vector_constant_termt{2, 8};
+
+  // Just regular (bit-vector) integers, to be used for the comparison
+  const auto one_bvint = from_integer({1}, signedbv_typet{8});
+  const auto two_bvint = from_integer({2}, signedbv_typet{8});
+
+  SECTION("Addition of two constant size bit-vectors")
+  {
+    const auto constructed_term = convert_expr_to_smt(plus_exprt{one_bvint, two_bvint});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_addition(smt_term_one, smt_term_two);
+    CHECK(constructed_term == expected_term);
+  }
+}

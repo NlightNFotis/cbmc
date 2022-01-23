@@ -318,6 +318,13 @@ convert_expr_to_smt(const binary_relation_exprt &binary_relation)
       smt_bit_vector_theoryt::unsigned_less_than_or_equal,
       smt_bit_vector_theoryt::signed_less_than_or_equal);
   }
+  if(can_cast_expr<plus_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_addition,
+      smt_bit_vector_theoryt::bitvector_addition);
+  }
   UNIMPLEMENTED_FEATURE(
     "Generation of SMT formula for binary relation expression: " +
     binary_relation.pretty());
@@ -325,8 +332,12 @@ convert_expr_to_smt(const binary_relation_exprt &binary_relation)
 
 static smt_termt convert_expr_to_smt(const plus_exprt &plus)
 {
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for plus expression: " + plus.pretty());
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{plus.op0(), ID_plus, plus.op1()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_addition,
+    smt_bit_vector_theoryt::bitvector_addition);
 }
 
 static smt_termt convert_expr_to_smt(const minus_exprt &minus)
