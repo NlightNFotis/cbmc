@@ -12,6 +12,8 @@
 #include <util/format.h>
 #include <util/std_expr.h>
 
+#include <iostream>
+
 TEST_CASE("\"typet\" to smt sort conversion", "[core][smt2_incremental]")
 {
   SECTION("Boolean type")
@@ -255,6 +257,23 @@ TEST_CASE(
   {
     const auto constructed_term = convert_expr_to_smt(plus_exprt{one_bvint, two_bvint});
     const auto expected_term = smt_bit_vector_theoryt::bitvector_addition(smt_term_one, smt_term_two);
+    CHECK(constructed_term == expected_term);
+  }
+
+  // TODO: Add addition test for unsigned bitvectors
+  // TODO: Add addition test on boundary conditions (overflow, underflow)
+
+  SECTION("Subtraction of two constant size bit-vectors")
+  {
+    const auto constructed_term = convert_expr_to_smt(minus_exprt{two_bvint, one_bvint});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_subtraction(smt_term_two, smt_term_one);
+    CHECK(constructed_term == expected_term);
+  }
+
+  SECTION("Multiplication of two constant size bit-vectors") 
+  {
+    const auto constructed_term = convert_expr_to_smt(mult_exprt{one_bvint, two_bvint});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_multiplication(smt_term_one, smt_term_two);
     CHECK(constructed_term == expected_term);
   }
 }

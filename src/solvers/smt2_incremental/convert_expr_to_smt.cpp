@@ -325,6 +325,20 @@ convert_expr_to_smt(const binary_relation_exprt &binary_relation)
       smt_bit_vector_theoryt::bitvector_addition,
       smt_bit_vector_theoryt::bitvector_addition);
   }
+  if(can_cast_expr<minus_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_subtraction,
+      smt_bit_vector_theoryt::bitvector_subtraction);
+  }
+  if(can_cast_expr<mult_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_multiplication,
+      smt_bit_vector_theoryt::bitvector_multiplication);
+  }
   UNIMPLEMENTED_FEATURE(
     "Generation of SMT formula for binary relation expression: " +
     binary_relation.pretty());
@@ -342,8 +356,12 @@ static smt_termt convert_expr_to_smt(const plus_exprt &plus)
 
 static smt_termt convert_expr_to_smt(const minus_exprt &minus)
 {
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for minus expression: " + minus.pretty());
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{minus.lhs(), ID_minus, minus.rhs()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_subtraction,
+    smt_bit_vector_theoryt::bitvector_subtraction);
 }
 
 static smt_termt convert_expr_to_smt(const div_exprt &divide)
@@ -378,8 +396,12 @@ convert_expr_to_smt(const euclidean_mod_exprt &euclidean_modulo)
 
 static smt_termt convert_expr_to_smt(const mult_exprt &multiply)
 {
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for multiply expression: " + multiply.pretty());
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{multiply.op0(), ID_mult, multiply.op1()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_multiplication,
+    smt_bit_vector_theoryt::bitvector_multiplication);
 }
 
 static smt_termt convert_expr_to_smt(const address_of_exprt &address_of)
