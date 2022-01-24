@@ -12,8 +12,6 @@
 #include <util/format.h>
 #include <util/std_expr.h>
 
-#include <iostream>
-
 TEST_CASE("\"typet\" to smt sort conversion", "[core][smt2_incremental]")
 {
   SECTION("Boolean type")
@@ -292,6 +290,14 @@ TEST_CASE(
   {
     const auto constructed_term = convert_expr_to_smt(mod_exprt{one_bvint_unsigned, two_bvint_unsigned});
     const auto expected_term = smt_bit_vector_theoryt::bitvector_modulus(smt_term_one, smt_term_two);
+    CHECK(constructed_term == expected_term);
+  }
+
+  SECTION("Unary minus of constant size bit-vector")
+  {
+    const smt_termt smt_term_zero = smt_bit_vector_constant_termt{0, 8};
+    const auto constructed_term = convert_expr_to_smt(unary_minus_exprt{one_bvint});
+    const auto expected_term = smt_bit_vector_theoryt::bitvector_subtraction(smt_term_zero, smt_term_one);
     CHECK(constructed_term == expected_term);
   }
 }

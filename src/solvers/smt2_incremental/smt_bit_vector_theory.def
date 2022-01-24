@@ -17,3 +17,5 @@ SMT_BITVECTOR_THEORY_PREDICATE(bvsub, bitvector_subtraction)
 SMT_BITVECTOR_THEORY_PREDICATE(bvmul, bitvector_multiplication)
 SMT_BITVECTOR_THEORY_PREDICATE(bvudiv, bitvector_division)
 SMT_BITVECTOR_THEORY_PREDICATE(bvurem, bitvector_modulus)
+// Unary operator, implemented in terms of binary operator
+SMT_BITVECTOR_THEORY_PREDICATE(bvneg, bitvector_negation)

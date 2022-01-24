@@ -152,13 +152,6 @@ static smt_termt convert_expr_to_smt(const bitnot_exprt &bitwise_not)
     bitwise_not.pretty());
 }
 
-static smt_termt convert_expr_to_smt(const unary_minus_exprt &unary_minus)
-{
-  UNIMPLEMENTED_FEATURE(
-    "Generation of SMT formula for unary minus expression: " +
-    unary_minus.pretty());
-}
-
 static smt_termt convert_expr_to_smt(const unary_plus_exprt &unary_plus)
 {
   UNIMPLEMENTED_FEATURE(
@@ -353,6 +346,13 @@ convert_expr_to_smt(const binary_relation_exprt &binary_relation)
       smt_bit_vector_theoryt::bitvector_modulus,
       smt_bit_vector_theoryt::bitvector_modulus);
   }
+  if(can_cast_expr<unary_minus_exprt>(binary_relation))
+  {
+    return convert_relational_to_smt(
+      binary_relation,
+      smt_bit_vector_theoryt::bitvector_subtraction,
+      smt_bit_vector_theoryt::bitvector_subtraction);
+  }
   UNIMPLEMENTED_FEATURE(
     "Generation of SMT formula for binary relation expression: " +
     binary_relation.pretty());
@@ -372,6 +372,16 @@ static smt_termt convert_expr_to_smt(const minus_exprt &minus)
 {
   // Construct a new binary_exprt to sidestep issues with inheritance tree.
   binary_relation_exprt new_expr{minus.lhs(), ID_minus, minus.rhs()};
+  return convert_relational_to_smt(
+    new_expr,
+    smt_bit_vector_theoryt::bitvector_subtraction,
+    smt_bit_vector_theoryt::bitvector_subtraction);
+}
+
+static smt_termt convert_expr_to_smt(const unary_minus_exprt &unary_minus)
+{
+  // Construct a new binary_exprt to sidestep issues with inheritance tree.
+  binary_relation_exprt new_expr{from_integer(0, signedbv_typet{8}), ID_unary_minus, unary_minus.op()};
   return convert_relational_to_smt(
     new_expr,
     smt_bit_vector_theoryt::bitvector_subtraction,
