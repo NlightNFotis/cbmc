@@ -8,7 +8,7 @@
 class smt_bit_vector_theoryt
 {
 public:
-#define SMT_BITVECTOR_THEORY_PREDICATE(the_identifier, the_name)               \
+#define SMT_BITVECTOR_THEORY_OPERATOR(the_identifier, the_name)                \
   /* NOLINTNEXTLINE(readability/identifiers) cpplint does not match the ## */  \
   struct the_name##t final                                                     \
   {                                                                            \
@@ -19,7 +19,7 @@ public:
   };                                                                           \
   static const smt_function_application_termt::factoryt<the_name##t> the_name;
 #include "smt_bit_vector_theory.def"
-#undef SMT_BITVECTOR_THEORY_PREDICATE
+#undef SMT_BITVECTOR_THEORY_OPERATOR
 };
 
 #endif // CPROVER_SOLVERS_SMT2_INCREMENTAL_SMT_BIT_VECTOR_THEORY_H

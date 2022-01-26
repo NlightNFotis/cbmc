@@ -3,19 +3,19 @@
 /// [X-macro](https://en.wikipedia.org/wiki/X_Macro) pattern. These define the
 /// set of bitvector theory functions which are implemented and it is used to
 /// automate repetitive parts of the implementation.
-SMT_BITVECTOR_THEORY_PREDICATE(bvult, unsigned_less_than)
-SMT_BITVECTOR_THEORY_PREDICATE(bvule, unsigned_less_than_or_equal)
-SMT_BITVECTOR_THEORY_PREDICATE(bvugt, unsigned_greater_than)
-SMT_BITVECTOR_THEORY_PREDICATE(bvuge, unsigned_greater_than_or_equal)
-SMT_BITVECTOR_THEORY_PREDICATE(bvslt, signed_less_than)
-SMT_BITVECTOR_THEORY_PREDICATE(bvsle, signed_less_than_or_equal)
-SMT_BITVECTOR_THEORY_PREDICATE(bvsgt, signed_greater_than)
-SMT_BITVECTOR_THEORY_PREDICATE(bvsge, signed_greater_than_or_equal)
+SMT_BITVECTOR_THEORY_OPERATOR(bvult, unsigned_less_than)
+SMT_BITVECTOR_THEORY_OPERATOR(bvule, unsigned_less_than_or_equal)
+SMT_BITVECTOR_THEORY_OPERATOR(bvugt, unsigned_greater_than)
+SMT_BITVECTOR_THEORY_OPERATOR(bvuge, unsigned_greater_than_or_equal)
+SMT_BITVECTOR_THEORY_OPERATOR(bvslt, signed_less_than)
+SMT_BITVECTOR_THEORY_OPERATOR(bvsle, signed_less_than_or_equal)
+SMT_BITVECTOR_THEORY_OPERATOR(bvsgt, signed_greater_than)
+SMT_BITVECTOR_THEORY_OPERATOR(bvsge, signed_greater_than_or_equal)
 // Arithmetic operators, probably to be spun out to their own macro
-SMT_BITVECTOR_THEORY_PREDICATE(bvadd, bitvector_addition)
-SMT_BITVECTOR_THEORY_PREDICATE(bvsub, bitvector_subtraction)
-SMT_BITVECTOR_THEORY_PREDICATE(bvmul, bitvector_multiplication)
-SMT_BITVECTOR_THEORY_PREDICATE(bvudiv, bitvector_division)
-SMT_BITVECTOR_THEORY_PREDICATE(bvurem, bitvector_modulus)
+SMT_BITVECTOR_THEORY_OPERATOR(bvadd, bitvector_addition)
+SMT_BITVECTOR_THEORY_OPERATOR(bvsub, bitvector_subtraction)
+SMT_BITVECTOR_THEORY_OPERATOR(bvmul, bitvector_multiplication)
+SMT_BITVECTOR_THEORY_OPERATOR(bvudiv, bitvector_division)
+SMT_BITVECTOR_THEORY_OPERATOR(bvurem, bitvector_modulus)
 // Unary operator, implemented in terms of binary operator
-SMT_BITVECTOR_THEORY_PREDICATE(bvneg, bitvector_negation)
+SMT_BITVECTOR_THEORY_OPERATOR(bvneg, bitvector_negation)

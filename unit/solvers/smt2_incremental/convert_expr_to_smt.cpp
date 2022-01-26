@@ -246,10 +246,12 @@ TEST_CASE(
 {
   const smt_termt smt_term_one = smt_bit_vector_constant_termt{1, 8};
   const smt_termt smt_term_two = smt_bit_vector_constant_termt{2, 8};
+  const smt_termt smt_term_three = smt_bit_vector_constant_termt{3, 8};
 
   // Just regular (bit-vector) integers, to be used for the comparison
   const auto one_bvint = from_integer({1}, signedbv_typet{8});
   const auto two_bvint = from_integer({2}, signedbv_typet{8});
+  const auto three_bvint = from_integer({3}, signedbv_typet{8});
   const auto one_bvint_unsigned = from_integer({1}, unsignedbv_typet{8});
   const auto two_bvint_unsigned = from_integer({2}, unsignedbv_typet{8});
 
@@ -259,6 +261,14 @@ TEST_CASE(
     const auto expected_term = smt_bit_vector_theoryt::bitvector_addition(smt_term_one, smt_term_two);
     CHECK(constructed_term == expected_term);
   }
+
+  // SECTION("Addition of three constant size bit-vectors")
+  // {
+  //   const exprt::operandst plus_ops{one_bvint, two_bvint, three_bvint};
+  //   const auto constructed_term = convert_expr_to_smt(plus_exprt{plus_ops, signedbv_typet{8}});
+  //   const auto expected_term = smt_bit_vector_theoryt::bitvector_addition(smt_term_one, smt_term_two, smt_term_three);
+  //   CHECK(constructed_term == expected_term);
+  // }
 
   // TODO: Add addition test for unsigned bitvectors
   // TODO: Add addition test on boundary conditions (overflow, underflow)
