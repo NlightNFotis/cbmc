@@ -69,7 +69,6 @@ std::vector<smt_indext> smt_bit_vector_theoryt::extractt::indices() const
 
 void smt_bit_vector_theoryt::extractt::validate(const smt_termt &operand) const
 {
-  PRECONDITION(i >= j);
   const auto bit_vector_sort = operand.get_sort().cast<smt_bit_vector_sortt>();
   PRECONDITION(bit_vector_sort);
   PRECONDITION(i < bit_vector_sort->bit_width());

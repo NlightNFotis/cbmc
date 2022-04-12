@@ -1143,6 +1143,28 @@ static smt_termt convert_expr_to_smt(
 }
 
 static smt_termt convert_expr_to_smt(
+  const pointer_object_exprt &pointer_object,
+  const sub_expression_mapt &converted,
+  const smt_object_mapt &object_map)
+{
+  const auto base = pointer_object.pointer();
+  const auto type = type_try_dynamic_cast<pointer_typet>(base.type());
+  INVARIANT(
+    type, "pointer object expressions should be of pointer type");
+  const auto object = object_map.find(base);
+  INVARIANT(
+    object != object_map.end(),
+    "Objects should be tracked before converting their object ID to SMT terms");
+  const std::size_t object_id = object->second.unique_id;
+  INVARIANT(
+    object_id < power2(config.bv_encoding.object_bits),
+    "There should be sufficient bits to encode unique object identifier.");
+  const smt_termt object_bit_vector =
+    smt_bit_vector_constant_termt{object_id, config.bv_encoding.object_bits};
+  return object_bit_vector;
+}
+
+static smt_termt convert_expr_to_smt(
   const shl_overflow_exprt &shl_overflow,
   const sub_expression_mapt &converted)
 {
@@ -1428,10 +1450,11 @@ static smt_termt dispatch_expr_to_smt_conversion(
   else if(expr.id()==ID_pointer_offset)
   {
   }
-  else if(expr.id()==ID_pointer_object)
-  {
-  }
 #endif
+  else if(const auto pointer_object = expr_try_dynamic_cast<pointer_object_exprt>(expr))
+  {
+    return convert_expr_to_smt(*pointer_object, converted, object_map);
+  }
   if(
     const auto is_dynamic_object =
       expr_try_dynamic_cast<is_dynamic_object_exprt>(expr))
