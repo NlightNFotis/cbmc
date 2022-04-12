@@ -4,6 +4,7 @@
 
 #include <util/c_types.h>
 #include <util/pointer_offset_size.h>
+#include <util/pointer_predicates.h>
 #include <util/std_code.h>
 #include <util/std_expr.h>
 #include <util/string_constant.h>
@@ -35,6 +36,11 @@ exprt find_object_base_expression(const address_of_exprt &address_of)
         current.get().pretty(1, 0));
   }
   return current.get();
+}
+
+exprt find_object_base_expression(const pointer_object_exprt &pointer_object)
+{
+  return pointer_object.pointer();
 }
 
 static decision_procedure_objectt make_null_object()

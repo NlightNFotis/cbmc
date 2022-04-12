@@ -5,6 +5,7 @@
 
 #include <util/expr.h>
 #include <util/pointer_expr.h>
+#include <util/pointer_predicates.h>
 
 #include <unordered_map>
 
@@ -26,6 +27,7 @@ struct decision_procedure_objectt
 /// in an address of expression for which a unique identifier needs to be
 /// assigned.
 exprt find_object_base_expression(const address_of_exprt &address_of);
+exprt find_object_base_expression(const pointer_object_exprt &pointer_object);
 
 /// Arbitary expressions passed to the decision procedure may have multiple
 /// address of operations as its sub expressions. This means the overall
@@ -51,6 +53,10 @@ void find_object_base_expressions(
     if(const auto address_of = expr_try_dynamic_cast<address_of_exprt>(node))
     {
       output_object(find_object_base_expression(*address_of));
+    }
+    else if (const auto pointer_object = expr_try_dynamic_cast<pointer_object_exprt>(node))
+    {
+      output_object(find_object_base_expression(*pointer_object));
     }
   });
 }
