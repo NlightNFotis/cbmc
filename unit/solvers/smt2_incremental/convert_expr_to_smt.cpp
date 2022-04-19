@@ -1191,79 +1191,33 @@ TEST_CASE(
   "expr to smt conversion for pointer object expression",
   "[core][smt2_incremental]")
 {
-  // Prelude similar to the one used for address-of expression conversion.
-
-  // The config lines are necessary to ensure that pointer width in configured.
-  config.ansi_c.mode = configt::ansi_ct::flavourt::GCC;
-  config.ansi_c.set_arch_spec_x86_64();
-  const symbol_tablet symbol_table;
-  const namespacet ns{symbol_table};
-  smt_object_mapt object_map = initial_smt_object_map();
-  // The following symbols will encode a valid pointer object.
-  const symbol_exprt foo{"foo", pointer_typet(unsigned_int_type(), 32)};
-  const symbol_exprt foobar{"foobar", pointer_typet(unsigned_int_type(), 32)};
-  // This symbol will fail to encode a valid pointer object.
-  const symbol_exprt bar{"bar", unsignedbv_typet{32}};
+  const symbol_exprt foo{"foo", pointer_typet(unsigned_int_type(), 64)};
+  const symbol_exprt foobar{"foobar", pointer_typet(unsigned_int_type(), 64)};
 
   SECTION("Pointer object expression")
   {
     const pointer_object_exprt pointer_obj =
       *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
-    track_expression_objects(pointer_obj, ns, object_map);
-    SECTION("8 object bits")
-    {
-      config.bv_encoding.object_bits = 8;
-      const auto converted = convert_expr_to_smt(pointer_obj, object_map);
-      CHECK(object_map.at(foo).unique_id == 1);
-      CHECK(converted == smt_bit_vector_constant_termt{1, 8});
-    }
-    SECTION("16 object bits")
-    {
-      config.bv_encoding.object_bits = 16;
-      const auto converted = convert_expr_to_smt(pointer_obj, object_map);
-      CHECK(object_map.at(foo).unique_id == 1);
-      CHECK(converted == smt_bit_vector_constant_termt{1, 16});
-    }
+    const auto converted = convert_expr_to_smt(pointer_obj);
+    const auto expected =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foo", smt_bit_vector_sortt(64))));
+    CHECK(converted == expected);
   }
 
   SECTION("Invariant checks")
   {
     const cbmc_invariants_should_throwt invariants_throw;
-    SECTION("Pointer object's operand type should be a pointer")
+    SECTION("Pointer object's operand type should be a bitvector type")
     {
       exprt pointer_obj =
-        *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(bar));
+        *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
       pointer_obj.type() = bool_typet{};
-      track_expression_objects(pointer_obj, ns, object_map);
       REQUIRE_THROWS_MATCHES(
-        convert_expr_to_smt(pointer_obj, object_map),
+        convert_expr_to_smt(pointer_obj),
         invariant_failedt,
         invariant_failure_containing(
-          "pointer object expressions should be of pointer type"));
-    }
-    SECTION("Objects should already be tracked")
-    {
-      exprt pointer_obj =
-        *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
-      REQUIRE_THROWS_MATCHES(
-        convert_expr_to_smt(pointer_obj, object_map),
-        invariant_failedt,
-        invariant_failure_containing(
-          "Objects should be tracked before converting their object ID to SMT "
-          "terms"));
-    }
-    SECTION("There should be enough bits for object id")
-    {
-      config.bv_encoding.object_bits = 8;
-      exprt pointer_obj =
-        *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
-      track_expression_objects(pointer_obj, ns, object_map);
-      object_map.at(foo).unique_id = 256;
-      REQUIRE_THROWS_MATCHES(
-        convert_expr_to_smt(pointer_obj, object_map),
-        invariant_failedt,
-        invariant_failure_containing("There should be sufficient bits to "
-                                     "encode unique object identifier."));
+          "Pointer object should have a bitvector-based type."));
     }
   }
 
@@ -1275,14 +1229,15 @@ TEST_CASE(
     const pointer_object_exprt pointer_foobar =
       *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foobar));
     const exprt comparison = notequal_exprt{pointer_foobar, pointer_foo};
-    track_expression_objects(comparison, ns, object_map);
     INFO("Expression " + comparison.pretty(1, 0));
-    const auto converted = convert_expr_to_smt(comparison, object_map);
-    CHECK(object_map.at(foo).unique_id == 1);
-    CHECK(object_map.at(foobar).unique_id == 2);
-    CHECK(
-      converted == smt_core_theoryt::distinct(
-                     smt_bit_vector_constant_termt{2, 8},
-                     smt_bit_vector_constant_termt{1, 8}));
+    const auto converted = convert_expr_to_smt(comparison);
+    const auto bv1 =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foo", smt_bit_vector_sortt(64))));
+    const auto bv2 =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foobar", smt_bit_vector_sortt(64))));
+    const auto expected = smt_core_theoryt::distinct(bv2, bv1);
+    CHECK(converted == expected);
   }
 }
