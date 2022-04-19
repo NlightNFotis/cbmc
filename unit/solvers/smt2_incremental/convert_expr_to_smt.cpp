@@ -1186,3 +1186,58 @@ TEST_CASE(
                        smt_bit_vector_constant_termt{0, 56})));
   }
 }
+
+TEST_CASE(
+  "expr to smt conversion for pointer object expression",
+  "[core][smt2_incremental]")
+{
+  const symbol_exprt foo{"foo", pointer_typet(unsigned_int_type(), 64)};
+  const symbol_exprt foobar{"foobar", pointer_typet(unsigned_int_type(), 64)};
+
+  SECTION("Pointer object expression")
+  {
+    const pointer_object_exprt pointer_obj =
+      *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
+    const auto converted = convert_expr_to_smt(pointer_obj);
+    const auto expected =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foo", smt_bit_vector_sortt(64))));
+    CHECK(converted == expected);
+  }
+
+  SECTION("Invariant checks")
+  {
+    const cbmc_invariants_should_throwt invariants_throw;
+    SECTION("Pointer object's operand type should be a bitvector type")
+    {
+      exprt pointer_obj =
+        *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
+      pointer_obj.type() = bool_typet{};
+      REQUIRE_THROWS_MATCHES(
+        convert_expr_to_smt(pointer_obj),
+        invariant_failedt,
+        invariant_failure_containing(
+          "Pointer object should have a bitvector-based type."));
+    }
+  }
+
+  SECTION("Comparison of pointer objects.")
+  {
+    config.bv_encoding.object_bits = 8;
+    const pointer_object_exprt pointer_foo =
+      *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foo));
+    const pointer_object_exprt pointer_foobar =
+      *expr_try_dynamic_cast<pointer_object_exprt>(pointer_object(foobar));
+    const exprt comparison = notequal_exprt{pointer_foobar, pointer_foo};
+    INFO("Expression " + comparison.pretty(1, 0));
+    const auto converted = convert_expr_to_smt(comparison);
+    const auto bv1 =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foo", smt_bit_vector_sortt(64))));
+    const auto bv2 =
+      smt_bit_vector_theoryt::zero_extend(56)(smt_bit_vector_theoryt::extract(
+        63, 56)(smt_identifier_termt("foobar", smt_bit_vector_sortt(64))));
+    const auto expected = smt_core_theoryt::distinct(bv2, bv1);
+    CHECK(converted == expected);
+  }
+}
