@@ -1146,13 +1146,17 @@ static smt_termt convert_expr_to_smt(
   const pointer_object_exprt &pointer_object,
   const sub_expression_mapt &converted)
 {
-  const auto type = *type_try_dynamic_cast<pointer_typet>(pointer_object.type());
+  const auto type =
+    type_try_dynamic_cast<bitvector_typet>(pointer_object.type());
+  INVARIANT(type, "Pointer object should have a bitvector-based type.");
   const auto pointer_expr = pointer_object.pointer();
   const auto converted_expr = converted.at(pointer_expr);
-  const std::size_t pointer_width = type.get_width();
+  const std::size_t pointer_width = type->get_width();
+  INVARIANT(pointer_width > 0, "Pointer should have a positive width.");
   const std::size_t object_bits_width = config.bv_encoding.object_bits;
   const std::size_t ext = pointer_width - object_bits_width;
-  const auto extract_op = smt_bit_vector_theoryt::extract(pointer_width - 1, pointer_width - object_bits_width)(converted_expr);
+  const auto extract_op = smt_bit_vector_theoryt::extract(
+    pointer_width - 1, pointer_width - object_bits_width)(converted_expr);
   if (ext > 0)
   {
     return smt_bit_vector_theoryt::zero_extend(ext)(extract_op);
