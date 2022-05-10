@@ -1,0 +1,8 @@
+CORE
+pointer_arith_simple.c
+--verbosity 10 --trace
+Solver response - sat
+^EXIT=0$
+^SIGNAL=0$
+--
+--

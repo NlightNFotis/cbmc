@@ -596,6 +596,39 @@ static smt_termt convert_expr_to_smt(
   {
     return convert_multiary_operator_to_terms(
       plus, converted, smt_bit_vector_theoryt::add);
+  } else if (std::any_of(
+    plus.operands().cbegin(), plus.operands().cend(), [](exprt operand) {
+      return can_cast_type<pointer_typet>(operand.type());
+    }))
+  {
+    exprt pointer;
+    // identify pointer expression
+    for (auto &operand : plus.operands()) {
+      if (can_cast_type<pointer_typet>(operand.type()))
+      {
+        pointer = operand;
+      }
+    }
+
+    // create object_size expression
+    object_size_exprt pointer_size{pointer, pointer.type()};
+
+    // create new plus, where ∀a.~Pointer(a) gets translated to a * sizeof p
+    exprt::operandst new_ops;
+    for (auto operand : plus.operands()) {
+      if (!can_cast_type<pointer_typet>(operand.type()))
+      {
+        new_ops.push_back(mult_exprt(operand, pointer_size));
+      } else {
+        new_ops.push_back(operand);
+      }
+    }
+    plus_exprt new_plus{new_ops, pointer.type()};
+
+    
+
+    return convert_multiary_operator_to_terms(
+      new_plus, converted, smt_bit_vector_theoryt::add);
   }
   else
   {
