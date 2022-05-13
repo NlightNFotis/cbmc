@@ -11,6 +11,7 @@
 #include <util/floatbv_expr.h>
 #include <util/mathematical_expr.h>
 #include <util/pointer_expr.h>
+#include <util/pointer_offset_size.h>
 #include <util/pointer_predicates.h>
 #include <util/range.h>
 #include <util/std_expr.h>
@@ -35,6 +36,10 @@
 ///     without inflating the parameter list / scope for all conversions.
 using sub_expression_mapt =
   std::unordered_map<exprt, smt_termt, irep_full_hash>;
+
+// #include <iostream>
+
+// static smt_termt convert_expr_to_smt(const constant_exprt &constant_literal);
 
 /// \brief Converts operator expressions with 2 or more operands to terms
 ///   expressed as binary operator application.
@@ -585,9 +590,38 @@ static optionalt<smt_termt> try_relational_conversion(
   return {};
 }
 
+#include <iostream>
+
+static smt_termt convert_expr_to_smt(
+  const mult_exprt &multiply,
+  const sub_expression_mapt &converted)
+{
+  if(std::all_of(
+       multiply.operands().cbegin(),
+       multiply.operands().cend(),
+       [](exprt operand) {
+         return can_cast_type<integer_bitvector_typet>(operand.type());
+       }))
+  {
+    std::cout << "[DEBUG] Right before multiply " << std::endl;
+    return convert_multiary_operator_to_terms(
+      multiply, converted, smt_bit_vector_theoryt::multiply);
+  }
+  else
+  {
+    UNIMPLEMENTED_FEATURE(
+      "Generation of SMT formula for multiply expression: " +
+      multiply.pretty());
+  }
+}
+
+
+
 static smt_termt convert_expr_to_smt(
   const plus_exprt &plus,
-  const sub_expression_mapt &converted)
+  const sub_expression_mapt &converted,
+  const smt_object_mapt &object_map,
+  const smt_object_sizet::make_applicationt &call_object_size)
 {
   if(std::all_of(
        plus.operands().cbegin(), plus.operands().cend(), [](exprt operand) {
@@ -610,25 +644,36 @@ static smt_termt convert_expr_to_smt(
       }
     }
 
-    // create object_size expression
-    object_size_exprt pointer_size{pointer, pointer.type()};
-
+    pointer_typet pointer_type = *type_try_dynamic_cast<pointer_typet>(pointer.type());
+    auto base_type = pointer_type.base_type();
+    auto size_of_base_type = to_bitvector_type(base_type).get_width() / 8;
+    auto size_of_type_expr = from_integer(size_of_base_type, size_type());
+    // We need to convert the new expression we introduced, otherwise we get key-lookup
+    // exceptions in the converted subexpression map.
+   
     // create new plus, where ∀a.~Pointer(a) gets translated to a * sizeof p
     exprt::operandst new_ops;
     for (auto operand : plus.operands()) {
       if (!can_cast_type<pointer_typet>(operand.type()))
       {
-        new_ops.push_back(mult_exprt(operand, pointer_size));
+        auto new_expr = mult_exprt(operand, size_of_type_expr);
+        // (void) convert_expr_to_smt(new_expr);
+        new_ops.push_back(new_expr);
       } else {
         new_ops.push_back(operand);
       }
     }
-    plus_exprt new_plus{new_ops, pointer.type()};
+    plus_exprt new_plus{new_ops, pointer.type()};  
 
-    
+    auto result_term = convert_expr_to_smt(
+      new_plus, converted, object_map, call_object_size);
 
-    return convert_multiary_operator_to_terms(
-      new_plus, converted, smt_bit_vector_theoryt::add);
+    return result_term;
+    // std::cout << "[DEBUG] new_plus" << std::endl;
+    // std::cout << plus.pretty() << std::endl;
+
+    // return convert_multiary_operator_to_terms(
+    //   new_plus, converted, smt_bit_vector_theoryt::add);
   }
   else
   {
@@ -742,28 +787,6 @@ static smt_termt convert_expr_to_smt(
   UNIMPLEMENTED_FEATURE(
     "Generation of SMT formula for euclidean modulo expression: " +
     euclidean_modulo.pretty());
-}
-
-static smt_termt convert_expr_to_smt(
-  const mult_exprt &multiply,
-  const sub_expression_mapt &converted)
-{
-  if(std::all_of(
-       multiply.operands().cbegin(),
-       multiply.operands().cend(),
-       [](exprt operand) {
-         return can_cast_type<integer_bitvector_typet>(operand.type());
-       }))
-  {
-    return convert_multiary_operator_to_terms(
-      multiply, converted, smt_bit_vector_theoryt::multiply);
-  }
-  else
-  {
-    UNIMPLEMENTED_FEATURE(
-      "Generation of SMT formula for multiply expression: " +
-      multiply.pretty());
-  }
 }
 
 #ifndef CPROVER_INVARIANT_DO_NOT_CHECK
@@ -1448,7 +1471,7 @@ static smt_termt dispatch_expr_to_smt_conversion(
   }
   if(const auto plus = expr_try_dynamic_cast<plus_exprt>(expr))
   {
-    return convert_expr_to_smt(*plus, converted);
+    return convert_expr_to_smt(*plus, converted, object_map, call_object_size);
   }
   if(const auto minus = expr_try_dynamic_cast<minus_exprt>(expr))
   {
