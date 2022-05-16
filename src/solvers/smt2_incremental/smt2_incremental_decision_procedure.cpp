@@ -163,6 +163,7 @@ smt_termt
 smt2_incremental_decision_proceduret::convert_expr_to_smt(const exprt &expr)
 {
   track_expression_objects(expr, ns, object_map);
+  associate_pointer_sizes(expr, ns, pointer_sizes_map, object_map, object_size_function.make_application);
   return ::convert_expr_to_smt(
     expr, object_map, object_size_function.make_application);
 }
