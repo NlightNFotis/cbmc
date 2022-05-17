@@ -15,7 +15,7 @@
 
 // TODO: change name (typesize_map maybe?)
 using pointer_size_mapt = 
-  std::unordered_map<exprt, smt_termt, irep_full_hash>;
+  std::unordered_map<typet, smt_termt, irep_full_hash>;
 
 // const smt_object_mapt &object_map,
   // const smt_object_sizet::make_applicationt &object_size)

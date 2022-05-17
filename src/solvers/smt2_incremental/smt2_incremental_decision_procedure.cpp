@@ -165,7 +165,7 @@ smt2_incremental_decision_proceduret::convert_expr_to_smt(const exprt &expr)
   track_expression_objects(expr, ns, object_map);
   associate_pointer_sizes(expr, ns, pointer_sizes_map, object_map, object_size_function.make_application);
   return ::convert_expr_to_smt(
-    expr, object_map, object_size_function.make_application);
+    expr, object_map, pointer_sizes_map, object_size_function.make_application);
 }
 
 exprt smt2_incremental_decision_proceduret::handle(const exprt &expr)
@@ -209,7 +209,7 @@ exprt smt2_incremental_decision_proceduret::get(const exprt &expr) const
         "Objects in expressions being read should already be tracked from "
         "point of being set/handled.");
       descriptor = ::convert_expr_to_smt(
-        expr, object_map, object_size_function.make_application);
+        expr, object_map, pointer_sizes_map, object_size_function.make_application);
     }
     else
     {

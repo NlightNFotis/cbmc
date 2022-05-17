@@ -37,10 +37,6 @@
 using sub_expression_mapt =
   std::unordered_map<exprt, smt_termt, irep_full_hash>;
 
-// #include <iostream>
-
-// static smt_termt convert_expr_to_smt(const constant_exprt &constant_literal);
-
 /// \brief Converts operator expressions with 2 or more operands to terms
 ///   expressed as binary operator application.
 /// \param expr: The expression to convert.
@@ -620,8 +616,7 @@ static smt_termt convert_expr_to_smt(
 static smt_termt convert_expr_to_smt(
   const plus_exprt &plus,
   const sub_expression_mapt &converted,
-  const smt_object_mapt &object_map,
-  const smt_object_sizet::make_applicationt &call_object_size)
+  const pointer_size_mapt &pointer_sizes)
 {
   if(std::all_of(
        plus.operands().cbegin(), plus.operands().cend(), [](exprt operand) {
@@ -635,45 +630,29 @@ static smt_termt convert_expr_to_smt(
       return can_cast_type<pointer_typet>(operand.type());
     }))
   {
+    INVARIANT(plus.operands().size() == 2,
+      "We are only handling a binary version of plus when it has a pointer operand");
+
     exprt pointer;
-    // identify pointer expression
+    exprt scalar;
     for (auto &operand : plus.operands()) {
       if (can_cast_type<pointer_typet>(operand.type()))
       {
         pointer = operand;
+      } else {
+        scalar = operand;
       }
     }
 
     pointer_typet pointer_type = *type_try_dynamic_cast<pointer_typet>(pointer.type());
     auto base_type = pointer_type.base_type();
-    auto size_of_base_type = to_bitvector_type(base_type).get_width() / 8;
-    auto size_of_type_expr = from_integer(size_of_base_type, size_type());
-    // We need to convert the new expression we introduced, otherwise we get key-lookup
-    // exceptions in the converted subexpression map.
-   
-    // create new plus, where ∀a.~Pointer(a) gets translated to a * sizeof p
-    exprt::operandst new_ops;
-    for (auto operand : plus.operands()) {
-      if (!can_cast_type<pointer_typet>(operand.type()))
-      {
-        auto new_expr = mult_exprt(operand, size_of_type_expr);
-        // (void) convert_expr_to_smt(new_expr);
-        new_ops.push_back(new_expr);
-      } else {
-        new_ops.push_back(operand);
-      }
-    }
-    plus_exprt new_plus{new_ops, pointer.type()};  
+    auto pointer_size = pointer_sizes.at(base_type);
 
-    auto result_term = convert_expr_to_smt(
-      new_plus, converted, object_map, call_object_size);
-
-    return result_term;
-    // std::cout << "[DEBUG] new_plus" << std::endl;
-    // std::cout << plus.pretty() << std::endl;
-
-    // return convert_multiary_operator_to_terms(
-    //   new_plus, converted, smt_bit_vector_theoryt::add);
+    return smt_bit_vector_theoryt::add(
+              converted.at(pointer),
+              smt_bit_vector_theoryt::multiply(
+                converted.at(scalar),
+                pointer_size));
   }
   else
   {
@@ -1355,6 +1334,7 @@ static smt_termt dispatch_expr_to_smt_conversion(
   const exprt &expr,
   const sub_expression_mapt &converted,
   const smt_object_mapt &object_map,
+  const pointer_size_mapt &pointer_sizes,
   const smt_object_sizet::make_applicationt &call_object_size)
 {
   if(const auto symbol = expr_try_dynamic_cast<symbol_exprt>(expr))
@@ -1471,7 +1451,7 @@ static smt_termt dispatch_expr_to_smt_conversion(
   }
   if(const auto plus = expr_try_dynamic_cast<plus_exprt>(expr))
   {
-    return convert_expr_to_smt(*plus, converted, object_map, call_object_size);
+    return convert_expr_to_smt(*plus, converted, pointer_sizes);
   }
   if(const auto minus = expr_try_dynamic_cast<minus_exprt>(expr))
   {
@@ -1714,6 +1694,7 @@ at_scope_exitt<functiont> at_scope_exit(functiont exit_function)
 smt_termt convert_expr_to_smt(
   const exprt &expr,
   const smt_object_mapt &object_map,
+  const pointer_size_mapt &pointer_sizes,
   const smt_object_sizet::make_applicationt &object_size)
 {
 #ifndef CPROVER_INVARIANT_DO_NOT_CHECK
@@ -1732,7 +1713,7 @@ smt_termt convert_expr_to_smt(
     if(find_result != sub_expression_map.cend())
       return;
     smt_termt term = dispatch_expr_to_smt_conversion(
-      expr, sub_expression_map, object_map, object_size);
+      expr, sub_expression_map, object_map, pointer_sizes, object_size);
     sub_expression_map.emplace_hint(find_result, expr, std::move(term));
   });
   return std::move(sub_expression_map.at(expr));

@@ -8,6 +8,8 @@
 
 #include <solvers/smt2_incremental/convert_expr_to_smt.h>
 
+#include <iostream>
+
 // Initialisation code
 pointer_size_mapt initial_pointer_size_map()
 {
@@ -39,15 +41,19 @@ void associate_pointer_sizes(
       }
 
       // get size of pointer
-      auto pointer_size_expr = size_of_expr(pointer.type(), ns);
+      auto pointer_type = to_pointer_type(pointer.type());
+      auto pointer_size_expr = size_of_expr(pointer_type, ns);
       PRECONDITION(pointer_size_expr.has_value());
-      auto pointer_size_term = convert_expr_to_smt(pointer_size_expr.value(), object_map, object_size);
+      auto pointer_size_term = convert_expr_to_smt(pointer_size_expr.value(), object_map, pointer_size_map, object_size);
+
+      std::cout << "[DEBUG] pointer_size_term is " << pointer_size_term.pretty() << std::endl; 
       
       // add to map
-      const auto find_result = pointer_size_map.find(expression);
+      const auto find_result = pointer_size_map.find(pointer_type.base_type());
       if (find_result != pointer_size_map.cend())
         return;
     
-      pointer_size_map.emplace_hint(find_result, expression, pointer_size_term);
+      std::cout << "[DEBUG] adding to map: " << pointer_type.base_type().pretty() << std::endl;
+      pointer_size_map.emplace_hint(find_result, pointer_type.base_type(), pointer_size_term);
     }
 }
