@@ -611,7 +611,7 @@ static smt_termt convert_expr_to_smt(
   }
 }
 
-
+#include <iostream>
 
 static smt_termt convert_expr_to_smt(
   const plus_exprt &plus,
@@ -632,6 +632,8 @@ static smt_termt convert_expr_to_smt(
   {
     INVARIANT(plus.operands().size() == 2,
       "We are only handling a binary version of plus when it has a pointer operand");
+
+    std::cout << "[DEBUG] Plus exprt is: " << plus.pretty() << std::endl;
 
     exprt pointer;
     exprt scalar;
@@ -663,16 +665,38 @@ static smt_termt convert_expr_to_smt(
 
 static smt_termt convert_expr_to_smt(
   const minus_exprt &minus,
-  const sub_expression_mapt &converted)
+  const sub_expression_mapt &converted,
+  const pointer_size_mapt &pointer_sizes)
 {
   const bool both_operands_bitvector =
     can_cast_type<integer_bitvector_typet>(minus.lhs().type()) &&
     can_cast_type<integer_bitvector_typet>(minus.rhs().type());
 
-  if(both_operands_bitvector)
+  const bool both_operands_pointers =
+    can_cast_type<pointer_typet>(minus.lhs().type()) &&
+    can_cast_type<pointer_typet>(minus.rhs().type());
+
+  // We don't really handle this - we just compute this to fall
+  // into an if-else branch that gives proper error handling information.
+  const bool one_operand_pointer =
+    can_cast_type<pointer_typet>(minus.lhs().type()) ||
+    can_cast_type<pointer_typet>(minus.rhs().type());
+
+  if(both_operands_bitvector || both_operands_pointers)
   {
     return smt_bit_vector_theoryt::subtract(
       converted.at(minus.lhs()), converted.at(minus.rhs()));
+  }
+  else if (one_operand_pointer)
+  {
+    UNIMPLEMENTED_FEATURE(
+      "convert_expr_to_smt::minus_exprt doesn't handle expressions where"
+      "only one operand is a pointer - this is because these expressions"
+      "are normally handled by convert_expr_to_smt::plus_exprt due to"
+      "transformations of the expressions by previous passes bringing"
+      "them into a form more suitably handled by that version of the function."
+      "If you are here, this is a mistake or something went wrong before."
+      "The expression that caused the problem is: " + minus.pretty());
   }
   else
   {
@@ -1455,7 +1479,7 @@ static smt_termt dispatch_expr_to_smt_conversion(
   }
   if(const auto minus = expr_try_dynamic_cast<minus_exprt>(expr))
   {
-    return convert_expr_to_smt(*minus, converted);
+    return convert_expr_to_smt(*minus, converted, pointer_sizes);
   }
   if(const auto divide = expr_try_dynamic_cast<div_exprt>(expr))
   {

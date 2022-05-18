@@ -55,6 +55,12 @@ public:
   }
 };
 
+template <>
+inline bool can_cast_type<empty_typet>(const typet &base)
+{
+  return base.id() == ID_empty;
+}
+
 /// Base type for structs and unions
 ///
 /// For example C structs, C unions, C++ classes, Java classes.
