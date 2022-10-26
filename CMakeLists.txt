@@ -206,6 +206,7 @@ option(WITH_MEMORY_ANALYZER
 add_subdirectory(src)
 add_subdirectory(regression)
 add_subdirectory(unit)
+add_subdirectory(cpp_api)
 
 cprover_default_properties(
     analyses
@@ -215,6 +216,8 @@ cprover_default_properties(
     cbmc
     cbmc-lib
     cpp
+    api_bin
+    bmc_api
     cprover
     cprover-lib
     crangler
