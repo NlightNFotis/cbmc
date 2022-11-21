@@ -2,20 +2,9 @@
 #include <iostream>
 #include <vector>
 
-#include <ansi-c/ansi_c_language.h>
-
-#include <langapi/mode.h>
-
-#include <goto-programs/goto_model.h>
-#include <goto-programs/initialize_goto_model.h>
-
-#include <util/config.h>
-#include <util/cmdline.h>
-#include <util/message.h>
+#include <util/exception_utils.h>
 
 #include "api.h"
-
-extern api_depst api_deps;
 
 int main(int argc, char *argv[])
 {
@@ -26,13 +15,14 @@ int main(int argc, char *argv[])
         std::vector<std::string> arguments(argv + 1, argv + argc);
 
         // Initialise API dependencies and global configuration in one step.
-        initialize();
+        cbmc_api api;
 
-        auto model = load_model_from_files(arguments, *api_deps.opts);
+        // Demonstrate the loading of a goto-model from the command line arguments
+        api.load_model_from_files(arguments);
 
         std::cout << "Successfully initialised goto_model" << std::endl;
         return 0;
-    } catch (invalid_command_line_argument_exceptiont e) {
+    } catch (const invalid_command_line_argument_exceptiont &e) {
         std::cout << e.what() << std::endl;
     }
 }
