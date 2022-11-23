@@ -1,10 +1,11 @@
 // Test file to try loading a GOTO-model into memory and running a sample verification run on it.
-#include <iostream>
-#include <vector>
-
 #include <util/exception_utils.h>
 
 #include "api.h"
+#include "options.h"
+
+#include <iostream>
+#include <vector>
 
 int main(int argc, char *argv[])
 {
@@ -14,8 +15,11 @@ int main(int argc, char *argv[])
         // Convert argv to vector of strings for initialize_goto_model
         std::vector<std::string> arguments(argv + 1, argv + argc);
 
+        // Create API options object, to pass to initialiser of API object.
+        auto api_options = api_optionst::create().simplify(false);
+
         // Initialise API dependencies and global configuration in one step.
-        cbmc_api api;
+        cbmc_api api(api_options);
 
         // Demonstrate the loading of a goto-model from the command line arguments
         api.load_model_from_files(arguments);

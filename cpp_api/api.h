@@ -6,6 +6,7 @@ class goto_modelt;
 class message_handlert;
 class optionst;
 
+#include "options.h"
 
 // An object in the pattern of Session Facade - owning all of the memory
 // the API is using and being responsible for the management of that.
@@ -13,6 +14,7 @@ struct cbmc_api
 {
   // Initialising constructor
   explicit cbmc_api();
+  cbmc_api(const api_optionst &options);
   ~cbmc_api();
 
   /// Load a goto_model from a given vector of filenames.
@@ -25,7 +27,8 @@ private:
   // A struct containing the API dependencies (some of them, at least)
   struct api_dependenciest
   {
-    api_dependenciest();
+    explicit api_dependenciest();
+    api_dependenciest(const optionst options);
     ~api_dependenciest();
   
     std::unique_ptr<message_handlert> message_handler;

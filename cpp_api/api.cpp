@@ -12,6 +12,7 @@
 #include <langapi/mode.h>
 
 #include <memory>
+#include <options.h>
 
 extern configt config;
 
@@ -25,9 +26,27 @@ cbmc_api::api_dependenciest::api_dependenciest()
 {
 }
 
+cbmc_api::api_dependenciest::api_dependenciest(const optionst options)
+  : // We don't print anything to the console as part of the API
+    message_handler(new null_message_handlert()),
+    options(util_make_unique<optionst>(options))
+{
+}
+
 cbmc_api::api_dependenciest::~api_dependenciest() = default;
 
 cbmc_api::cbmc_api() : dependencies(new api_dependenciest())
+{
+  // Needed to initialise the language options correctly
+  cmdlinet cmdline;
+  // config is global in config.cpp
+  config.set(cmdline);
+  // Initialise C language mode
+  register_language(new_ansi_c_language);
+}
+
+cbmc_api::cbmc_api(const api_optionst &options)
+  : dependencies(new api_dependenciest(options.to_engine_options()))
 {
   // Needed to initialise the language options correctly
   cmdlinet cmdline;
