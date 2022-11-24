@@ -1,4 +1,7 @@
-#pragma once
+#ifndef CPROVER_API_OPTIONS_H
+#define CPROVER_API_OPTIONS_H
+
+#include <memory>
 
 class optionst;
 
@@ -11,10 +14,11 @@ class api_optionst
   api_optionst() = default;
 
 public:
-  ~api_optionst() = default;
   static api_optionst create();
 
   api_optionst &simplify(bool on);
 
-  optionst to_engine_options() const;
+  std::unique_ptr<optionst> to_engine_options() const;
 };
+
+#endif

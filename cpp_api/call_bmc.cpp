@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
         auto api_options = api_optionst::create().simplify(false);
 
         // Initialise API dependencies and global configuration in one step.
-        cbmc_api api(api_options);
+        cprover_api api(api_options);
 
         // Demonstrate the loading of a goto-model from the command line arguments
         api.load_model_from_files(arguments);
@@ -30,5 +30,3 @@ int main(int argc, char *argv[])
         std::cout << e.what() << std::endl;
     }
 }
-
-

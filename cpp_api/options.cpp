@@ -1,5 +1,6 @@
 #include "options.h"
 
+#include <util/make_unique.h>
 #include <util/options.h>
 
 api_optionst api_optionst::create()
@@ -13,9 +14,9 @@ api_optionst &api_optionst::simplify(bool on)
   return *this;
 }
 
-optionst api_optionst::to_engine_options() const
+std::unique_ptr<optionst> api_optionst::to_engine_options() const
 {
   optionst engine_options;
   engine_options.set_option("simplify", simplify_enabled);
-  return engine_options;
+  return util_make_unique<optionst>(engine_options);
 }

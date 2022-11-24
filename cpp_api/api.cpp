@@ -16,26 +16,10 @@
 
 extern configt config;
 
-// Default initialise the api_dependencies object
-cbmc_api::api_dependenciest::api_dependenciest()
-  : // We don't print anything to the console as part of the API
-    message_handler(new null_message_handlert()),
-    // We create a default options object which we are going to
-    // customise later.
-    options(new optionst())
-{
-}
-
-cbmc_api::api_dependenciest::api_dependenciest(const optionst options)
-  : // We don't print anything to the console as part of the API
-    message_handler(new null_message_handlert()),
-    options(util_make_unique<optionst>(options))
-{
-}
-
-cbmc_api::api_dependenciest::~api_dependenciest() = default;
-
-cbmc_api::cbmc_api() : dependencies(new api_dependenciest())
+cprover_api::cprover_api()
+  : message_handler(
+      util_make_unique<null_message_handlert>(null_message_handlert{})),
+    options(util_make_unique<optionst>(optionst{}))
 {
   // Needed to initialise the language options correctly
   cmdlinet cmdline;
@@ -45,8 +29,10 @@ cbmc_api::cbmc_api() : dependencies(new api_dependenciest())
   register_language(new_ansi_c_language);
 }
 
-cbmc_api::cbmc_api(const api_optionst &options)
-  : dependencies(new api_dependenciest(options.to_engine_options()))
+cprover_api::cprover_api(const api_optionst &options)
+  : message_handler(
+      util_make_unique<null_message_handlert>(null_message_handlert{})),
+    options(options.to_engine_options())
 {
   // Needed to initialise the language options correctly
   cmdlinet cmdline;
@@ -56,10 +42,10 @@ cbmc_api::cbmc_api(const api_optionst &options)
   register_language(new_ansi_c_language);
 }
 
-cbmc_api::~cbmc_api() = default;
+cprover_api::~cprover_api() = default;
 
-void cbmc_api::load_model_from_files(const std::vector<std::string> &files)
+void cprover_api::load_model_from_files(const std::vector<std::string> &files)
 {
-  model = util_make_unique<goto_modelt>(initialize_goto_model(
-    files, *dependencies->message_handler, *dependencies->options));
+  model = util_make_unique<goto_modelt>(
+    initialize_goto_model(files, *message_handler, *options));
 }
