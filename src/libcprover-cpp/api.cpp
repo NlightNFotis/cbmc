@@ -159,3 +159,15 @@ void api_sessiont::verify_model()
   (void)verifier();
   verifier.report();
 }
+
+/////////////////////////////
+
+std::unique_ptr<api_sessiont> new_api_session()
+{
+  return std::unique_ptr<api_sessiont>(new api_sessiont());
+}
+
+std::unique_ptr<std::string> get_api_version(std::unique_ptr<api_sessiont> api_handle)
+{
+  return util_make_unique<std::string>(api_handle->get_api_version());
+}

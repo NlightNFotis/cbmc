@@ -71,8 +71,16 @@ struct api_sessiont
   /// Verify previously loaded model.
   void verify_model();
 
+  // A simple API version information function.
+  // TODO: Investigate best way to store and expose version string.
+  std::string get_api_version() const { return std::string{"0.1"}; } 
+
 private:
   std::unique_ptr<api_session_implementationt> implementation;
 };
+
+// TODO: Investigate best way to define this
+std::unique_ptr<api_sessiont> new_api_session();
+std::unique_ptr<std::string> get_api_version(std::unique_ptr<api_sessiont> api_handle);
 
 #endif

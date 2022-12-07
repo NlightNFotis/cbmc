@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.15)
 
 # Compile with /usr/bin/clang on MacOS
 # See https://github.com/diffblue/cbmc/issues/4956
@@ -254,6 +254,16 @@ cprover_default_properties(
 option(WITH_JBMC "Build the JBMC Java front-end" ON)
 if(WITH_JBMC)
     add_subdirectory(jbmc)
+endif()
+
+option(WITH_RUST_API "Build with the CPROVER Rust API" ON)
+if(WITH_RUST_API)
+  find_package(Corrosion REQUIRED)
+  corrosion_import_crate(MANIFEST_PATH src/libcprover-rust/Cargo.toml)
+  target_link_libraries(cprover-api-cpp cprover-api-rust)
+  install(TARGETS cprover-api-rust RUNTIME DESTINATION lib)
+  # TODO: cargo builds the artifact with underscores - we need to change to hyphens
+  # to bring to same naming convention as the rest of CBMC
 endif()
 
 include(cmake/packaging.cmake)
