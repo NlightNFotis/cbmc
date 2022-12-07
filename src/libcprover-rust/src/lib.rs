@@ -13,12 +13,14 @@ pub mod ffi {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use cxx::let_cxx_string;
 
     #[test]
     fn it_works() {
         let client = ffi::new_api_session();
         let result = ffi::get_api_version(client);
-        println!("{}", *result);
-        // assert_eq!(*result, "0.1");
+        
+        let_cxx_string!(expected_version = "0.1");
+        assert_eq!(*result, *expected_version);
     }
 }
