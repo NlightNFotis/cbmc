@@ -171,3 +171,7 @@ std::unique_ptr<std::string> get_api_version(std::unique_ptr<api_sessiont> api_h
 {
   return util_make_unique<std::string>(api_handle->get_api_version());
 }
+
+void load_model_from_files(std::unique_ptr<api_sessiont> api_handle, const std::vector<std::string> &files) {
+  api_handle->load_model_from_files(files);
+}

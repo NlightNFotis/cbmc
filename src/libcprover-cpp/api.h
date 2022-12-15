@@ -82,5 +82,6 @@ private:
 // TODO: Investigate best way to define this
 std::unique_ptr<api_sessiont> new_api_session();
 std::unique_ptr<std::string> get_api_version(std::unique_ptr<api_sessiont> api_handle);
+void load_model_from_files(std::unique_ptr<api_sessiont> api_handle, const std::vector<std::string> &files);
 
 #endif
