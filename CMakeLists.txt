@@ -260,6 +260,7 @@ option(WITH_RUST_API "Build with the CPROVER Rust API" ON)
 if(WITH_RUST_API)
   find_package(Corrosion REQUIRED)
   corrosion_import_crate(MANIFEST_PATH src/libcprover-rust/Cargo.toml)
+  corrosion_set_env_vars(cprover-api-rust CBMC_LIB_DIR=${CMAKE_LIBRARY_OUTPUT_DIRECTORY})
   corrosion_link_libraries(cprover-api-rust cprover-api-cpp)
   install(TARGETS cprover-api-rust RUNTIME DESTINATION lib)
   # NOTE: We create a symlink for a name consistent with the name of the
