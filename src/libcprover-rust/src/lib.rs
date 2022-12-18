@@ -22,8 +22,6 @@ pub mod ffi {
 mod tests {
     use super::*;
     use cxx::let_cxx_string;
-    use cxx::{CxxString, CxxVector};
-    use core::pin::Pin;
 
     #[test]
     fn it_works() {

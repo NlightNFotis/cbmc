@@ -26,5 +26,6 @@ fn main() {
     println!("cargo:rustc-link-lib=static=ansi-c");
     println!("cargo:rustc-link-lib=static=big-int");
     println!("cargo:rustc-link-lib=static=linking");
+    println!("cargo:rustc-link-lib=static=goto-checker");
     println!("cargo:rustc-link-lib=static=cprover-api-cpp");
 }

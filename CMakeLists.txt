@@ -260,10 +260,14 @@ option(WITH_RUST_API "Build with the CPROVER Rust API" ON)
 if(WITH_RUST_API)
   find_package(Corrosion REQUIRED)
   corrosion_import_crate(MANIFEST_PATH src/libcprover-rust/Cargo.toml)
-  target_link_libraries(cprover-api-cpp cprover-api-rust)
+  corrosion_link_libraries(cprover-api-rust cprover-api-cpp)
   install(TARGETS cprover-api-rust RUNTIME DESTINATION lib)
-  # TODO: cargo builds the artifact with underscores - we need to change to hyphens
-  # to bring to same naming convention as the rest of CBMC
+  # NOTE: We create a symlink for a name consistent with the name of the
+  # rest of the static libraries built as a result of a build. The reason
+  # we cannot set the target name directly is that Cargo doesn't support
+  # hyphens in names of packages, so it builds the name by default with
+  # an underscore.
+  file(CREATE_LINK ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libcprover_api_rust.a ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libcprover-api-rust.a SYMBOLIC)
 endif()
 
 include(cmake/packaging.cmake)
