@@ -76,7 +76,7 @@ verification_resultt::verification_resultt(const verification_resultt &other)
 verification_resultt &
 verification_resultt::operator=(verification_resultt &&) = default;
 verification_resultt &
-verification_resultt::operator=(const verification_resultt &&other)
+verification_resultt::operator=(const verification_resultt &other)
 {
   *_impl = *other._impl;
   return *this;
@@ -122,17 +122,17 @@ std::vector<std::string> verification_resultt::get_property_ids() const
 std::string verification_resultt::get_property_description(
   const std::string &property_id) const
 {
-  auto dstringt_property = dstringt(property_id);
+  auto irepidt_property = irep_idt(property_id);
   const auto description =
-    _impl->get_properties().at(dstringt_property).description;
+    _impl->get_properties().at(irepidt_property).description;
   return description;
 }
 
 prop_statust
 verification_resultt::get_property_status(const std::string &property_id) const
 {
-  auto dstringt_property = dstringt(property_id);
-  switch(_impl->get_properties().at(dstringt_property).status)
+  auto irepidt_property = irep_idt(property_id);
+  switch(_impl->get_properties().at(irepidt_property).status)
   {
   case property_statust::ERROR:
     return prop_statust::ERROR;

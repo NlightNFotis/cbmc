@@ -7,7 +7,6 @@ SRC = \
   require_expr.cpp \
   require_symbol.cpp \
   run_test_with_compilers.cpp \
-  run_verification_engine.cpp \
   smt2irep.cpp \
   # Empty last line (please keep above list sorted!)
 

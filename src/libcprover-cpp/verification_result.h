@@ -11,9 +11,15 @@
 #include <string>
 #include <vector>
 
-class dstringt;
-struct property_infot;
-using propertiest = std::map<dstringt, property_infot>;
+#ifndef CPROVER_UTIL_IREP_H
+  #ifdef USE_DSTRING
+  typedef dstringt irep_idt;
+  #else
+  typedef std::string irep_idt;
+  #endif
+#endif
+// class propertiest;
+using propertiest = std::map<irep_idt, property_infot>;
 enum class resultt;
 
 // The enumerations here mirror the ones in properties.h.
@@ -53,7 +59,7 @@ struct verification_resultt
   verification_resultt(const verification_resultt &other);
   ~verification_resultt();
   verification_resultt &operator=(verification_resultt &&);
-  verification_resultt &operator=(const verification_resultt &&other);
+  verification_resultt &operator=(const verification_resultt &other);
 
   void set_result(resultt &result);
   void set_properties(propertiest &properties);
