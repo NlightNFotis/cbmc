@@ -13,6 +13,11 @@ Author: Peter Schrammel
 #define CPROVER_GOTO_SYMEX_SHADOW_MEMORY_UTIL_H
 
 #include <util/irep.h>
+#include <util/message.h>
+
+#include "goto_symex_state.h"
+
+#include <pointer-analysis/value_set_dereference.h>
 
 class exprt;
 class typet;
@@ -31,5 +36,76 @@ irep_idt extract_field_name(const exprt &string_expr);
 ///    __CPROVER_field_get.
 /// \param type The followed type of expr.
 void clean_pointer_expr(exprt &expr, const typet &type);
+
+// TODO: doxygen
+void log_get_field(
+  const namespacet &ns,
+  const messaget &log,
+  const irep_idt &field_name,
+  const exprt &expr);
+
+// TODO: doxygen
+void replace_invalid_object_by_null(exprt &expr);
+
+// TODO: doxygen
+void log_value_set(
+  const namespacet &ns,
+  const messaget &log,
+  const std::vector<exprt> &value_set);
+
+// TODO: doxygen
+const exprt &
+get_field_init_expr(const irep_idt &field_name, const goto_symex_statet &state);
+
+// TODO: doxygen
+bool filter_by_value_set(
+  const std::vector<exprt> &value_set,
+  const exprt &address);
+
+// TODO: doxygen
+void log_value_set_match(
+  const namespacet &ns,
+  const messaget &log,
+  const shadow_memory_statet::shadowed_addresst &shadowed_address,
+  const exprt &matched_base_address,
+  const value_set_dereferencet::valuet &dereference,
+  const exprt &expr,
+  const value_set_dereferencet::valuet &shadow_dereference);
+
+// TODO: doxygen
+void log_value_set_match(
+  const namespacet &ns,
+  const messaget &log,
+  const exprt &address,
+  const exprt &expr);
+
+// TODO: doxygen
+void log_try_shadow_address(
+  const namespacet &ns,
+  const messaget &log,
+  const shadow_memory_statet::shadowed_addresst &shadowed_address);
+
+// TODO: doxygen
+void log_cond(
+  const namespacet &ns,
+  const messaget &log,
+  const char *cond_text,
+  const exprt &cond);
+
+// TODO: doxygen
+exprt compute_or_over_cells(
+  const exprt &expr,
+  const typet &field_type,
+  const namespacet &ns,
+  const messaget &log,
+  const bool is_union);
+
+// TODO: doxygen
+exprt compute_max_over_cells(
+  const exprt &expr,
+  const typet &field_type,
+  const namespacet &ns,
+  const messaget &log,
+  const bool is_union);
 
 #endif // CPROVER_GOTO_SYMEX_SHADOW_MEMORY_STATE_H
