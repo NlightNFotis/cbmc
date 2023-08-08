@@ -80,4 +80,32 @@ void log_cond(
   const char *cond_text,
   const exprt &cond);
 
+// TODO: doxygen
+void replace_invalid_object_by_null(exprt &expr);
+
+// TODO: doxygen
+const exprt &
+get_field_init_expr(const irep_idt &field_name, const goto_symex_statet &state);
+
+// TODO: doxygen
+bool contains_compatible_address(
+  const std::vector<exprt> &value_set,
+  const exprt &address);
+
+// TODO: doxygen
+exprt compute_or_over_cells(
+  const exprt &expr,
+  const typet &field_type,
+  const namespacet &ns,
+  const messaget &log,
+  const bool is_union);
+
+// TODO: doxygen
+exprt compute_max_over_cells(
+  const exprt &expr,
+  const typet &field_type,
+  const namespacet &ns,
+  const messaget &log,
+  const bool is_union);
+
 #endif // CPROVER_GOTO_SYMEX_SHADOW_MEMORY_UTIL_H
