@@ -1,4 +1,4 @@
-FUTURE
+CORE
 main.c
 --no-shadow-memory-matching '.*\.c:.*__cs_.*'
 ^EXIT=0$
