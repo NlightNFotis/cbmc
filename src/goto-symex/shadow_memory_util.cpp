@@ -141,16 +141,18 @@ const exprt &get_field_init_expr(
   const irep_idt& field_name,
   const goto_symex_statet &state)
 {
+  // Search the local fields first.
   auto field_type_it = state.shadow_memory.fields.local_fields.find(field_name);
   if (field_type_it != state.shadow_memory.fields.local_fields.end()) {
     return field_type_it->second;
   }
+  // Otherwise, search the globals. If we can't find it this time as well,
+  // we bail.
   field_type_it = state.shadow_memory.fields.global_fields.find(field_name);
   CHECK_RETURN(field_type_it != state.shadow_memory.fields.global_fields.end());
   return field_type_it->second;
 }
 
-/// Given a pointer expression `address` checks if any expr in value_set is compatible
 bool filter_by_value_set(
   const std::vector<exprt>  &value_set,
   const exprt &address)
@@ -180,8 +182,6 @@ bool filter_by_value_set(
   }
   return false;
 }
-
-
 
 void log_value_set_match(
   const namespacet &ns,
@@ -385,7 +385,10 @@ exprt compute_or_over_cells(
   return or_values(values, field_type);
 }
 
-// TODO: doxygen?
+/// @brief Craft an expression that returns the max of two values.
+/// @param element The first value we want to compare.
+/// @param field_type The type we want to interpret the first value as.
+/// @param [out] max The second value - the eventual result will be placed here.
 static void max_element(
   const exprt &element,
   const typet &field_type,
