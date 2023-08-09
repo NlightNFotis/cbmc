@@ -37,6 +37,17 @@ irep_idt extract_field_name(const exprt &string_expr);
 /// \param type The followed type of expr.
 void clean_pointer_expr(exprt &expr, const typet &type);
 
+// TODO: Daxygen
+exprt deref_expr(const exprt &expr);
+
+// TODO: DOxYGEN
+void log_set_field(
+  const namespacet &ns,
+  const messaget &log,
+  const irep_idt &field_name,
+  const exprt &expr,
+  const exprt &value);
+
 // TODO: doxygen
 void log_get_field(
   const namespacet &ns,

@@ -52,6 +52,16 @@ static void remove_array_type_l2(typet &type)
   size.remove_level_2();
 }
 
+exprt deref_expr(const exprt &expr)
+{
+  if(expr.id() == ID_address_of)
+  {
+    return to_address_of_expr(expr).object();
+  }
+
+  return dereference_exprt(expr);
+}
+
 void clean_pointer_expr(exprt &expr, const typet &type)
 {
   if(
@@ -77,6 +87,21 @@ void clean_pointer_expr(exprt &expr, const typet &type)
     expr = address_of_exprt(expr);
   }
   POSTCONDITION(expr.type().id() == ID_pointer);
+}
+
+void log_set_field(
+  const namespacet &ns,
+  const messaget &log,
+  const irep_idt &field_name,
+  const exprt &expr,
+  const exprt &value)
+{
+  log.conditional_output(
+    log.debug(), [field_name, ns, expr, value](messaget::mstreamt &mstream) {
+      mstream << "Shadow memory: set_field: " << id2string(field_name) << " for "
+              << format(expr) << " to " << format(value)
+              << messaget::eom;
+    });
 }
 
 void log_get_field(

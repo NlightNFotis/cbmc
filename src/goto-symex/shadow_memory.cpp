@@ -11,6 +11,7 @@ Author: Peter Schrammel
 
 #include "shadow_memory.h"
 
+#include <util/arith_tools.h>
 #include <util/bitvector_types.h>
 #include <util/c_types.h>
 #include <util/expr_initializer.h>
@@ -18,6 +19,7 @@ Author: Peter Schrammel
 #include <util/format_type.h>
 #include <util/fresh_symbol.h>
 #include <util/pointer_expr.h>
+#include <util/pointer_offset_size.h>
 #include <util/prefix.h>
 #include <util/string_constant.h>
 
@@ -179,6 +181,244 @@ static exprt get_matched_expr_cond(
   return expr_cond;
 }
 
+// TODO: doxygen?
+static value_set_dereferencet::valuet get_shadow(
+  const exprt &shadow,
+  const object_descriptor_exprt &matched_base_descriptor,
+  const exprt &expr,
+  const namespacet &ns,
+  const messaget &log)
+{
+  object_descriptor_exprt shadowed_object = matched_base_descriptor;
+  shadowed_object.object() = shadow;
+  value_set_dereferencet::valuet shadow_dereference =
+    value_set_dereferencet::build_reference_to(shadowed_object, expr, ns);
+#ifdef DEBUG_SM
+  log.debug() << "Shadow memory: shadow-deref: "
+              << format(shadow_dereference.value) << messaget::eom;
+#endif
+  return shadow_dereference;
+}
+
+// Unfortunately.
+static object_descriptor_exprt normalize(
+    const object_descriptor_exprt &expr, const namespacet &ns)
+{
+  if(expr.object().id() == ID_symbol) {
+    return expr;
+  }
+  if(expr.offset().id() == ID_unknown) {
+    return expr;
+  }
+
+  object_descriptor_exprt result = expr;
+  mp_integer offset = numeric_cast_v<mp_integer>(to_constant_expr(expr.offset()));
+  exprt object = expr.object();
+
+  while(true)
+  {
+    if(object.id() == ID_index)
+    {
+      const index_exprt &index_expr = to_index_expr(object);
+      mp_integer index =
+          numeric_cast_v<mp_integer>(to_constant_expr(index_expr.index()));
+
+      offset += *pointer_offset_size(index_expr.type(), ns) * index;
+      object = index_expr.array();
+    }
+    else if(object.id() == ID_member)
+    {
+      const member_exprt &member_expr = to_member_expr(object);
+      const struct_typet &struct_type =
+          to_struct_type(ns.follow(member_expr.struct_op().type()));
+      offset +=
+          *member_offset(struct_type, member_expr.get_component_name(), ns);
+      object = member_expr.struct_op();
+    }
+    else
+    {
+      break;
+    }
+  }
+  result.object() = object;
+  result.offset() = from_integer(offset, expr.offset().type());
+  return result;
+}
+
+/// Used for set_field and shadow memory copy
+static std::vector<std::pair<exprt, exprt>> get_shadow_memory_for_matched_object(
+    const exprt &expr,
+    const exprt &matched_object,
+    const std::vector<shadow_memory_statet::shadowed_addresst> &addresses,
+    const namespacet &ns,
+    const messaget &log,
+    bool &exact_match)
+{
+  std::vector<std::pair<exprt, exprt>> result;
+  for (const auto &shadowed_address : addresses)
+  {
+    log_try_shadow_address(ns, log, shadowed_address);
+
+    if(!are_types_compatible(expr.type(), shadowed_address.address.type()))
+    {
+#ifdef DEBUG_SM
+      log.debug() << "Shadow memory: incompatible types "
+        << from_type(ns, "", expr.type()) << ", "
+        << from_type(ns, "", shadowed_address.address.type())
+        << messaget::eom;
+#endif
+      continue;
+    }
+
+    object_descriptor_exprt matched_base_descriptor =
+        normalize(to_object_descriptor_expr(matched_object), ns);
+
+    value_set_dereferencet::valuet dereference =
+        value_set_dereferencet::build_reference_to(matched_base_descriptor, expr, ns);
+
+    exprt matched_base_address = address_of_exprt(matched_base_descriptor.object());
+    clean_string_constant(to_address_of_expr(matched_base_address).op());
+
+    // NULL has already been handled in the caller; skip.
+    if(matched_base_descriptor.object().id() == ID_null_object)
+    {
+      continue;
+    }
+    const value_set_dereferencet::valuet shadow_dereference =
+        get_shadow(shadowed_address.shadow, matched_base_descriptor, expr, ns, log);
+    log_value_set_match(
+        ns, log, shadowed_address, matched_base_address, dereference, expr, shadow_dereference);
+
+    const exprt base_cond = get_matched_base_cond(
+        shadowed_address.address, matched_base_address,ns, log);
+    log_cond(ns, log, "base_cond", base_cond);
+    if(base_cond.is_false())
+    {
+      continue;
+    }
+
+    const exprt expr_cond = get_matched_expr_cond(
+        dereference.pointer, expr, ns, log);
+    if(expr_cond.is_false()) {
+      continue;
+    }
+
+    if(base_cond.is_true() && expr_cond.is_true()) {
+#ifdef DEBUG_SM
+      log.debug() << "exact match" << messaget::eom;
+#endif
+      exact_match = true;
+      result.clear();
+      result.emplace_back(base_cond, shadow_dereference.pointer);
+      break;
+    }
+
+    if(base_cond.is_true())
+    {
+      // No point looking at further shadow addresses
+      // as only one of them can match.
+#ifdef DEBUG_SM
+      log.debug() << "base match" << messaget::eom;
+#endif
+      result.clear();
+      result.emplace_back(expr_cond, shadow_dereference.pointer);
+      break;
+    }
+    else
+    {
+#ifdef DEBUG_SM
+      log.debug() << "conditional match" << messaget::eom;
+#endif
+      result.emplace_back(and_exprt(base_cond, expr_cond), shadow_dereference.pointer);
+    }
+  }
+  return result;
+}
+
+/// returns true if we attempt to set/get a field on a NULL pointer
+static bool set_field_check_null(
+  const namespacet &ns,
+  const messaget &log,
+  const std::vector<exprt> &value_set,
+  const exprt &expr)
+{
+  const null_pointer_exprt null_pointer(to_pointer_type(expr.type()));
+  if(value_set.size() == 1 && contains_compatible_address(value_set, null_pointer))
+  {
+#ifdef DEBUG_SM
+    log.conditional_output(
+      log.debug(), [ns, null_pointer, expr](messaget::mstreamt &mstream) {
+        mstream << "Shadow memory: value set match: " << format(null_pointer)
+                << " <-- " << format(expr) << messaget::eom;
+        mstream << "Shadow memory: ignoring set field on NULL object" << messaget::eom;
+      });
+#endif
+    return true;
+  }
+  return false;
+}
+
+/// Used for set_field and shadow memory copy
+static optionalt<exprt> get_shadow_memory(
+    const exprt &expr,
+    const std::vector<exprt> &value_set,
+    const std::vector<shadow_memory_statet::shadowed_addresst> &addresses,
+    const namespacet &ns,
+    const messaget &log,
+    size_t &mux_size)
+{
+  std::vector<std::pair<exprt, exprt>> conds_values;
+  for(const auto &matched_object : value_set)
+  {
+    if(matched_object.id() != ID_object_descriptor)
+    {
+      log.warning()
+          << "Shadow memory: value set contains unknown for "
+          << format(expr)
+          << messaget::eom;
+      continue;
+    }
+    if(to_object_descriptor_expr(matched_object).root_object().id() == ID_integer_address)
+    {
+      log.warning()
+          << "Shadow memory: value set contains integer_address for "
+          << format(expr)
+          << messaget::eom;
+      continue;
+    }
+    if(matched_object.type().get_bool(ID_C_is_failed_symbol))
+    {
+      log.warning()
+          << "Shadow memory: value set contains failed symbol for "
+          << format(expr)
+          << messaget::eom;
+      continue;
+    }
+
+    bool exact_match = false;
+    auto per_value_set_conds_values = get_shadow_memory_for_matched_object(
+        expr, matched_object, addresses, ns, log, exact_match);
+
+    if (!per_value_set_conds_values.empty())
+    {
+      if (exact_match) {
+        conds_values.clear();
+      }
+      conds_values.insert(conds_values.begin(),
+          per_value_set_conds_values.begin(), per_value_set_conds_values.end());
+      mux_size += conds_values.size() - 1;
+      if (exact_match) {
+        break;
+      }
+    }
+  }
+  if(!conds_values.empty())
+  {
+    return build_if_else_expr(conds_values);
+  }
+  return {};
+}
+
 void shadow_memoryt::initialize_shadow_memory(
   goto_symex_statet &state,
   exprt expr,
@@ -243,26 +483,89 @@ void shadow_memoryt::symex_set_field(
   goto_symex_statet &state,
   const exprt::operandst &arguments)
 {
-  // To be implemented
-}
+  // parse set_field call
+  INVARIANT(
+      arguments.size() == 3,
+    CPROVER_PREFIX "set_field requires 3 arguments");
+  irep_idt field_name = extract_field_name(arguments[1]);
 
-// TODO: doxygen?
-static value_set_dereferencet::valuet get_shadow(
-  const exprt &shadow,
-  const object_descriptor_exprt &matched_base_descriptor,
-  const exprt &expr,
-  const namespacet &ns,
-  const messaget &log)
-{
-  object_descriptor_exprt shadowed_object = matched_base_descriptor;
-  shadowed_object.object() = shadow;
-  value_set_dereferencet::valuet shadow_dereference =
-    value_set_dereferencet::build_reference_to(shadowed_object, expr, ns);
+  exprt expr = arguments[0];
+  typet expr_type = expr.type();
+  DATA_INVARIANT_WITH_DIAGNOSTICS(
+    expr_type.id() == ID_pointer,
+    "shadow memory requires a pointer expression",
+    irep_pretty_diagnosticst{expr_type});
+
+  exprt value = arguments[2];
+  log_set_field(ns, log, field_name, expr, value);
+  INVARIANT(
+    state.shadow_memory.address_fields.count(field_name) == 1,
+    id2string(field_name) + " should exist");
+  const auto &addresses = state.shadow_memory.address_fields.at(field_name);
+
+  // get value set
+  replace_invalid_object_by_null(expr);
 #ifdef DEBUG_SM
-  log.debug() << "Shadow memory: shadow-deref: "
-              << format(shadow_dereference.value) << messaget::eom;
+  log_set_field(ns, log, field_name, expr, value);
+#endif 
+  std::vector<exprt> value_set = state.value_set.get_value_set(expr, ns);
+  log_value_set(ns, log, value_set);
+  if(set_field_check_null(ns, log, value_set, expr))
+  {
+    log.warning() << "Shadow memory: cannot set shadow memory of NULL" << messaget::eom;
+    return;
+  }
+
+  // build lhs
+  const exprt &rhs = value;
+  size_t mux_size = 0;
+  optionalt<exprt> maybe_lhs = get_shadow_memory(
+      expr, value_set, addresses, ns, log, mux_size);
+
+  // add to equation
+  if(maybe_lhs.has_value())
+  {
+    if (mux_size >= 10)
+    {
+      log.warning() << "Shadow memory: mux size set_field: " << mux_size
+                    << messaget::eom;
+    }
+    else
+    {
+      log.debug() << "Shadow memory: mux size set_field: " << mux_size
+                  << messaget::eom;
+    }
+    const exprt lhs = deref_expr(*maybe_lhs);
+#ifdef DEBUG_SM
+    log.debug() << "Shadow memory: LHS: " << format(lhs) << messaget::eom;
 #endif
-  return shadow_dereference;
+    if(lhs.type().id() == ID_empty)
+    {
+      std::stringstream s;
+      s << "Shadow memory: cannot set shadow memory via type void* for "
+        << format(expr)
+        << ". Insert a cast to the type that you want to access.";
+      throw invalid_input_exceptiont(s.str());
+    }
+    // We replicate the rhs value on each byte of the value that we set.
+    // This allows the get_field or/max semantics to operate correctly
+    // on unions.
+    const auto per_byte_rhs =
+      expr_initializer(lhs.type(), expr.source_location(), ns, rhs);
+    CHECK_RETURN(per_byte_rhs.has_value());
+
+#ifdef DEBUG_SM
+    log.debug() << "Shadow memory: RHS: " << format(per_byte_rhs.value()) << messaget::eom;
+#endif
+    symex_assign(state, lhs, typecast_exprt::conditional_cast(per_byte_rhs.value(), lhs.type()));
+  }
+  else
+  {
+    log.warning()
+      << "Shadow memory: cannot set_field for "
+      << format(expr)
+      << messaget::eom;
+  }
 }
 
 // TODO: doxygen?
@@ -774,3 +1077,4 @@ void shadow_memoryt::convert_field_declaration(
   // record the field's initial value (and type)
   fields[field_name] = expr;
 }
+
