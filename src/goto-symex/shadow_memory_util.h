@@ -99,6 +99,10 @@ const exprt &
 get_field_init_expr(const irep_idt &field_name, const goto_symex_statet &state);
 
 // TODO: doxygen
+const typet &
+get_field_init_type(const irep_idt &field_name, const goto_symex_statet &state);
+
+// TODO: doxygen
 bool contains_compatible_address(
   const std::vector<exprt> &value_set,
   const exprt &address);
