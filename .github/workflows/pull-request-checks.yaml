@@ -12,10 +12,8 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v3
-        with:
-          submodules: recursive
       - name: Hello world
-        run: python -c "print("Hello World")"
+        run: Write-Output python -c 'import sys; print(sys.executable)'
 
 
   # This job takes approximately 65 to 84 minutes
