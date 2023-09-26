@@ -1,22 +1,22 @@
-name: Build Doxygen Documentation
-on:
-  pull_request:
-    branches: [ develop ]
+# name: Build Doxygen Documentation
+# on:
+#   pull_request:
+#     branches: [ develop ]
 
-jobs:
-  # This job takes approximately 2 minutes
-  check-doxygen:
-    # Note that the versions used for this `check-doxygen` job should be kept in
-    # sync with the `publish` job.
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Fetch dependencies
-      env:
-        # This is needed in addition to -yq to prevent apt-get from asking for
-        # user input
-        DEBIAN_FRONTEND: noninteractive
-      run: |
-        sudo apt-get install --no-install-recommends -yq doxygen graphviz
-    - name: Run Doxygen
-      run: ./scripts/run_doxygen.sh
+# jobs:
+#   # This job takes approximately 2 minutes
+#   check-doxygen:
+#     # Note that the versions used for this `check-doxygen` job should be kept in
+#     # sync with the `publish` job.
+#     runs-on: ubuntu-22.04
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Fetch dependencies
+#       env:
+#         # This is needed in addition to -yq to prevent apt-get from asking for
+#         # user input
+#         DEBIAN_FRONTEND: noninteractive
+#       run: |
+#         sudo apt-get install --no-install-recommends -yq doxygen graphviz
+#     - name: Run Doxygen
+#       run: ./scripts/run_doxygen.sh

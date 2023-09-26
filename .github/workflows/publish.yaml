@@ -1,31 +1,31 @@
-name: Publish CBMC documentation
-on: [push, pull_request]
+# name: Publish CBMC documentation
+# on: [push, pull_request]
 
-jobs:
-  # This job takes approximately 3 minutes
-  publish:
-    # Note that the versions used for this `publish` job should be kept in sync
-    # with the `check-doxygen` job.
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+# jobs:
+#   # This job takes approximately 3 minutes
+#   publish:
+#     # Note that the versions used for this `publish` job should be kept in sync
+#     # with the `check-doxygen` job.
+#     runs-on: ubuntu-22.04
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
 
-      - name: Install doxygen
-        run: sudo apt install doxygen graphviz pandoc npm
+#       - name: Install doxygen
+#         run: sudo apt install doxygen graphviz pandoc npm
 
-      - name: Install python modules
-        run: sudo python3 -m pip install gitpython pandocfilters
+#       - name: Install python modules
+#         run: sudo python3 -m pip install gitpython pandocfilters
 
-      - name: Install mermaid diagram filter
-        run: sudo npm install --global mermaid-filter
+#       - name: Install mermaid diagram filter
+#         run: sudo npm install --global mermaid-filter
 
-      - name: Build documentation
-        run: cd doc/doxygen-root && make && touch html/.nojekyll
+#       - name: Build documentation
+#         run: cd doc/doxygen-root && make && touch html/.nojekyll
 
-      - name: Publish documentation
-        if: ${{ github.event_name == 'push' && startsWith('refs/heads/develop', github.ref) }}
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: doc/doxygen-root/html
+#       - name: Publish documentation
+#         if: ${{ github.event_name == 'push' && startsWith('refs/heads/develop', github.ref) }}
+#         uses: JamesIves/github-pages-deploy-action@v4
+#         with:
+#           branch: gh-pages
+#           folder: doc/doxygen-root/html
