@@ -920,7 +920,6 @@ code_with_references_listt assign_from_json(
   std::unordered_map<std::string, object_creation_referencet> &references)
 {
   source_locationt location{};
-  location.set_function(function_id);
   allocate_objectst allocate(ID_java, location, function_id, symbol_table);
   const symbolt *function_symbol = symbol_table.lookup(function_id);
   INVARIANT(function_symbol, "Function must appear in symbol table");

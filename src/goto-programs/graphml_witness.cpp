@@ -257,7 +257,7 @@ static bool filter_out(
      source_location.is_built_in() ||
      source_location.get_line().empty())
   {
-    const irep_idt id = source_location.get_function();
+    const irep_idt id = it->function_id;
     // Do not filter out assertions in functions the name of which starts with
     // CPROVER_PREFIX, because we need to maintain those as violation nodes:
     // these are assertions generated, for examples, for memory leaks.

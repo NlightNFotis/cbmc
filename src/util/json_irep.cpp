@@ -152,8 +152,9 @@ json_objectt json(const source_locationt &location)
   if(!location.get_column().empty())
     result["column"] = json_stringt(location.get_column());
 
-  if(!location.get_function().empty())
-    result["function"] = json_stringt(location.get_function());
+  // if(!location.get_function().empty())
+  //   result["function"] = json_stringt(location.
+  //   get_function());
 
   if(!location.get_java_bytecode_index().empty())
     result["bytecodeIndex"] = json_stringt(location.get_java_bytecode_index());

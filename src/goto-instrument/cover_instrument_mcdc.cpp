@@ -666,7 +666,6 @@ void cover_mcdc_instrumentert::instrument(
       annotated_location.set_comment(comment_t);
       annotated_location.set(ID_coverage_criterion, coverage_criterion);
       annotated_location.set_property_class(property_class);
-      annotated_location.set_function(function_id);
       *i_it = make_assertion(not_exprt(p), annotated_location);
 
       std::string comment_f = description + " '" + p_string + "' false";
@@ -675,7 +674,6 @@ void cover_mcdc_instrumentert::instrument(
       annotated_location.set_comment(comment_f);
       annotated_location.set(ID_coverage_criterion, coverage_criterion);
       annotated_location.set_property_class(property_class);
-      annotated_location.set_function(function_id);
       *i_it = make_assertion(p, annotated_location);
     }
 
@@ -701,7 +699,6 @@ void cover_mcdc_instrumentert::instrument(
       annotated_location.set_comment(description);
       annotated_location.set(ID_coverage_criterion, coverage_criterion);
       annotated_location.set_property_class(property_class);
-      annotated_location.set_function(function_id);
       *i_it = make_assertion(not_exprt(p), annotated_location);
     }
 

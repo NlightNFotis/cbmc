@@ -895,7 +895,6 @@ void add_java_array_types(symbol_table_baset &symbol_table)
     code_declt declare_cloned(local_symexpr);
 
     source_locationt location;
-    location.set_function(local_name);
     side_effect_exprt java_new_array(
       ID_java_new_array, java_reference_type(struct_tag_type), location);
     dereference_exprt old_array{this_symbol.symbol_expr()};

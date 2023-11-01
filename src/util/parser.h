@@ -121,10 +121,10 @@ public:
     e.add_source_location()=source_location;
   }
 
-  void set_function(const irep_idt &function)
-  {
-    source_location.set_function(function);
-  }
+  // void set_function(const irep_idt &function)
+  // {
+  //   source_location.set_function(function);
+  // }
 
   void advance_column(unsigned token_width)
   {

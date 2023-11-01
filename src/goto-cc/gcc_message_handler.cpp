@@ -28,16 +28,7 @@ void gcc_message_handlert::print(
     const irep_idt file = location.get_file();
     const irep_idt line = location.get_line();
     const irep_idt column = location.get_column();
-    const irep_idt function = location.get_function();
 
-    if(!function.empty())
-    {
-      if(!file.empty())
-        out << string(messaget::bold) << file << ':' << string(messaget::reset)
-            << ' ';
-      out << "In function " << string(messaget::bold) << '\'' << function
-          << '\'' << string(messaget::reset) << ":\n";
-    }
 
     if(!line.empty())
     {

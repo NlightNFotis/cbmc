@@ -1994,7 +1994,6 @@ void goto_check_ct::memory_leak_check(const irep_idt &function_id)
   new_code.add(goto_programt::make_assignment(leak_expr, leak_expr));
 
   source_locationt source_location;
-  source_location.set_function(function_id);
 
   equal_exprt eq(leak_expr, null_pointer_exprt(to_pointer_type(leak.type)));
 
@@ -2219,10 +2218,6 @@ void goto_check_ct::goto_check(
         if(!it->source_location().get_line().empty())
           instruction.source_location_nonconst().set_line(
             it->source_location().get_line());
-
-        if(!it->source_location().get_function().empty())
-          instruction.source_location_nonconst().set_function(
-            it->source_location().get_function());
 
         if(!it->source_location().get_column().empty())
         {

@@ -745,7 +745,7 @@ void goto_convertt::do_alloca(
   // alloca. Also, we can only add instrumentation when we're in a function
   // context.
   if(
-    function.source_location().get_function() == "alloca" || !targets.prefix ||
+    function.get_identifier() == irep_idt("alloca") || !targets.prefix ||
     !targets.suffix)
   {
     return;
@@ -757,7 +757,7 @@ void goto_convertt::do_alloca(
   symbol_exprt this_alloca_ptr =
     get_fresh_aux_symbol(
       alloca_type.return_type(),
-      id2string(function.source_location().get_function()),
+      id2string(function.get_identifier()),
       "tmp_alloca",
       source_location,
       mode,

@@ -170,8 +170,8 @@ void expr2ct::get_shorthands(const exprt &expr)
       const symbolt *symbol;
       // we use the source-level function name as a means to detect collisions,
       // which is ok, because this is about generating user-visible output
-      if(!ns.lookup(symbol_id, symbol))
-        func=symbol->location.get_function();
+      if(!ns.lookup(symbol_id, symbol) && symbol->is_function())
+        func = symbol->name;
 
       has_collision=!ns_collision[func].insert(sh).second;
     }

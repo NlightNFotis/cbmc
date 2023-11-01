@@ -385,8 +385,6 @@ protected:
       static_cast<source_locationt &>(dest.add(ID_C_source_location));
     source_location.set_file(token.filename);
     source_location.set_line(token.line_no);
-    if(!current_function.empty())
-      source_location.set_function(current_function);
   }
 
   void make_subtype(const typet &src, typet &dest)

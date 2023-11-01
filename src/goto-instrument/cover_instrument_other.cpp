@@ -100,6 +100,5 @@ void cover_instrument_end_of_function(
   source_locationt annotated_location = location;
   annotated_location.set_comment(comment);
   annotated_location.set_property_class("reachability_constraint");
-  annotated_location.set_function(function_id);
   *if_it = make_assertion(false_exprt(), annotated_location);
 }

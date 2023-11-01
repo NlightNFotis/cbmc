@@ -285,7 +285,6 @@ void document_propertiest::doit()
 
         new_source_location.set_file(source_location.get_file());
         new_source_location.set_line(source_location.get_line());
-        new_source_location.set_function(source_location.get_function());
 
         claim_set[new_source_location].comment_set.insert(
           source_location.get_comment());

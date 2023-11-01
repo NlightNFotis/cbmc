@@ -314,7 +314,6 @@ void dfcc_wrapper_programt::encode_requires_write_set()
     wrapper_sl));
 
   source_locationt check_sl(wrapper_sl);
-  check_sl.set_function(wrapper_symbol.name);
   check_sl.set_property_class("no_alloc_dealloc_in_requires");
   check_sl.set_comment(
     "Check that requires do not allocate or deallocate memory");
@@ -394,7 +393,6 @@ void dfcc_wrapper_programt::encode_ensures_write_set()
     wrapper_sl));
 
   source_locationt check_sl(wrapper_sl);
-  check_sl.set_function(wrapper_symbol.name);
   check_sl.set_property_class("no_alloc_dealloc_in_ensures");
   check_sl.set_comment(
     "Check that ensures do not allocate or deallocate memory");
@@ -736,7 +734,6 @@ void dfcc_wrapper_programt::encode_havoced_function_call()
       wrapper_sl));
 
     source_locationt check_sl(wrapper_sl);
-    check_sl.set_function(wrapper_symbol.name);
     check_sl.set_property_class("assigns");
     check_sl.set_comment(
       "Check that the assigns clause of " + id2string(contract_symbol.name) +
@@ -762,7 +759,6 @@ void dfcc_wrapper_programt::encode_havoced_function_call()
       wrapper_sl));
 
     source_locationt check_sl(wrapper_sl);
-    check_sl.set_function(wrapper_symbol.name);
     check_sl.set_property_class("frees");
     check_sl.set_comment(
       "Check that the frees clause of " + id2string(contract_symbol.name) +

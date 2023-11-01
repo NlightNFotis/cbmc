@@ -64,12 +64,9 @@ void label_properties(
     if(it->source_location().is_nil())
     {
       it->source_location_nonconst() = source_locationt{};
-      it->source_location_nonconst().set_function(function_identifier);
     }
 
-    irep_idt function = it->source_location().get_function();
-
-    std::string prefix=id2string(function);
+    std::string prefix=id2string(function_identifier);
     if(!it->source_location().get_property_class().empty())
     {
       if(!prefix.empty())
