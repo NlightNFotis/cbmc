@@ -102,10 +102,10 @@ static std::string type2name(
   if(type.get_bool(ID_C_noreturn))
     result+='n';
 
-  // this isn't really a qualifier, but the linker needs to
-  // distinguish these - should likely be fixed in the linker instead
-  if(!type.source_location().get_function().empty())
-    result+='l';
+  // // this isn't really a qualifier, but the linker needs to
+  // // distinguish these - should likely be fixed in the linker instead
+  // if(!type.source_location().get_function().empty())
+  //   result+='l';
 
   if(type.id().empty())
     throw "empty type encountered";

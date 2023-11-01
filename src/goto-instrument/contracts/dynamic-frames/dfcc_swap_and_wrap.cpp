@@ -203,7 +203,6 @@ void dfcc_swap_and_wrapt::check_contract(
 
   // Any other call occuring with `check_completed` true is forbidden.
   source_locationt sl(wrapper_symbol.location);
-  sl.set_function(wrapper_symbol.name);
   sl.set_property_class("single_top_level_call");
   sl.set_comment(
     "Only a single top-level call to function " + id2string(function_id) +
@@ -255,7 +254,6 @@ void dfcc_swap_and_wrapt::check_contract(
   else
   {
     source_locationt sl(wrapper_symbol.location);
-    sl.set_function(wrapper_symbol.name);
     sl.set_property_class("no_recursive_call");
     sl.set_comment(
       "No recursive call to function " + id2string(function_id) +

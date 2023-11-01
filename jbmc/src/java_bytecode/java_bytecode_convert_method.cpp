@@ -313,7 +313,6 @@ void java_bytecode_convert_method_lazy(
   symbolt method_symbol{method_identifier, typet{}, ID_java};
   method_symbol.base_name=m.base_name;
   method_symbol.location=m.source_location;
-  method_symbol.location.set_function(method_identifier);
 
   if(m.is_public)
     member_type.set_access(ID_public);
@@ -584,7 +583,6 @@ void java_bytecode_convert_methodt::convert(
   // Update the symbol for the method
   method_symbol.mode=ID_java;
   method_symbol.location=m.source_location;
-  method_symbol.location.set_function(method_identifier);
 
   for(const auto &exception_name : m.throws_exception_table)
     method_type.add_throws_exception(exception_name);
@@ -2294,8 +2292,6 @@ void java_bytecode_convert_methodt::convert_invoke(
     }
   }
 
-  location.set_function(method_id);
-
   code_function_callt::argumentst arguments = pop(parameters.size());
 
   // double-check a bit
@@ -2396,7 +2392,6 @@ codet &java_bytecode_convert_methodt::replace_call_to_cprover_assume(
   operand = typecast_exprt::conditional_cast(operand, bool_typet());
 
   c = code_assumet(operand);
-  location.set_function(method_id);
   c.add_source_location() = location;
   return c;
 }
@@ -2904,12 +2899,9 @@ code_ifthenelset java_bytecode_convert_methodt::convert_if(
     code_gotot(label(std::to_string(label_number))));
 
   code_branch.cond().add_source_location() = location;
-  code_branch.cond().add_source_location().set_function(method_id);
   code_branch.then_case().add_source_location() =
     address_map.at(label_number).source->source_location;
-  code_branch.then_case().add_source_location().set_function(method_id);
   code_branch.add_source_location() = location;
-  code_branch.add_source_location().set_function(method_id);
 
   return code_branch;
 }

@@ -52,10 +52,6 @@ codet cpp_typecheckt::dtor(const symbolt &symbol, const symbol_exprt &this_expr)
 
   source_locationt source_location=symbol.type.source_location();
 
-  source_location.set_function(
-    id2string(symbol.base_name)+
-    "::~"+id2string(symbol.base_name)+"()");
-
   code_blockt block;
 
   const struct_union_typet::componentst &components =

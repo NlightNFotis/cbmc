@@ -143,11 +143,6 @@ void cpp_typecheckt::default_cpctor(
 {
   source_locationt source_location=symbol.type.source_location();
 
-  source_location.set_function(
-    id2string(symbol.base_name)+
-    "::"+id2string(symbol.base_name)+
-    "(const "+id2string(symbol.base_name)+" &)");
-
   // Produce default constructor first
   default_ctor(source_location, symbol.base_name, cpctor);
   cpp_declaratort &decl0=cpctor.declarators()[0];
@@ -279,12 +274,6 @@ void cpp_typecheckt::default_assignop(
   cpp_declarationt &cpctor)
 {
   source_locationt source_location=symbol.type.source_location();
-
-  source_location.set_function(
-    id2string(symbol.base_name)
-    + "& "+
-    id2string(symbol.base_name)+
-    "::operator=( const "+id2string(symbol.base_name)+"&)");
 
   std::string arg_name("ref");
 

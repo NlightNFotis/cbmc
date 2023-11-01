@@ -76,7 +76,6 @@ protected:
   {
     auto const &function_symbol = symbol_table.lookup_ref(function_name);
     source_locationt location = function_symbol.location;
-    location.set_function(function_name);
 
     function.body.add(goto_programt::make_assumption(false_exprt(), location));
     function.body.add(goto_programt::make_end_function(location));
@@ -94,14 +93,12 @@ protected:
     auto const &function_symbol = symbol_table.lookup_ref(function_name);
 
     source_locationt annotated_location = function_symbol.location;
-    annotated_location.set_function(function_name);
     annotated_location.set_comment("undefined function should be unreachable");
     annotated_location.set_property_class(ID_assertion);
     function.body.add(
       goto_programt::make_assertion(false_exprt(), annotated_location));
 
     source_locationt location = function_symbol.location;
-    location.set_function(function_name);
     function.body.add(goto_programt::make_end_function(location));
   }
 };
@@ -118,14 +115,12 @@ protected:
     auto const &function_symbol = symbol_table.lookup_ref(function_name);
 
     source_locationt annotated_location = function_symbol.location;
-    annotated_location.set_function(function_name);
     annotated_location.set_comment("undefined function should be unreachable");
     annotated_location.set_property_class(ID_assertion);
     function.body.add(
       goto_programt::make_assertion(false_exprt(), annotated_location));
 
     source_locationt location = function_symbol.location;
-    location.set_function(function_name);
     function.body.add(goto_programt::make_assumption(false_exprt(), location));
     function.body.add(goto_programt::make_end_function(location));
   }

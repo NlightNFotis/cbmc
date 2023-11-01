@@ -477,7 +477,7 @@ static void replace_history_parameter_rec(
     // history variable
     entry.first->second = get_fresh_aux_symbol(
                             parameter.type(),
-                            id2string(location.get_function()),
+                            id2string(function_name),
                             "tmp_cc",
                             location,
                             mode,

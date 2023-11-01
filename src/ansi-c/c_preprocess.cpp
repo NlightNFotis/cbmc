@@ -87,7 +87,6 @@ static void error_parse_line(
     if(state==4)
     {
       saved_error_location.set_file(file);
-      saved_error_location.set_function(function);
       saved_error_location.set_line(line_no);
       saved_error_location.set_column(column);
       error_msg=_error_msg;
@@ -127,7 +126,6 @@ static void error_parse_line(
     if(state==2)
     {
       saved_error_location.set_file(file);
-      saved_error_location.set_function(irep_idt());
       saved_error_location.set_line(line_no);
       saved_error_location.set_column(irep_idt());
     }

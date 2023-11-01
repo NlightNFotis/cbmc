@@ -445,6 +445,7 @@ void instrument_spec_assignst::track_plain_spec_target(
 /// Creates a fresh symbolt with given suffix, scoped to the function of
 /// \p location.
 static symbol_exprt create_fresh_symbol(
+  const irep_idt function_name,
   const std::string &suffix,
   const typet &type,
   const source_locationt &location,
@@ -453,7 +454,7 @@ static symbol_exprt create_fresh_symbol(
 {
   return get_fresh_aux_symbol(
            type,
-           id2string(location.get_function()),
+           id2string(function_name),
            suffix,
            location,
            mode,
@@ -659,11 +660,7 @@ void instrument_spec_assignst::target_validity_assertion(
   bool allow_null_target,
   goto_programt &dest) const
 {
-  // since assigns clauses are declared outside of their function body
-  // their source location might not have a function attribute
   source_locationt source_location(car.source_location());
-  if(source_location.get_function().empty())
-    source_location.set_function(function_id);
 
   source_location.set_property_class("assigns");
 
@@ -692,11 +689,6 @@ void instrument_spec_assignst::inclusion_check_assertion(
   goto_programt &dest) const
 {
   source_locationt source_location(car.source_location());
-
-  // since assigns clauses are declared outside of their function body
-  // their source location might not have a function attribute
-  if(source_location.get_function().empty())
-    source_location.set_function(function_id);
 
   add_pragma_disable_pointer_checks(source_location);
   add_pragma_disable_assigns_check(source_location);

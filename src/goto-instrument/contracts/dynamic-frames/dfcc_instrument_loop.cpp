@@ -365,7 +365,7 @@ dfcc_instrument_loopt::add_step_instructions(
     check_location.set_property_class("loop_invariant_base");
     check_location.set_comment(
       "Check invariant before entry for loop " +
-      id2string(check_location.get_function()) + "." +
+      id2string(function_id) + "." +
       std::to_string(cbmc_loop_id));
     step_instrs.add(
       goto_programt::make_assertion(initial_invariant, check_location));
@@ -397,7 +397,7 @@ dfcc_instrument_loopt::add_step_instructions(
     check_location.set_property_class("loop_assigns");
     check_location.set_comment(
       "Check assigns clause inclusion for loop " +
-      id2string(check_location.get_function()) + "." +
+      id2string(function_id) + "." +
       std::to_string(cbmc_loop_id));
     step_instrs.add(goto_programt::make_assertion(check_var, check_location));
     step_instrs.add(goto_programt::make_dead(check_var, loop_head_location));
@@ -510,7 +510,7 @@ void dfcc_instrument_loopt::add_body_instructions(
     check_location.set_property_class("loop_invariant_step");
     check_location.set_comment(
       "Check invariant after step for loop " +
-      id2string(check_location.get_function()) + "." +
+      // id2string(function_name) + "." +
       std::to_string(cbmc_loop_id));
     // Assume the loop invariant after havocing the state.
     // Replace bound variables by fresh instances in quantified formulas.
@@ -540,7 +540,7 @@ void dfcc_instrument_loopt::add_body_instructions(
       check_location.set_property_class("loop_decreases");
       check_location.set_comment(
         "Check variant decreases after step for loop " +
-        id2string(check_location.get_function()) + "." +
+        id2string(function_id) + "." +
         std::to_string(cbmc_loop_id));
       pre_loop_latch_instrs.add(goto_programt::make_assertion(
         generate_lexicographic_less_than_check(

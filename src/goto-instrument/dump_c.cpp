@@ -231,7 +231,6 @@ void dump_ct::operator()(std::ostream &os)
     const irep_idt &type_id=symbol.type.id();
 
     if(symbol.is_type &&
-       symbol.location.get_function().empty() &&
        (type_id==ID_struct ||
         type_id==ID_union ||
         type_id==ID_c_enum))
@@ -867,8 +866,7 @@ void dump_ct::gather_global_typedefs()
   {
     const symbolt &symbol=symbol_entry.second;
 
-    if(symbol.is_macro && symbol.is_type &&
-       symbol.location.get_function().empty())
+    if(symbol.is_macro && symbol.is_type)
     {
       const irep_idt &typedef_str=symbol.type.get(ID_C_typedef);
       PRECONDITION(!typedef_str.empty());
@@ -1538,8 +1536,7 @@ void dump_ct::cleanup_expr(exprt &expr)
 
     optionalt<exprt> clean_init;
     if(
-      ns.follow(bu.type()).id() == ID_union &&
-      bu.source_location().get_function().empty())
+      ns.follow(bu.type()).id() == ID_union)
     {
       clean_init = zero_initializer(bu.op().type(), source_locationt{}, ns)
                      .value_or(nil_exprt{});

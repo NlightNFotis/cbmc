@@ -141,7 +141,7 @@ void code_contractst::check_apply_loop_contracts(
   const auto entered_loop =
     get_fresh_aux_symbol(
       bool_typet(),
-      id2string(loop_head_location.get_function()),
+      id2string(function_name),
       std::string(ENTERED_LOOP) + "__" + std::to_string(loop_number),
       loop_head_location,
       mode,
@@ -157,7 +157,7 @@ void code_contractst::check_apply_loop_contracts(
   const auto initial_invariant_val =
     get_fresh_aux_symbol(
       bool_typet(),
-      id2string(loop_head_location.get_function()),
+      id2string(function_name),
       INIT_INVARIANT,
       loop_head_location,
       mode,
@@ -181,7 +181,7 @@ void code_contractst::check_apply_loop_contracts(
   // instrumentation of the loop.
   const auto in_base_case = get_fresh_aux_symbol(
                               bool_typet(),
-                              id2string(loop_head_location.get_function()),
+                              id2string(function_name),
                               "__in_base_case",
                               loop_head_location,
                               mode,
@@ -310,7 +310,7 @@ void code_contractst::check_apply_loop_contracts(
   const auto in_loop_havoc_block =
     get_fresh_aux_symbol(
       bool_typet(),
-      id2string(loop_head_location.get_function()),
+      id2string(function_name),
       std::string(IN_LOOP_HAVOC_BLOCK) + +"__" + std::to_string(loop_number),
       loop_head_location,
       mode,
@@ -348,7 +348,7 @@ void code_contractst::check_apply_loop_contracts(
     const auto old_decreases_var =
       get_fresh_aux_symbol(
         clause.type(),
-        id2string(loop_head_location.get_function()),
+        id2string(function_name),
         "tmp_cc",
         loop_head_location,
         mode,
@@ -361,7 +361,7 @@ void code_contractst::check_apply_loop_contracts(
     const auto new_decreases_var =
       get_fresh_aux_symbol(
         clause.type(),
-        id2string(loop_head_location.get_function()),
+        id2string(function_name),
         "tmp_cc",
         loop_head_location,
         mode,
@@ -1269,7 +1269,6 @@ void code_contractst::add_contract_check(
 
   source_locationt source_location = function_symbol.location;
   // Set function in source location to original function
-  source_location.set_function(wrapper_function);
 
   // decl ret
   optionalt<code_returnt> return_stmt;
@@ -1277,7 +1276,7 @@ void code_contractst::add_contract_check(
   {
     symbol_exprt r = get_fresh_aux_symbol(
                        code_type.return_type(),
-                       id2string(source_location.get_function()),
+                       id2string(function_symbol),
                        "tmp_cc",
                        source_location,
                        function_symbol.mode,
@@ -1303,7 +1302,7 @@ void code_contractst::add_contract_check(
     const symbolt &parameter_symbol = ns.lookup(parameter);
     symbol_exprt p = get_fresh_aux_symbol(
                        parameter_symbol.type,
-                       id2string(source_location.get_function()),
+                       id2string(f_it->first),
                        "tmp_cc",
                        source_location,
                        parameter_symbol.mode,

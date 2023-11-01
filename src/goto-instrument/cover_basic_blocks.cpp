@@ -163,11 +163,6 @@ void cover_basic_blockst::add_block_lines(
     }
   };
   add_location(instruction.source_location());
-  instruction.code().visit_pre([&](const exprt &expr) {
-    const auto &location = expr.source_location();
-    if(!location.get_function().empty())
-      add_location(location);
-  });
 }
 
 cover_basic_blocks_javat::cover_basic_blocks_javat(

@@ -23,7 +23,7 @@ void message_handlert::print(
   const irep_idt &file=location.get_file();
   const irep_idt &line=location.get_line();
   const irep_idt &column=location.get_column();
-  const irep_idt &function=location.get_function();
+  // const irep_idt &function=location.get_function();
 
   if(!file.empty())
   {
@@ -43,12 +43,12 @@ void message_handlert::print(
       dest+=' ';
     dest+="column "+id2string(column);
   }
-  if(!function.empty())
-  {
-    if(!dest.empty())
-      dest+=' ';
-    dest+="function "+id2string(function);
-  }
+  // if(!function.empty())
+  // {
+  //   if(!dest.empty())
+  //     dest+=' ';
+  //   dest+="function "+id2string(function);
+  // }
 
   if(!dest.empty())
     dest+=": ";

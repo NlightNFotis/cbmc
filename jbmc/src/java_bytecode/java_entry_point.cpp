@@ -669,7 +669,6 @@ bool generate_java_start_function(
   // and arg1 ... argn are constructed below as well
 
   source_locationt loc=symbol.location;
-  loc.set_function(symbol.name);
   source_locationt &dloc=loc;
 
   // function to call

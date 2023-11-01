@@ -332,9 +332,6 @@ static void create_function_scope(const YYSTYPE d)
 
   irep_idt function_name=declarator.get_base_name();
 
-  // record which function we are in
-  PARSER.set_function(function_name);
-
   std::string prefix=PARSER.current_scope().prefix+
                      id2string(function_name)+"::";
   PARSER.new_scope(prefix);
@@ -363,9 +360,6 @@ static void create_function_scope(const YYSTYPE d)
       if(param.id()==ID_declaration)
       {
         ansi_c_declarationt &param_decl=to_ansi_c_declaration(param);
-
-        // we record the function name in the location
-        param_decl.add_source_location().set_function(function_name);
 
         if(!param_decl.declarators().empty())
         {

@@ -2958,9 +2958,6 @@ function_definition:
           
           // Kill the scope that 'function_head' creates.
           PARSER.pop_scope();
-          
-          // We are no longer in any function.
-          PARSER.set_function(irep_idt());
         }
         ;
 
@@ -3492,12 +3489,6 @@ parameter_postfixing_abstract_declarator:
           array_abstract_declarator
         | '(' ')'
           {
-            // Set function name (last declarator) in source location
-            // before parsing function contracts.  Only do this if we
-            // are at a global scope.
-            if (PARSER.current_scope().prefix.empty()) {
-              PARSER.set_function(PARSER.current_scope().last_declarator);
-            }
             // Use last declarator (i.e., function name) to name
             // the scope.
             PARSER.new_scope(
@@ -3510,22 +3501,10 @@ parameter_postfixing_abstract_declarator:
           stack_type($1).add_subtype()=typet(ID_abstract);
           PARSER.pop_scope();
 
-          // Clear function name in source location after parsing if
-          // at global scope.
-          if (PARSER.current_scope().prefix.empty()) {
-            PARSER.set_function(irep_idt());
-          }
-
           $$ = merge($4, $1);
         }
         | '('
           {
-            // Set function name (last declarator) in source location
-            // before parsing function contracts.  Only do this if we
-            // are at a global scope.
-            if (PARSER.current_scope().prefix.empty()) {
-              PARSER.set_function(PARSER.current_scope().last_declarator);
-            }
             // Use last declarator (i.e., function name) to name
             // the scope.
             PARSER.new_scope(
@@ -3541,12 +3520,6 @@ parameter_postfixing_abstract_declarator:
           stack_type($1).add(ID_parameters).get_sub().
             swap((irept::subt &)(to_type_with_subtypes(stack_type($3)).subtypes()));
           PARSER.pop_scope();
-
-          // Clear function name in source location after parsing if
-          // at global scope.
-          if (PARSER.current_scope().prefix.empty()) {
-            PARSER.set_function(irep_idt());
-          }
 
           if(parser_stack($5).is_not_nil())
           {

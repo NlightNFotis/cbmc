@@ -1403,7 +1403,7 @@ exprt cpp_typecheck_resolvet::resolve(
     {
       // __func__ is an ANSI-C standard compliant hack to get the function name
       // __FUNCTION__ and __PRETTY_FUNCTION__ are GCC-specific
-      string_constantt s(source_location.get_function());
+      string_constantt s(base_name);
       s.add_source_location()=source_location;
       return std::move(s);
     }

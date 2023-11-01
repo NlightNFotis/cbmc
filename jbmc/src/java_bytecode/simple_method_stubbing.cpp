@@ -155,7 +155,6 @@ void java_simple_method_stubst::create_method_stub(symbolt &symbol)
 
   // synthetic source location that contains the opaque function name only
   source_locationt synthesized_source_location;
-  synthesized_source_location.set_function(symbol.name);
 
   // make sure all parameters are named
   for(auto &parameter : required_type.parameters())
