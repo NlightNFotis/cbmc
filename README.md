@@ -1,4 +1,4 @@
-[![Build Status][coverity_img]][coverity]
+HAHAHAHHA[![Build Status][coverity_img]][coverity]
 [![Build Status][codecov_img]][codecov]
 
 [CProver Documentation](https://diffblue.github.io/cbmc/)
